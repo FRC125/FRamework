@@ -1,13 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="FRC Deployment" default="compile" xmlns:ivy="antlib:org.apache.ivy.ant">
+  <ivy:retrieve />
 
   <target name="bootstrap" description="Used to install the ivy task jar">
     <mkdir dir="${user.home}/.ant/lib"/>
     <get dest="${user.home}/.ant/lib/ivy.jar" src="http://search.maven.org/remotecontent?filepath=org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar"/>
   </target>
-  
-  <ivy:retrieve />
+
+  <target name="test" depends="compile">
+	<junit>
+      <classpath>
+		<pathelement location="bin" />    
+		<pathelement location="lib/junit*.jar"/>
+      </classpath>    
+      <batchtest>
+		<fileset dir="${test}">
+          <include name="**/*Test*" />
+		</fileset>
+      </batchtest>
+      <formatter type="brief" usefile="false"/>
+	</junit>
+  </target>  
   
   <property file="${user.home}/wpilib/wpilib.properties"/>
   <property file="build.properties"/>
