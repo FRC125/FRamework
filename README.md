@@ -1,2 +1,2 @@
 # FRamework
-Framework for a better robot for great good
+A functional-reactive wrapper around WPILib. 
