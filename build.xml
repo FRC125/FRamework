@@ -49,7 +49,7 @@
   <property file="${user.home}/wpilib/wpilib.properties"/>
   <property file="build.properties"/>
   <property file="${user.home}/wpilib/java/${version}/ant/build.properties"/>
-
-  <import file="wpilib/ant/build.xml"/>
+  <property name="wpilib.ant.dir" value="wpilib/ant" />
+  <import file="${wpilib.ant.dir}/build.xml"/>
 
 </project>
