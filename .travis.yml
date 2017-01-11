@@ -1,4 +1,6 @@
 language: java
 sudo: required
 before_install: ant init-ivy -buildfile helper.xml
-install: sudo ./wpilib-download.sh
+install:
+  - sudo chmod +x wpilib-download.sh
+  - ./wpilib-download.sh
