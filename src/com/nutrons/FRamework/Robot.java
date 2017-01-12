@@ -1,22 +1,13 @@
 package com.nutrons.FRamework;
 
-import edu.wpi.first.wpilibj.SampleRobot;
+import edu.wpi.first.wpilibj.RobotBase;
 
-public class Robot extends SampleRobot {
+public class Robot extends RobotBase {
+
+    @Override
+    public void startCompetition() {
+	// TODO Auto-generated method stub
 	
-	@Override
-	public void robotInit() {
-		
-	}
-	
-	@Override
-	public void autonomous() {
-		
-		
-	}
-	
-	@Override
-	public void operatorControl() {
-		
-	}
+    }
+    
 }
