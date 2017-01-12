@@ -46,10 +46,14 @@
 	</junit>
   </target>
 
-  <property file="${user.home}/wpilib/wpilib.properties"/>
-  <property file="build.properties"/>
-  <property file="${user.home}/wpilib/java/${version}/ant/build.properties"/>
-  <property name="wpilib.ant.dir" value="wpilib/ant" />
-  <import file="${wpilib.ant.dir}/build.xml"/>
+  <property name="wpilib" value="wpilib"/>
+    <property name="userLibs.dir" value="${wpilib}/userLibs"/>
+
+    <property file="build.properties"/>
+    <property file="${wpilib}/ant/build.properties"/>
+
+    <property file="${wpilib}/ant/ni_image.properties"/>
+
+    <import file="${wpilib.ant.dir}/build.xml"/>
 
 </project>
