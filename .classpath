@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/junit-4.12.jar" sourcepath="lib/junit-4.12-sources.jar"/>
+	<classpathentry kind="lib" path="wpilib/lib/WPILib.jar" sourcepath="wpilib/lib/WPILib-sources.jar"/>
+	<classpathentry kind="lib" path="wpilib/lib/NetworkTables.jar" sourcepath="wpilib/lib/NetworkTables-sources.jar"/>
+	<classpathentry kind="lib" path="lib/rxjava-2.0.4.jar" sourcepath="lib/rxjava-2.0.4-sources.jar"/>
+	<classpathentry kind="lib" path="wpilib/lib/opencv.jar" sourcepath="wpilib/lib/opencv-sources.jar"/>
+	<classpathentry kind="lib" path="wpilib/lib/cscore.jar" sorucepath="wpilib/lib/cscore-sources.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
