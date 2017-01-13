@@ -1,9 +1,11 @@
 language: java
+sudo: false
 addons:
   apt:
     packages:
       - oracle-java8-installer
-      - oracle-java8-set-default
+jdk:
+  - oraclejdk8
 before_install: ant init-ivy -buildfile helper.xml
 install:
   - ant install -buildfile install.xml
