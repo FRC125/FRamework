@@ -9,3 +9,4 @@ jdk:
 before_install: ant init-ivy -buildfile helper.xml
 install:
   - ant install -buildfile install.xml
+  - jdk_switcher use oraclejdk8
