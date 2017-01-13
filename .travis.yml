@@ -1,4 +1,6 @@
 language: java
+jdk:
+ - oraclejdk8
 before_install: ant init-ivy -buildfile helper.xml
 install:
   - ant install -buildfile install.xml
