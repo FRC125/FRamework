@@ -39,11 +39,36 @@
              uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
   </target>
   <ivy:retrieve/>
+
+  <target name="compile" description="Try to override WPILib's compile step">
+    <mkdir dir="${build.dir}"/>
+    <path id="classpath.path">
+      <fileset dir="${userLibs.dir}" includes="*.jar"/>
+      <fileset file="${wpilib.jar}"/>
+      <fileset file="${networktables.jar}"/>
+      <fileset file="${opencv.jar}"/>
+      <fileset file="${cscore.jar}"/>
+      <fileset dir="${userLibs}" erroronmissingdir="false"/>
+      <fileset dir="lib/rxjava-2.0.4.jar"/>
+    </path>
+    <pathconvert property="classpathProp" refid="classpath.path"/>
+    <echo>[athena-compile] Compiling ${src.dir} with classpath=${classpathProp} to ${build.dir}</echo>
+    <javac srcdir="${src.dir}"
+           destdir="${build.dir}"
+           includeAntRuntime="no"
+           includeJavaRuntime="no"
+           classpathref="classpath.path"
+           target="${ant.java.version}"
+           source="${ant.java.version}"
+           compiler="javac${ant.java.version}"
+           debug="true">
+    </javac>
+  </target>
+
   <target name="test" depends="compile,init-ivy">
     <path id="classpath.path">
       <fileset file="lib/junit-4.12.jar"/>
       <fileset file="lib/hamcrest-core-1.3.jar"/>
-      <fileset file="lib/test/notexists.jar"/>
     </path>
     <javac srcdir="${test.dir}"
            destdir="${build.dir}"
