@@ -13,3 +13,4 @@ install:
   - sed -i 's/${ant\.java\.version}/1.8/g' build.xml
   - sed -i 's/compiler="javac1.8"//g' wpilib/ant/build.xml
   - sed -i 's/compiler="javac1.8"//g' build.xml
+
