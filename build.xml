@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="FRC Deployment" default="compile" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+  <property name="wpilib" value="wpilib"/>
+  <property name="userLibs.dir" value="${wpilib}/userLibs"/>
+  <property file="build.properties"/>
+  <property file="${wpilib}/ant/build.properties"/>
+  <property file="${wpilib}/ant/ni_image.properties"/>
+
   <import file="${wpilib.ant.dir}/build.xml"/>
 
   <property name="ivy.install.version" value="2.1.0-rc2"/>
@@ -62,12 +69,4 @@
       <formatter type="brief" usefile="false"/>
     </junit>
   </target>
-
-  <property name="wpilib" value="wpilib"/>
-  <property name="userLibs.dir" value="${wpilib}/userLibs"/>
-
-  <property file="build.properties"/>
-  <property file="${wpilib}/ant/build.properties"/>
-
-  <property file="${wpilib}/ant/ni_image.properties"/>
 </project>
