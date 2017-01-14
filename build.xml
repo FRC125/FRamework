@@ -49,7 +49,7 @@
       <fileset file="${opencv.jar}"/>
       <fileset file="${cscore.jar}"/>
       <fileset dir="${userLibs}" erroronmissingdir="false"/>
-      <fileset dir="lib/rxjava-2.0.4.jar"/>
+      <fileset dir="lib/" includes="*.jar"/> <!-- include everything, I did not remove wpi's specific includes-->
     </path>
     <pathconvert property="classpathProp" refid="classpath.path"/>
     <echo>[athena-compile] Compiling ${src.dir} with classpath=${classpathProp} to ${build.dir}</echo>
