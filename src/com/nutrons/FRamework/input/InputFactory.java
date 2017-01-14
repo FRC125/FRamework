@@ -54,6 +54,6 @@ public class InputFactory {
     }
 
     protected <T> Flowable<T> toFlow(Supplier<T> s) {
-        return Flowable.interval(100, TimeUnit.MILLISECONDS).map((x) -> s.get());
+        return toFlow(s, 100, TimeUnit.MILLISECONDS);
     }
 }
