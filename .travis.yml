@@ -1,6 +1,18 @@
 language: java
+sudo: false
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
 jdk:
- - oraclejdk8
+  - oraclejdk8
 before_install: ant init-ivy -buildfile helper.xml
 install:
   - ant install -buildfile install.xml
+  - ls
+  - cat wpilib/ant/build.xml
+  - sed -i 's/${ant\.java\.version}/1.8/g' wpilib/ant/build.xml
+  - sed -i 's/${ant\.java\.version}/1.8/g' build.xml
+  - sed -i 's/compiler="javac1.8"//g' wpilib/ant/build.xml
+  - sed -i 's/compiler="javac1.8"//g' build.xml
+
