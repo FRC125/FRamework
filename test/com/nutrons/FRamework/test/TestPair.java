@@ -4,7 +4,7 @@ import com.nutrons.FRamework.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.*;
 
 public class TestPair {
 
@@ -26,6 +26,6 @@ public class TestPair {
 
     @Test
     public void checkInequality() {
-        assertEquals(p, new Pair<Integer, String>(2, "b"));
+        assertFalse(p.equals(new Pair<Integer, String>(2, "b")));
     }
 }
