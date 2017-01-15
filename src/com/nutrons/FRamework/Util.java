@@ -35,6 +35,8 @@ public class Util {
         Flowable<List<T>> asymmetricPairs = o.buffer(2, 1)
                 .filter((x) -> x.size() == 2
                         && !x.get(0).equals(x.get(1)));
-        return o.take(1).concatWith(asymmetricPairs.map((x) -> x.get(1)));
+        return o.take(1)
+                .concatWith(asymmetricPairs
+                        .map((x) -> x.get(1)));
     }
 }
