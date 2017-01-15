@@ -98,7 +98,7 @@
            compiler="javac1.8"
            debug="true">
     </javac>
-    <junit>
+    <junit haltonfailure="no" failureproperty="test.failed" >
       <classpath location="${build.dir}"/>
 
       <!-- Make sure these two libraries are included -->
@@ -111,5 +111,6 @@
       </batchtest>
       <formatter type="brief" usefile="false"/>
     </junit>
+    <fail message="Test failure detected, check test results." if="test.failed" />
   </target>
 </project>
