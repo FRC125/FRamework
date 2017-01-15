@@ -31,14 +31,14 @@ public class OutputFactory {
         this.controllers.putAll(controllers);
     }
 
-    private void lazySpeedConsumer(int instance) {
-        if (!motorSpeedConsumer.containsKey(instance)) {
-            this.motorSpeedConsumer.put(instance, (x) -> this.controllers.get(instance).set(x));
+    private void lazySpeedConsumer(int port) {
+        if (!motorSpeedConsumer.containsKey(port)) {
+            this.motorSpeedConsumer.put(port, (x) -> this.controllers.get(port).set(x));
         }
     }
 
-    public Consumer<Double> motor(int instance) {
-        lazySpeedConsumer(instance);
-        return this.motorSpeedConsumer.get(instance);
+    public Consumer<Double> motor(int port) {
+        lazySpeedConsumer(port);
+        return this.motorSpeedConsumer.get(port);
     }
 }
