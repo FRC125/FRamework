@@ -1,13 +1,11 @@
-package com.nutrons.FRamework.input;
+package com.nutrons.FRamework;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.Joystick;
+
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 
 public class InputFactory {
 
@@ -30,16 +28,12 @@ public class InputFactory {
         return InputFactory.instance;
     }
 
-    public <T> Flowable<T> toFlow(Supplier<T> s, long period, TimeUnit unit) {
-        return Flowable.interval(period, unit).map((x) -> s.get());
-    }
-
     private Joystick lazyJoy(int instance) {
         if (!this.joysticks.containsKey(instance)) {
             Joystick j = new Joystick(instance);
             this.joysticks.put(instance, j);
-            this.joysticksX.put(instance, this.toFlow(() -> j.getAxis(Joystick.AxisType.kX), 100, TimeUnit.MILLISECONDS));
-            this.joysticksY.put(instance, this.toFlow(() -> j.getAxis(Joystick.AxisType.kY), 100, TimeUnit.MILLISECONDS));
+            this.joysticksX.put(instance, Util.toFlow(() -> j.getAxis(Joystick.AxisType.kX)));
+            this.joysticksY.put(instance, Util.toFlow(() -> j.getAxis(Joystick.AxisType.kY)));
         }
         return this.joysticks.get(instance);
     }
