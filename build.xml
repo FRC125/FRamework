@@ -53,10 +53,11 @@
     <checkstyle config="docs/google_checks.xml"
                 failureProperty="checkstyle.failure"
                 failOnViolation="false">
-      <formatter type="xml" tofile="checkstyle_report.xml"/>
+      <formatter type="plain"/>
       <fileset dir="src" includes="**/*.java"/>
       <fileset dir="test" includes="**/*.java"/>
     </checkstyle>
+    <fail message="Style failure detected, check." if="checkstyle.failure" />
   </target>
 
   <target name="compile" description="Try to override WPILib's compile step">
