@@ -18,7 +18,7 @@ public class OutputFactory {
         this.motorSpeedConsumer = new HashMap<>();
     }
 
-    public static OutputFactory instance() {
+    public static synchronized OutputFactory instance() {
         if (OutputFactory.instance == null) {
             OutputFactory.instance = new OutputFactory();
         }

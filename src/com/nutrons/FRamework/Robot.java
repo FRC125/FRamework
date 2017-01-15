@@ -12,9 +12,10 @@ public class Robot extends RobotBase {
 
     public Robot() {
         this.enabled = Util.changedValues(Util.toFlow(this::isEnabled));
-        this.mode = Util.changedValues(Flowable.merge(Util.toFlow(this::isAutonomous).filter((x) -> x).map((x) -> AUTO),
-                Util.toFlow(this::isOperatorControl).filter((x) -> x).map((x) -> TELEOP),
-                Util.toFlow(this::isTest).filter((x) -> x).map((x) -> TEST)));
+        this.mode = Util.changedValues(Flowable.merge(
+                Util.toFlow(this::isAutonomous).filter(x -> x).map((x) -> AUTO),
+                Util.toFlow(this::isOperatorControl).filter(x -> x).map((x) -> TELEOP),
+                Util.toFlow(this::isTest).filter(x -> x).map((x) -> TEST)));
     }
 
     @Override

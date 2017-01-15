@@ -11,11 +11,12 @@ public class Util {
     /**
      * Generate a Flowable from a periodic call to a Supplier.
      *
-     * @param period the number of time units to wait before calling the supplier again
-     * @param <T>    the type of the Flowable and Supplier
+     * @param ignored the number of time units to wait before calling the supplier again
+     * @param <T>     the type of the Flowable and Supplier
      */
-    static <T> Flowable<T> toFlow(Supplier<T> s, long period, TimeUnit unit) {
-        return Flowable.interval(period, unit, Schedulers.io()).subscribeOn(Schedulers.io()).map((x) -> s.get());
+    static <T> Flowable<T> toFlow(Supplier<T> s, long ignored, TimeUnit unit) {
+        return Flowable.interval(ignored, unit, Schedulers.io())
+                .subscribeOn(Schedulers.io()).map((x) -> s.get());
     }
 
     /**
@@ -31,7 +32,9 @@ public class Util {
      * @return A Flowable of all items that are not equal to their predecessor, including the initial item.
      */
     static <T> Flowable<T> changedValues(Flowable<T> o) {
-        Flowable<List<T>> asymmetricPairs = o.buffer(2, 1).filter((x) -> x.size() == 2 && !x.get(0).equals(x.get(1)));
+        Flowable<List<T>> asymmetricPairs = o.buffer(2, 1)
+                .filter((x) -> x.size() == 2
+                        && !x.get(0).equals(x.get(1)));
         return o.take(1).concatWith(asymmetricPairs.map((x) -> x.get(1)));
     }
 }

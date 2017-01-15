@@ -1,50 +1,45 @@
 package com.nutrons.FRamework;
 
+import edu.wpi.first.wpilibj.Joystick;
+import io.reactivex.Flowable;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.wpi.first.wpilibj.Joystick;
-
-import io.reactivex.Flowable;
+import static edu.wpi.first.wpilibj.Joystick.AxisType.kX;
+import static edu.wpi.first.wpilibj.Joystick.AxisType.kY;
 
 public class InputFactory {
 
     private static InputFactory instance;
 
-    private Map<Integer, Joystick> joysticks;
-    private Map<Integer, Flowable<Double>> joysticksX;
-    private Map<Integer, Flowable<Double>> joysticksY;
-
     private InputFactory() {
         this.joysticks = new HashMap<>();
-        this.joysticksX = new HashMap<>();
-        this.joysticksY = new HashMap<>();
     }
 
-    public static InputFactory instance() {
+    public static synchronized InputFactory instance() {
         if (InputFactory.instance == null) {
             InputFactory.instance = new InputFactory();
         }
         return InputFactory.instance;
     }
 
-    private Joystick lazyJoy(int instance) {
-        if (!this.joysticks.containsKey(instance)) {
-            Joystick j = new Joystick(instance);
-            this.joysticks.put(instance, j);
-            this.joysticksX.put(instance, Util.toFlow(() -> j.getAxis(Joystick.AxisType.kX)));
-            this.joysticksY.put(instance, Util.toFlow(() -> j.getAxis(Joystick.AxisType.kY)));
+    private Map<Integer, Flowable<Pair<Double, Double>>> joysticks;
+
+    private Flowable<Pair<Double, Double>> lazyJoy(int port) {
+        if (!this.joysticks.containsKey(port)) {
+            Joystick j = new Joystick(port);
+            this.joysticks.put(port,
+                    Util.toFlow(() -> new Pair<>(j.getAxis(kX), j.getAxis(kY))));
         }
-        return this.joysticks.get(instance);
+        return this.joysticks.get(port);
     }
 
     public Flowable<Double> joystickX(int instance) {
-        lazyJoy(instance);
-        return this.joysticksX.get(instance);
+        return lazyJoy(instance).map(Pair::left);
     }
 
     public Flowable<Double> joystickY(int instance) {
-        lazyJoy(instance);
-        return this.joysticksY.get(instance);
+        return lazyJoy(instance).map(Pair::right);
     }
 }
