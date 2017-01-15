@@ -55,6 +55,7 @@
                 failOnViolation="false">
       <formatter type="xml" tofile="checkstyle_report.xml"/>
       <fileset dir="src" includes="**/*.java"/>
+      <fileset dir="test" includes="**/*.java"/>
     </checkstyle>
   </target>
 
@@ -83,7 +84,7 @@
     </javac>
   </target>
 
-  <target name="test" depends="compile,init-ivy">
+  <target name="test" depends="checkstyle,compile,init-ivy">
     <path id="classpath.path">
       <fileset file="lib/junit-4.12.jar"/>
       <fileset file="lib/hamcrest-core-1.3.jar"/>
