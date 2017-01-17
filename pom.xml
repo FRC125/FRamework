@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.github.FRC125</groupId>
+    <artifactId>ant-buildfiles</artifactId>
+    <version>1.0.5-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>FRamework</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.reactivex.rxjava2</groupId>
+      <artifactId>rxjava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.wpi</groupId>
+      <artifactId>opencv</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.wpi</groupId>
+      <artifactId>NetworkTables</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>edu.wpi</groupId>
+      <artifactId>WPILib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.reactivestreams</groupId>
+      <artifactId>reactive-streams</artifactId>
+    </dependency>
+  </dependencies>
+</project>

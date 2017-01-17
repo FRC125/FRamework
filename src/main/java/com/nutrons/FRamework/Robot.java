@@ -1,8 +1,8 @@
-package com.nutrons.FRamework;
+package com.nutrons.framework;
 
-import static com.nutrons.FRamework.CompMode.AUTO;
-import static com.nutrons.FRamework.CompMode.TELEOP;
-import static com.nutrons.FRamework.CompMode.TEST;
+import static com.nutrons.framework.CompMode.AUTO;
+import static com.nutrons.framework.CompMode.TELEOP;
+import static com.nutrons.framework.CompMode.TEST;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import io.reactivex.Flowable;

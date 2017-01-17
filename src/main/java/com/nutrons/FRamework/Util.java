@@ -1,4 +1,4 @@
-package com.nutrons.FRamework;
+package com.nutrons.framework;
 
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
