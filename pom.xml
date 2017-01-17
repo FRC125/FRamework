@@ -9,7 +9,7 @@
   <parent>
     <groupId>com.github.FRC125</groupId>
     <artifactId>ant-buildfiles</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.5</version>
   </parent>
 
   <artifactId>FRamework</artifactId>
@@ -42,4 +42,11 @@
       <artifactId>reactive-streams</artifactId>
     </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
 </project>
