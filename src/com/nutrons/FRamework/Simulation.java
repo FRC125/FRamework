@@ -10,16 +10,16 @@ public class Simulation {
 
   private StreamManager sm;
 
-  private Simulation(Flowable<Boolean> enabled, Flowable<CompMode> mode) {
-    this.sm = new StreamManager(enabled, mode);
+  protected Simulation(StreamManager sm) {
+    this.sm = sm;
   }
 
-  protected final void startCompetition() {
+  public final void startCompetition() {
     this.sm.startCompetition();
   }
 
   public static void main(String[] args) {
-    Simulation simulation = new Simulation(Flowable.never(), Flowable.never());
+    Simulation simulation = new Simulation(new StreamManager(Flowable.never(), Flowable.never()));
     simulation.startCompetition();
   }
 }
