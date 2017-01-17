@@ -3,4 +3,4 @@ sudo: false
 jdk:
   - oraclejdk8
 install:
-  - maven clean package
+  - mvn clean package
