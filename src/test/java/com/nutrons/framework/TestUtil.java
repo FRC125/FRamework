@@ -1,8 +1,8 @@
-package com.nutrons.FRamework.test;
+package com.nutrons.framework.test;
 
 import static junit.framework.TestCase.assertTrue;
 
-import com.nutrons.FRamework.Util;
+import com.nutrons.framework.Util;
 import io.reactivex.Flowable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

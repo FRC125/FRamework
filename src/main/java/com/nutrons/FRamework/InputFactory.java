@@ -1,4 +1,4 @@
-package com.nutrons.FRamework;
+package com.nutrons.framework;
 
 import static edu.wpi.first.wpilibj.Joystick.AxisType.kX;
 import static edu.wpi.first.wpilibj.Joystick.AxisType.kY;

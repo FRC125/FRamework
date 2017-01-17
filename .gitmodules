@@ -1,0 +1,3 @@
+[submodule "maven-build-files"]
+	path = maven-build-files
+	url = https://github.com/FRC125/maven-build-files.git

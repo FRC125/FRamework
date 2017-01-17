@@ -1,4 +1,4 @@
-package com.nutrons.FRamework;
+package com.nutrons.framework;
 
 import edu.wpi.first.wpilibj.SpeedController;
 import io.reactivex.functions.Consumer;

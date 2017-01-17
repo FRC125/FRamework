@@ -1,4 +1,4 @@
-package com.nutrons.FRamework.test;
+package com.nutrons.framework.test;
 
 import static org.junit.Assert.assertEquals;
 
