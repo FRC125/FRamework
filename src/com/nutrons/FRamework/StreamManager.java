@@ -16,8 +16,9 @@ public class StreamManager {
 
   /**
    * Manages subsystems and the competition loop.
+   *
    * @param enabled a Flowable of booleans, representing changes in the enabled state of the robot
-   * @param mode a Flowable of CompModes, representing changes in the competition game mode
+   * @param mode    a Flowable of CompModes, representing changes in the competition game mode
    */
   public StreamManager(Flowable<Boolean> enabled, Flowable<CompMode> mode) {
     this.subsystems = new ArrayList<>();
@@ -49,8 +50,9 @@ public class StreamManager {
   }
 
   /**
-   * Register a subsystem, so it will only subscribe side effect consumers
-   * (such as motors) once the Robot is initialized.
+   * Register a subsystem, so that when the Robot is initialized,
+   * the StreamManager will notify the subsystem that it should
+   * subscribe its consumers to streams.
    */
   protected final void registerSubsystem(Subsystem subsystem) {
     this.subsystems.add(subsystem);

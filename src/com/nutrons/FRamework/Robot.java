@@ -1,9 +1,11 @@
 package com.nutrons.FRamework;
 
+import static com.nutrons.FRamework.CompMode.AUTO;
+import static com.nutrons.FRamework.CompMode.TELEOP;
+import static com.nutrons.FRamework.CompMode.TEST;
+
 import edu.wpi.first.wpilibj.RobotBase;
 import io.reactivex.Flowable;
-
-import static com.nutrons.FRamework.CompMode.*;
 
 public class Robot extends RobotBase {
 
