@@ -26,19 +26,29 @@ public abstract class Robot extends SampleRobot {
   }
 
   /**
-   * Construct the StreamManager for the physical robot
+   * Constructs the StreamManager for the physical robot.
    */
   protected abstract StreamManager createStreamManager();
 
+  /**
+   * A Flowable of booleans representing changes in enabled state over time.
+   * Will emit item only when state changes.
+   */
   protected final Flowable<Boolean> enabledStream() {
     return Util.changedValues(Util.toFlow(this::isEnabled));
   }
 
+  /**
+   * A Flowable of competition modes over time, representing a change
+   * in the competition mode to test, auto or teleop.
+   * Emits an item only when mode changes.
+   */
   protected final Flowable<CompMode> competitionStream() {
     return Util.changedValues(Flowable.merge(
         Util.toFlow(this::isAutonomous).filter(x -> x).map((x) -> AUTO),
         Util.toFlow(this::isOperatorControl).filter(x -> x).map((x) -> TELEOP),
         Util.toFlow(this::isTest).filter(x -> x).map((x) -> TEST)));
+    // filter(x -> x) will filter all false values from the stream.
   }
 
   /**
