@@ -1,6 +1,8 @@
 package com.nutrons.FRamework;
 
-import static com.nutrons.FRamework.CompMode.*;
+import static com.nutrons.FRamework.CompMode.AUTO;
+import static com.nutrons.FRamework.CompMode.TELEOP;
+import static com.nutrons.FRamework.CompMode.TEST;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
@@ -18,7 +20,7 @@ public abstract class Robot extends SampleRobot {
 
 
   /**
-   * Initializes the StreamManager
+   * Initializes the StreamManager.
    */
   @Override
   protected final void robotInit() {
