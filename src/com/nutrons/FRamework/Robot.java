@@ -1,13 +1,11 @@
 package com.nutrons.FRamework;
 
-import static com.nutrons.FRamework.CompMode.AUTO;
-import static com.nutrons.FRamework.CompMode.TELEOP;
-import static com.nutrons.FRamework.CompMode.TEST;
+import static com.nutrons.FRamework.CompMode.*;
 
-import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
 
-public class Robot extends RobotBase {
+public class Robot extends SampleRobot {
 
   private StreamManager sm;
 
@@ -18,19 +16,59 @@ public class Robot extends RobotBase {
 
   }
 
+
   /**
-   * Called at start of competition.
+   * Initializes the StreamManager
    */
   @Override
-  public final void startCompetition() {
-    this.sm = new StreamManager(
+  protected final void robotInit() {
+    this.sm = this.createStreamManager();
+  }
+
+  /**
+   * Construct the StreamManager for the physical robot
+   */
+  protected StreamManager createStreamManager() {
+    return new StreamManager(
         Util.changedValues(Util.toFlow(this::isEnabled)),
         Util.changedValues(Flowable.merge(
             Util.toFlow(this::isAutonomous).filter(x -> x).map((x) -> AUTO),
             Util.toFlow(this::isOperatorControl).filter(x -> x).map((x) -> TELEOP),
             Util.toFlow(this::isTest).filter(x -> x).map((x) -> TEST)))
     );
+  }
+
+  /**
+   * Called at start of competition.
+   */
+  @Override
+  public final void robotMain() {
     this.sm.startCompetition();
+  }
+
+  @Override
+  public final void startCompetition() {
+
+  }
+
+  @Override
+  protected final void disabled() {
+
+  }
+
+  @Override
+  public final void autonomous() {
+
+  }
+
+  @Override
+  public final void operatorControl() {
+
+  }
+
+  @Override
+  public final void test() {
+
   }
 
   @Override
