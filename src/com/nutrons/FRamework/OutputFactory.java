@@ -1,8 +1,8 @@
 package com.nutrons.FRamework;
 
-import edu.wpi.first.wpilibj.SpeedController;
-import io.reactivex.functions.Consumer;
-
+import com.nutrons.FRamework.consumers.LoopSpeedController;
+import com.nutrons.FRamework.consumers.MotorEvent;
+import io.reactivex.Observer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,12 +10,10 @@ public class OutputFactory {
 
   private static OutputFactory instance;
 
-  private Map<Integer, SpeedController> controllers;
-  private Map<Integer, Consumer<Double>> motorSpeedConsumer;
+  private Map<Integer, LoopSpeedController> controllers;
 
   private OutputFactory() {
     this.controllers = new HashMap<>();
-    this.motorSpeedConsumer = new HashMap<>();
   }
 
   /**
@@ -35,20 +33,15 @@ public class OutputFactory {
    *
    * @param controllers Mapping from port number to controller
    */
-  public void setControllers(Map<Integer, SpeedController> controllers) {
+  public void setControllers(Map<Integer, LoopSpeedController> controllers) {
     this.controllers.clear();
-    this.motorSpeedConsumer.clear();
     this.controllers.putAll(controllers);
   }
 
-  private void lazySpeedConsumer(int port) {
-    if (!motorSpeedConsumer.containsKey(port)) {
-      this.motorSpeedConsumer.put(port, (x) -> this.controllers.get(port).set(x));
+  public Observer<MotorEvent> motor(int port) {
+    if(!this.controllers.containsKey(port)) {
+      throw new RuntimeException("Motor not registered");
     }
-  }
-
-  public Consumer<Double> motor(int port) {
-    lazySpeedConsumer(port);
-    return this.motorSpeedConsumer.get(port);
+    return this.controllers.get(port);
   }
 }
