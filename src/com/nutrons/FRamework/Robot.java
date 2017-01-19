@@ -5,7 +5,7 @@ import static com.nutrons.FRamework.CompMode.*;
 import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
 
-public class Robot extends SampleRobot {
+public abstract class Robot extends SampleRobot {
 
   private StreamManager sm;
 
@@ -28,14 +28,17 @@ public class Robot extends SampleRobot {
   /**
    * Construct the StreamManager for the physical robot
    */
-  protected StreamManager createStreamManager() {
-    return new StreamManager(
-        Util.changedValues(Util.toFlow(this::isEnabled)),
-        Util.changedValues(Flowable.merge(
-            Util.toFlow(this::isAutonomous).filter(x -> x).map((x) -> AUTO),
-            Util.toFlow(this::isOperatorControl).filter(x -> x).map((x) -> TELEOP),
-            Util.toFlow(this::isTest).filter(x -> x).map((x) -> TEST)))
-    );
+  protected abstract StreamManager createStreamManager();
+
+  protected final Flowable<Boolean> enabledStream() {
+    return Util.changedValues(Util.toFlow(this::isEnabled));
+  }
+
+  protected final Flowable<CompMode> competitionStream() {
+    return Util.changedValues(Flowable.merge(
+        Util.toFlow(this::isAutonomous).filter(x -> x).map((x) -> AUTO),
+        Util.toFlow(this::isOperatorControl).filter(x -> x).map((x) -> TELEOP),
+        Util.toFlow(this::isTest).filter(x -> x).map((x) -> TEST)));
   }
 
   /**
