@@ -4,45 +4,120 @@ import static com.nutrons.FRamework.CompMode.AUTO;
 import static com.nutrons.FRamework.CompMode.TELEOP;
 import static com.nutrons.FRamework.CompMode.TEST;
 
-import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
 
-public class Robot extends RobotBase {
+public abstract class Robot extends SampleRobot {
 
-  private Flowable<Boolean> enabled;
-  private Flowable<CompMode> mode;
+  private StreamManager sm;
 
   /**
-   * Initialize the robot.
+   * Bootstraps the StreamManager with appropriate factories.
    */
   public Robot() {
-    this.enabled = Util.changedValues(Util.toFlow(this::isEnabled));
-    this.mode = Util.changedValues(Flowable.merge(
+
+  }
+
+
+  /**
+   * Initializes the StreamManager.
+   */
+  @Override
+  protected final void robotInit() {
+    this.sm = this.createStreamManager();
+  }
+
+  /**
+   * Constructs the StreamManager for the physical robot.
+   */
+  protected abstract StreamManager createStreamManager();
+
+  /**
+   * A Flowable of booleans representing changes in enabled state over time.
+   * Will emit item only when state changes.
+   */
+  protected final Flowable<Boolean> enabledStream() {
+    return Util.changedValues(Util.toFlow(this::isEnabled));
+  }
+
+  /**
+   * A Flowable of competition modes over time, representing a change
+   * in the competition mode to test, auto or teleop.
+   * Emits an item only when mode changes.
+   */
+  protected final Flowable<CompMode> competitionStream() {
+    return Util.changedValues(Flowable.merge(
         Util.toFlow(this::isAutonomous).filter(x -> x).map((x) -> AUTO),
         Util.toFlow(this::isOperatorControl).filter(x -> x).map((x) -> TELEOP),
         Util.toFlow(this::isTest).filter(x -> x).map((x) -> TEST)));
+    // filter(x -> x) will filter all false values from the stream.
   }
 
   /**
    * Called at start of competition.
    */
   @Override
-  public void startCompetition() {
-    this.enabled.ignoreElements().blockingAwait();
-    this.mode.ignoreElements().blockingAwait();
+  public final void robotMain() {
+    this.sm.startCompetition();
   }
 
-  /**
-   * @return A Flowable representing the "enabled" state of the robot over time.
-   */
-  public Flowable<Boolean> enabled() {
-    return this.enabled;
+  @Override
+  public final void startCompetition() {
+
   }
 
-  /**
-   * @return A Flowable representing the "competition mode" of the robot over time.
-   */
-  public Flowable<CompMode> mode() {
-    return this.mode;
+  @Override
+  protected final void disabled() {
+
+  }
+
+  @Override
+  public final void autonomous() {
+
+  }
+
+  @Override
+  public final void operatorControl() {
+
+  }
+
+  @Override
+  public final void test() {
+
+  }
+
+  @Override
+  public final void free() {
+    super.free();
+  }
+
+  @Override
+  public final boolean isDisabled() {
+    return super.isDisabled();
+  }
+
+  @Override
+  public final boolean isEnabled() {
+    return super.isEnabled();
+  }
+
+  @Override
+  public final boolean isAutonomous() {
+    return super.isAutonomous();
+  }
+
+  @Override
+  public final boolean isTest() {
+    return super.isTest();
+  }
+
+  @Override
+  public final boolean isOperatorControl() {
+    return super.isOperatorControl();
+  }
+
+  @Override
+  public final boolean isNewDataAvailable() {
+    return super.isNewDataAvailable();
   }
 }

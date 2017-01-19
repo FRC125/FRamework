@@ -1,10 +1,8 @@
 package com.nutrons.FRamework;
 
-import static edu.wpi.first.wpilibj.Joystick.AxisType.kX;
-import static edu.wpi.first.wpilibj.Joystick.AxisType.kY;
-
 import edu.wpi.first.wpilibj.Joystick;
 import io.reactivex.Flowable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +17,7 @@ public class InputFactory {
 
   /**
    * Get or create the singleton instance.
+   *
    * @return The singleton instance
    */
   public static synchronized InputFactory instance() {
@@ -34,7 +33,7 @@ public class InputFactory {
     if (!this.joysticks.containsKey(port)) {
       Joystick joystick = new Joystick(port);
       this.joysticks.put(port,
-          Util.toFlow(() -> new Pair<>(joystick.getAxis(kX), joystick.getAxis(kY))));
+          Util.toFlow(() -> new Pair<>(joystick.getX(), joystick.getY())));
     }
     return this.joysticks.get(port);
   }

@@ -20,6 +20,7 @@ public class OutputFactory {
 
   /**
    * Get or create the singleton instance.
+   *
    * @return The singleton instance
    */
   public static synchronized OutputFactory instance() {
@@ -31,6 +32,7 @@ public class OutputFactory {
 
   /**
    * Sets the type of speed controller on each port.
+   *
    * @param controllers Mapping from port number to controller
    */
   public void setControllers(Map<Integer, SpeedController> controllers) {
