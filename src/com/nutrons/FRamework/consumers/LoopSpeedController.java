@@ -3,6 +3,7 @@ package com.nutrons.FRamework.consumers;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,11 +33,7 @@ public abstract class LoopSpeedController implements Observer<LoopControllerEven
     Observable.fromIterable(this.subscriptions).blockingSubscribe(x -> x.dispose());
   }
 
-  abstract void runAtPower(double power);
-
-  abstract void loopEnable();
-
-  abstract void loopDisable();
+  abstract void set(double value);
 
   abstract void setLoopProperties(double p, double i, double d, double f);
 }

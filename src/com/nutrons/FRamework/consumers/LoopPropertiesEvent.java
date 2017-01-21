@@ -15,7 +15,7 @@ public class LoopPropertiesEvent implements LoopControllerEvent {
   }
 
   @Override
-  public void actOn(LoopSpeedController controller) {
-    controller.setLoopProperties(p, i, d, f);
+  public void actOn(Talon talon) {
+    talon.setLoopProperties(p, i, d, f);
   }
 }

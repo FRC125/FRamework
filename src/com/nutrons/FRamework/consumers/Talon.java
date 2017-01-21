@@ -3,12 +3,10 @@ package com.nutrons.FRamework.consumers;
 import com.ctre.CANTalon;
 
 public class Talon extends LoopSpeedController {
-  private final CANTalon.TalonControlMode loopMode;
   private CANTalon talon;
 
-  public Talon(CANTalon talon, CANTalon.TalonControlMode loopMode) {
+  public Talon(CANTalon talon) {
     this.talon = talon;
-    this.loopMode = loopMode;
   }
 
   @Override
@@ -17,19 +15,12 @@ public class Talon extends LoopSpeedController {
   }
 
   @Override
-  void runAtPower(double power) {
-    this.loopDisable();
-    this.talon.set(power);
+  void set(double value) {
+
   }
 
-  @Override
-  void loopEnable() {
-    this.talon.changeControlMode(this.loopMode);
-  }
-
-  @Override
-  void loopDisable() {
-    this.talon.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+  void setMode(CANTalon.TalonControlMode mode) {
+    this.talon.changeControlMode(mode);
   }
 
   @Override
