@@ -1,9 +1,11 @@
 package com.nutrons.FRamework;
 
-import static com.nutrons.FRamework.CompMode.AUTO;
-import static com.nutrons.FRamework.CompMode.TELEOP;
-import static com.nutrons.FRamework.CompMode.TEST;
+import static com.nutrons.FRamework.util.CompMode.AUTO;
+import static com.nutrons.FRamework.util.CompMode.TELE;
+import static com.nutrons.FRamework.util.CompMode.TEST;
 
+import com.nutrons.FRamework.util.CompMode;
+import com.nutrons.FRamework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
 
@@ -12,12 +14,12 @@ public abstract class Robot extends SampleRobot {
   private StreamManager sm;
 
   /**
-   * Bootstraps the StreamManager with appropriate factories.
+   * Bootstraps a StreamManager with appropriate factories.
+   * Subclasses should setup factories in this constructor.
    */
   public Robot() {
 
   }
-
 
   /**
    * Initializes the StreamManager.
@@ -27,9 +29,6 @@ public abstract class Robot extends SampleRobot {
     this.sm = this.createStreamManager();
   }
 
-  /**
-   * Constructs the StreamManager for the physical robot.
-   */
   protected abstract StreamManager createStreamManager();
 
   /**
@@ -37,7 +36,7 @@ public abstract class Robot extends SampleRobot {
    * Will emit item only when state changes.
    */
   protected final Flowable<Boolean> enabledStream() {
-    return Util.changedValues(Util.toFlow(this::isEnabled));
+    return FlowOperators.toFlow(this::isEnabled).distinctUntilChanged();
   }
 
   /**
@@ -46,10 +45,10 @@ public abstract class Robot extends SampleRobot {
    * Emits an item only when mode changes.
    */
   protected final Flowable<CompMode> competitionStream() {
-    return Util.changedValues(Flowable.merge(
-        Util.toFlow(this::isAutonomous).filter(x -> x).map((x) -> AUTO),
-        Util.toFlow(this::isOperatorControl).filter(x -> x).map((x) -> TELEOP),
-        Util.toFlow(this::isTest).filter(x -> x).map((x) -> TEST)));
+    return Flowable.merge(
+        FlowOperators.toFlow(this::isAutonomous).filter(x -> x).map((x) -> AUTO),
+        FlowOperators.toFlow(this::isOperatorControl).filter(x -> x).map((x) -> TELE),
+        FlowOperators.toFlow(this::isTest).filter(x -> x).map((x) -> TEST)).distinctUntilChanged();
     // filter(x -> x) will filter all false values from the stream.
   }
 

@@ -12,12 +12,12 @@ public class Talon extends LoopSpeedController {
   }
 
   @Override
-  public void onNext(MotorEvent motorEvent) {
+  public void onNext(LoopControllerEvent motorEvent) {
     motorEvent.actOn(this);
   }
 
   @Override
-  void setRunAtPower(double power) {
+  void runAtPower(double power) {
     this.loopDisable();
     this.talon.set(power);
   }
@@ -30,5 +30,11 @@ public class Talon extends LoopSpeedController {
   @Override
   void loopDisable() {
     this.talon.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+  }
+
+  @Override
+  void setLoopProperties(double p, double i, double d, double f) {
+    this.talon.setPID(p, i, d);
+    this.talon.setF(f);
   }
 }

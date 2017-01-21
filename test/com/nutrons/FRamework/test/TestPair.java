@@ -3,7 +3,7 @@ package com.nutrons.FRamework.test;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 
-import com.nutrons.FRamework.Pair;
+import com.nutrons.FRamework.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
 

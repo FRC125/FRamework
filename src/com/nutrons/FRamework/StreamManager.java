@@ -1,8 +1,8 @@
 package com.nutrons.FRamework;
 
+import com.nutrons.FRamework.util.CompMode;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +16,7 @@ public class StreamManager {
 
   /**
    * Manages subsystems and the competition loop.
+   * Subclasses should register subsystems in their constructor.
    *
    * @param enabled a Flowable of booleans, representing changes in the enabled state of the robot
    * @param mode    a Flowable of CompModes, representing changes in the competition game mode
@@ -27,9 +28,10 @@ public class StreamManager {
   }
 
   /**
-   * Called to subscribe subsystem streams, and start the competition loop.
+   * Called to by the bootstrapper to subscribe subsystem streams,
+   * and start the competition loop.
    */
-  public void startCompetition() {
+  public final void startCompetition() {
     Observable.fromIterable(this.subsystems).blockingSubscribe(Subsystem::registerSubscriptions);
     this.enabled.ignoreElements().blockingAwait();
     this.mode.ignoreElements().blockingAwait();

@@ -1,6 +1,6 @@
 package com.nutrons.FRamework.consumers;
 
-public class SetPowerEvent implements MotorEvent {
+public class SetPowerEvent implements LoopControllerEvent {
   private final double power;
 
   public SetPowerEvent(double power) {
@@ -13,6 +13,6 @@ public class SetPowerEvent implements MotorEvent {
 
   @Override
   public void actOn(LoopSpeedController controller) {
-    controller.setRunAtPower(this.power);
+    controller.runAtPower(this.power);
   }
 }

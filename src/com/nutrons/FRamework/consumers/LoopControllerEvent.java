@@ -1,5 +1,5 @@
 package com.nutrons.FRamework.consumers;
 
-public interface MotorEvent {
+public interface LoopControllerEvent {
   void actOn(LoopSpeedController controller);
 }

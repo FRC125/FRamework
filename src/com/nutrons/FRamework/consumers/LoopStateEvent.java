@@ -1,9 +1,9 @@
 package com.nutrons.FRamework.consumers;
 
-public class SetLoopEvent implements MotorEvent {
+public class LoopStateEvent implements LoopControllerEvent {
   private final boolean setTo;
 
-  public SetLoopEvent(boolean setTo) {
+  public LoopStateEvent(boolean setTo) {
     this.setTo = setTo;
   }
   

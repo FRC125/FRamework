@@ -1,8 +1,9 @@
 package com.nutrons.FRamework;
 
+import com.nutrons.FRamework.util.FlowOperators;
+import com.nutrons.FRamework.util.Pair;
 import edu.wpi.first.wpilibj.Joystick;
 import io.reactivex.Flowable;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class InputFactory {
     if (!this.joysticks.containsKey(port)) {
       Joystick joystick = new Joystick(port);
       this.joysticks.put(port,
-          Util.toFlow(() -> new Pair<>(joystick.getX(), joystick.getY())));
+          FlowOperators.toFlow(() -> new Pair<>(joystick.getX(), joystick.getY())));
     }
     return this.joysticks.get(port);
   }

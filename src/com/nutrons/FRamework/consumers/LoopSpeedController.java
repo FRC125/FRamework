@@ -10,7 +10,7 @@ import java.util.List;
  * Provides a common interface for speed controllers that have closed loop capabilities.
  * Extends observable so it can contain state, which may be necessary in the future.
  */
-public abstract class LoopSpeedController implements Observer<MotorEvent> {
+public abstract class LoopSpeedController implements Observer<LoopControllerEvent> {
   private final List<Disposable> subscriptions = new ArrayList<>();
 
   @Override
@@ -32,7 +32,11 @@ public abstract class LoopSpeedController implements Observer<MotorEvent> {
     Observable.fromIterable(this.subscriptions).blockingSubscribe(x -> x.dispose());
   }
 
-  abstract void setRunAtPower(double power);
+  abstract void runAtPower(double power);
+
   abstract void loopEnable();
+
   abstract void loopDisable();
+
+  abstract void setLoopProperties(double p, double i, double d, double f);
 }

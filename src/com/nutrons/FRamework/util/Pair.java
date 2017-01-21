@@ -1,4 +1,4 @@
-package com.nutrons.FRamework;
+package com.nutrons.FRamework.util;
 
 public class Pair<L, R> {
   private L left;
