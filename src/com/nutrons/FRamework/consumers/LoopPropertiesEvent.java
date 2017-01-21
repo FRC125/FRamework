@@ -2,20 +2,20 @@ package com.nutrons.FRamework.consumers;
 
 public class LoopPropertiesEvent implements LoopControllerEvent {
 
-  private final double p;
-  private final double i;
-  private final double d;
-  private final double f;
+  private final double kP;
+  private final double kI;
+  private final double kD;
+  private final double kF;
 
-  public LoopPropertiesEvent(double p, double i, double d, double f) {
-    this.p = p;
-    this.i = i;
-    this.d = d;
-    this.f = f;
+  public LoopPropertiesEvent(double kP, double kI, double kD, double kF) {
+    this.kP = kP;
+    this.kI = kI;
+    this.kD = kD;
+    this.kF = kF;
   }
 
   @Override
   public void actOn(Talon talon) {
-    talon.setLoopProperties(p, i, d, f);
+    talon.setLoopProperties(kP, kI, kD, kF);
   }
 }

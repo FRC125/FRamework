@@ -13,7 +13,10 @@ public class Settings implements Subsystem {
 
   }
 
-  public synchronized Settings getInstance() {
+  /**
+   * Get the Settings instance, it is a singleton.
+   */
+  public static synchronized Settings instance() {
     if (Settings.instance == null) {
       Settings.instance = new Settings();
     }
@@ -22,13 +25,20 @@ public class Settings implements Subsystem {
 
   @Override
   public void registerSubscriptions() {
-    FlowOperators.toFlow(() -> this.preferences = Preferences.getInstance(), 500, TimeUnit.MILLISECONDS);
+    FlowOperators.toFlow(() -> this.preferences = Preferences.getInstance(),
+        500, TimeUnit.MILLISECONDS);
   }
 
+  /**
+   * Get int from settings table.
+   */
   public int getInt(String key) {
     return this.preferences.getInt(key, 0);
   }
 
+  /**
+   * Get double from settings table.
+   */
   public double getDouble(String key) {
     return this.preferences.getDouble(key, 0.0);
   }
