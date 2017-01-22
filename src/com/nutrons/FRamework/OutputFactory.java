@@ -1,16 +1,18 @@
 package com.nutrons.FRamework;
 
 import com.nutrons.FRamework.consumers.LoopControllerEvent;
+import com.nutrons.FRamework.subsystems.Settings;
+import io.reactivex.functions.Consumer;
 import java.util.HashMap;
 import java.util.Map;
-import org.reactivestreams.Subscriber;
 
 
 public class OutputFactory {
 
   private static OutputFactory instance;
+  private Settings settingsInstance;
 
-  private Map<Integer, Subscriber<LoopControllerEvent>> controllers;
+  private Map<Integer, Consumer<LoopControllerEvent>> controllers;
 
   private OutputFactory() {
     this.controllers = new HashMap<>();
@@ -33,18 +35,35 @@ public class OutputFactory {
    *
    * @param controllers Mapping from port number to controller
    */
-  public void setControllers(Map<Integer, Subscriber<LoopControllerEvent>> controllers) {
+  public void setControllers(Map<Integer, Consumer<LoopControllerEvent>> controllers) {
     this.controllers.clear();
     this.controllers.putAll(controllers);
   }
 
   /**
+   * Sets the Settings object this factory will provide
+   */
+  public void setSettingsInstance(Settings settings) {
+    if(settingsInstance != null) {
+      throw new RuntimeException("Settings instance has already been set");
+    }
+    this.settingsInstance = settings;
+  }
+
+  /**
    * Retrieves a motor based on the port.
    */
-  public Subscriber<LoopControllerEvent> motor(int port) {
+  public Consumer<LoopControllerEvent> motor(int port) {
     if (!this.controllers.containsKey(port)) {
       throw new RuntimeException("Motor not registered");
     }
     return this.controllers.get(port);
+  }
+
+  public Settings settingsSubsystem() {
+    if(settingsInstance == null) {
+      throw new RuntimeException("Settings instance hasn't been set");
+    }
+    return this.settingsInstance;
   }
 }

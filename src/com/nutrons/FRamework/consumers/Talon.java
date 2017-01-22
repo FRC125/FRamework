@@ -10,7 +10,7 @@ public class Talon extends LoopSpeedController {
   }
 
   @Override
-  public void onNext(LoopControllerEvent motorEvent) {
+  public void accept(LoopControllerEvent motorEvent) {
     motorEvent.actOn(this);
   }
 
