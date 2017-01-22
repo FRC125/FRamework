@@ -26,8 +26,9 @@ public class FakeTalon extends Talon {
   }
 
   @Override
-  public void setLoopProperties(double p, double i, double d, double f) {
+  public void setLoopProperties(double setpoint, double p, double i, double d, double f) {
     log("setting pidf to: " + p + "," + i + "," + d + "," + f);
+    log("settings setpoint to: " + setpoint);
   }
 
   private void log(Object s) {

@@ -6,11 +6,13 @@ public class LoopPropertiesEvent implements LoopControllerEvent {
   private final double kI;
   private final double kD;
   private final double kF;
+  private final double setpoint;
 
   /**
    * Sets the coefficients for a closed loop controller.
    */
-  public LoopPropertiesEvent(double kP, double kI, double kD, double kF) {
+  public LoopPropertiesEvent(double setpoint, double kP, double kI, double kD, double kF) {
+    this.setpoint = setpoint;
     this.kP = kP;
     this.kI = kI;
     this.kD = kD;
@@ -19,6 +21,6 @@ public class LoopPropertiesEvent implements LoopControllerEvent {
 
   @Override
   public void actOn(Talon talon) {
-    talon.setLoopProperties(kP, kI, kD, kF);
+    talon.setLoopProperties(setpoint, kP, kI, kD, kF);
   }
 }

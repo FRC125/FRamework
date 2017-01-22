@@ -18,5 +18,5 @@ public abstract class LoopSpeedController implements Consumer<LoopControllerEven
 
   abstract void set(double value);
 
-  abstract void setLoopProperties(double p, double i, double d, double f);
+  abstract void setLoopProperties(double setpoint, double p, double i, double d, double f);
 }

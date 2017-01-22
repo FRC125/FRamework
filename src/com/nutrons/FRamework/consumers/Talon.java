@@ -24,7 +24,8 @@ public class Talon extends LoopSpeedController {
   }
 
   @Override
-  void setLoopProperties(double p, double i, double d, double f) {
+  void setLoopProperties(double setpoint, double p, double i, double d, double f) {
+    this.talon.setSetpoint(setpoint);
     this.talon.setPID(p, i, d);
     this.talon.setF(f);
   }
