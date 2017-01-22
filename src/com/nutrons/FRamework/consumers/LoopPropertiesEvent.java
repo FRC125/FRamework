@@ -7,6 +7,9 @@ public class LoopPropertiesEvent implements LoopControllerEvent {
   private final double kD;
   private final double kF;
 
+  /**
+   * Sets the coefficients for a closed loop controller.
+   */
   public LoopPropertiesEvent(double kP, double kI, double kD, double kF) {
     this.kP = kP;
     this.kI = kI;

@@ -41,10 +41,10 @@ public class OutputFactory {
   }
 
   /**
-   * Sets the Settings object this factory will provide
+   * Sets the Settings object this factory will provide.
    */
   public void setSettingsInstance(Settings settings) {
-    if(settingsInstance != null) {
+    if (settingsInstance != null) {
       throw new RuntimeException("Settings instance has already been set");
     }
     this.settingsInstance = settings;
@@ -60,8 +60,11 @@ public class OutputFactory {
     return this.controllers.get(port);
   }
 
+  /**
+   * Gets the Settings subsystem instance.
+   */
   public Settings settingsSubsystem() {
-    if(settingsInstance == null) {
+    if (settingsInstance == null) {
       throw new RuntimeException("Settings instance hasn't been set");
     }
     return this.settingsInstance;
