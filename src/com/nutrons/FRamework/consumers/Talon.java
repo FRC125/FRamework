@@ -16,7 +16,7 @@ public class Talon extends LoopSpeedController {
 
   @Override
   void set(double value) {
-
+    this.talon.set(value);
   }
 
   void setMode(CANTalon.TalonControlMode mode) {

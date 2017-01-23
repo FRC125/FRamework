@@ -1,13 +1,10 @@
 package com.nutrons.FRamework;
 
-import static com.nutrons.FRamework.util.CompMode.AUTO;
-import static com.nutrons.FRamework.util.CompMode.TELE;
-import static com.nutrons.FRamework.util.CompMode.TEST;
-
 import com.nutrons.FRamework.util.CompMode;
 import com.nutrons.FRamework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
+import static com.nutrons.FRamework.util.CompMode.*;
 
 public abstract class Robot extends SampleRobot {
 
@@ -62,7 +59,7 @@ public abstract class Robot extends SampleRobot {
 
   @Override
   public final void startCompetition() {
-
+    super.startCompetition();
   }
 
   @Override

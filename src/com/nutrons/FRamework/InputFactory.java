@@ -1,7 +1,6 @@
 package com.nutrons.FRamework;
 
 import com.nutrons.FRamework.util.FlowOperators;
-import com.nutrons.FRamework.util.Pair;
 import edu.wpi.first.wpilibj.Joystick;
 import io.reactivex.Flowable;
 import java.util.HashMap;
@@ -28,22 +27,30 @@ public class InputFactory {
     return InputFactory.instance;
   }
 
-  private Map<Integer, Flowable<Pair<Double, Double>>> joysticks;
+  private Map<Integer, Joystick> joysticks;
 
-  private Flowable<Pair<Double, Double>> lazyJoy(int port) {
+  private Flowable<Double> memoizedJoy(int port, int axis) {
     if (!this.joysticks.containsKey(port)) {
       Joystick joystick = new Joystick(port);
       this.joysticks.put(port,
-          FlowOperators.toFlow(() -> new Pair<>(joystick.getX(), joystick.getY())));
+          joystick);
     }
-    return this.joysticks.get(port);
+    return FlowOperators.toFlow(() -> this.joysticks.get(port).getRawAxis(axis));
   }
 
-  public Flowable<Double> joystickX(int instance) {
-    return lazyJoy(instance).map(Pair::left);
+  public Flowable<Double> controllerX(int instance) {
+    return memoizedJoy(instance, 0);
   }
 
-  public Flowable<Double> joystickY(int instance) {
-    return lazyJoy(instance).map(Pair::right);
+  public Flowable<Double> controllerX2(int instance) {
+    return memoizedJoy(instance, 4);
+  }
+
+  public Flowable<Double> controllerY(int instance) {
+    return memoizedJoy(instance, 1);
+  }
+
+  public Flowable<Double> controllerY2(int instance) {
+    return memoizedJoy(instance, 5);
   }
 }

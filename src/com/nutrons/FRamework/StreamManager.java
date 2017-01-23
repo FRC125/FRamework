@@ -35,6 +35,7 @@ public class StreamManager {
     Observable.fromIterable(this.subsystems).blockingSubscribe(Subsystem::registerSubscriptions);
     this.enabled.ignoreElements().blockingAwait();
     this.mode.ignoreElements().blockingAwait();
+    Observable.never().blockingSubscribe();
   }
 
   /**

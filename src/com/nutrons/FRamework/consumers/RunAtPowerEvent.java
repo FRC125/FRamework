@@ -9,6 +9,9 @@ public class RunAtPowerEvent implements LoopControllerEvent {
     this.power = power;
   }
 
+  public double power() {
+    return this.power;
+  }
 
   @Override
   public void actOn(Talon talon) {
