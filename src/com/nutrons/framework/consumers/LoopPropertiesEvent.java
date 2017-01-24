@@ -1,4 +1,4 @@
-package com.nutrons.FRamework.consumers;
+package com.nutrons.framework.consumers;
 
 public class LoopPropertiesEvent implements ControllerEvent {
 

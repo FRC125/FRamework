@@ -1,6 +1,6 @@
-package com.nutrons.FRamework;
+package com.nutrons.framework;
 
-import com.nutrons.FRamework.util.FlowOperators;
+import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.Joystick;
 import io.reactivex.Flowable;
 import java.util.HashMap;

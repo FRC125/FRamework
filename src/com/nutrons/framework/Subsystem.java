@@ -1,4 +1,4 @@
-package com.nutrons.FRamework;
+package com.nutrons.framework;
 
 /**
  * Subsystems must only subscribe consumers which cause side effects

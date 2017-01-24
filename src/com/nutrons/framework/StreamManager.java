@@ -1,6 +1,6 @@
-package com.nutrons.FRamework;
+package com.nutrons.framework;
 
-import com.nutrons.FRamework.util.CompMode;
+import com.nutrons.framework.util.CompMode;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import java.util.ArrayList;

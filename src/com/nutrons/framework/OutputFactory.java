@@ -1,7 +1,7 @@
-package com.nutrons.FRamework;
+package com.nutrons.framework;
 
-import com.nutrons.FRamework.consumers.ControllerEvent;
-import com.nutrons.FRamework.subsystems.Settings;
+import com.nutrons.framework.consumers.ControllerEvent;
+import com.nutrons.framework.subsystems.Settings;
 import io.reactivex.functions.Consumer;
 import java.util.HashMap;
 import java.util.Map;

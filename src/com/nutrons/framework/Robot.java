@@ -1,11 +1,11 @@
-package com.nutrons.FRamework;
+package com.nutrons.framework;
 
-import static com.nutrons.FRamework.util.CompMode.AUTO;
-import static com.nutrons.FRamework.util.CompMode.TELE;
-import static com.nutrons.FRamework.util.CompMode.TEST;
+import static com.nutrons.framework.util.CompMode.AUTO;
+import static com.nutrons.framework.util.CompMode.TELE;
+import static com.nutrons.framework.util.CompMode.TEST;
 
-import com.nutrons.FRamework.util.CompMode;
-import com.nutrons.FRamework.util.FlowOperators;
+import com.nutrons.framework.util.CompMode;
+import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
 

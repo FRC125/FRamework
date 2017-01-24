@@ -1,6 +1,6 @@
-package com.nutrons.FRamework.subsystems;
+package com.nutrons.framework.subsystems;
 
-import com.nutrons.FRamework.util.FlowOperators;
+import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.Preferences;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;

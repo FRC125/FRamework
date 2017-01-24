@@ -1,9 +1,9 @@
-package com.nutrons.FRamework.test;
+package com.nutrons.framework.test;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 
-import com.nutrons.FRamework.util.Pair;
+import com.nutrons.framework.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
 

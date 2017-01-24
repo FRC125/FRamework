@@ -1,4 +1,4 @@
-package com.nutrons.FRamework.consumers;
+package com.nutrons.framework.consumers;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
