@@ -11,8 +11,17 @@ import java.util.List;
  */
 public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   private final List<Subscription> subscriptions = new ArrayList<>();
+  private final int port;
+
+  public LoopSpeedController(int port) {
+    this.port = port;
+  }
 
   public void unsub() {
     Observable.fromIterable(this.subscriptions).blockingSubscribe(x -> x.cancel());
+  }
+
+  public int port() {
+    return port;
   }
 }

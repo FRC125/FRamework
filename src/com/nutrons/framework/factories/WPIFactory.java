@@ -1,12 +1,15 @@
 package com.nutrons.framework.factories;
 
 import com.nutrons.framework.consumers.ControllerEvent;
+import com.nutrons.framework.consumers.LoopSpeedController;
 import com.nutrons.framework.subsystems.Settings;
 import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.Joystick;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WPIFactory implements InputFactory, OutputFactory {
@@ -56,9 +59,24 @@ public class WPIFactory implements InputFactory, OutputFactory {
    * @param controllers Mapping from port number to controller
    */
   @Override
-  public void setControllers(Map<Integer, Consumer<ControllerEvent>> controllers) {
-    this.controllers.clear();
-    this.controllers.putAll(controllers);
+  public void setControllers(List<LoopSpeedController> controllers) {
+    for (LoopSpeedController controller : controllers) {
+      if (this.controllers.containsKey(controller.port())) {
+        throw new RuntimeException("Controller on port "
+            + controller.port() + " is already registered!");
+      }
+    }
+    Observable.fromIterable(controllers)
+        .blockingSubscribe(x -> this.controllers.put(x.port(), x));
+  }
+
+  @Override
+  public void setController(LoopSpeedController controller) {
+    if (controllers.containsKey(controller.port())) {
+      throw new RuntimeException("Controller on port "
+          + controller.port() + " is already registered!");
+    }
+    controllers.put(controller.port(), controller);
   }
 
   /**

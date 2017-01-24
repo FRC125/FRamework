@@ -6,6 +6,7 @@ public class Talon extends LoopSpeedController {
   private CANTalon talon;
 
   public Talon(int port) {
+    super(port);
     this.talon = new CANTalon(port);
   }
 
