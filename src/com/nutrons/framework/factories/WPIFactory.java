@@ -1,33 +1,53 @@
-package com.nutrons.framework;
+package com.nutrons.framework.factories;
 
 import com.nutrons.framework.consumers.ControllerEvent;
 import com.nutrons.framework.subsystems.Settings;
+import com.nutrons.framework.util.FlowOperators;
+import edu.wpi.first.wpilibj.Joystick;
+import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import java.util.HashMap;
 import java.util.Map;
 
+public class WPIFactory implements InputFactory, OutputFactory {
 
-public class OutputFactory {
-
-  private static OutputFactory instance;
+  private Map<Integer, Joystick> joysticks;
   private Settings settingsInstance;
 
   private Map<Integer, Consumer<ControllerEvent>> controllers;
 
-  private OutputFactory() {
+  public WPIFactory() {
+    this.joysticks = new HashMap<>();
     this.controllers = new HashMap<>();
   }
 
-  /**
-   * Get or create the singleton instance.
-   *
-   * @return The singleton instance
-   */
-  public static synchronized OutputFactory instance() {
-    if (OutputFactory.instance == null) {
-      OutputFactory.instance = new OutputFactory();
+  private Flowable<Double> memoizedJoy(int port, int axis) {
+    if (!this.joysticks.containsKey(port)) {
+      Joystick joystick = new Joystick(port);
+      this.joysticks.put(port,
+          joystick);
     }
-    return OutputFactory.instance;
+    return FlowOperators.toFlow(() -> this.joysticks.get(port).getRawAxis(axis));
+  }
+
+  @Override
+  public Flowable<Double> controllerX(int instance) {
+    return memoizedJoy(instance, 0);
+  }
+
+  @Override
+  public Flowable<Double> controllerX2(int instance) {
+    return memoizedJoy(instance, 4);
+  }
+
+  @Override
+  public Flowable<Double> controllerY(int instance) {
+    return memoizedJoy(instance, 1);
+  }
+
+  @Override
+  public Flowable<Double> controllerY2(int instance) {
+    return memoizedJoy(instance, 5);
   }
 
   /**
@@ -35,6 +55,7 @@ public class OutputFactory {
    *
    * @param controllers Mapping from port number to controller
    */
+  @Override
   public void setControllers(Map<Integer, Consumer<ControllerEvent>> controllers) {
     this.controllers.clear();
     this.controllers.putAll(controllers);
@@ -43,6 +64,7 @@ public class OutputFactory {
   /**
    * Sets the Settings object this factory will provide.
    */
+  @Override
   public void setSettingsInstance(Settings settings) {
     if (settingsInstance != null) {
       throw new RuntimeException("Settings instance has already been set");
@@ -53,6 +75,7 @@ public class OutputFactory {
   /**
    * Retrieves a motor based on the port.
    */
+  @Override
   public Consumer<ControllerEvent> motor(int port) {
     if (!this.controllers.containsKey(port)) {
       throw new RuntimeException("Motor not registered");
@@ -63,6 +86,7 @@ public class OutputFactory {
   /**
    * Gets the Settings subsystem instance.
    */
+  @Override
   public Settings settingsSubsystem() {
     if (settingsInstance == null) {
       throw new RuntimeException("Settings instance hasn't been set");

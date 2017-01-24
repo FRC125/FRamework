@@ -4,6 +4,10 @@ import static com.nutrons.framework.util.CompMode.AUTO;
 import static com.nutrons.framework.util.CompMode.TELE;
 import static com.nutrons.framework.util.CompMode.TEST;
 
+import com.nutrons.framework.factories.InputManager;
+import com.nutrons.framework.factories.OutputManager;
+import com.nutrons.framework.factories.WPIFactory;
+import com.nutrons.framework.subsystems.WPISettings;
 import com.nutrons.framework.util.CompMode;
 import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -15,7 +19,6 @@ public abstract class Robot extends SampleRobot {
 
   /**
    * Bootstraps a StreamManager with appropriate factories.
-   * Subclasses can setup different factories in this constructor.
    */
   public Robot() {
 
@@ -36,6 +39,17 @@ public abstract class Robot extends SampleRobot {
    * @return A StreamManager instance with all of its subsystems registered.
    */
   protected abstract StreamManager provideStreamManager();
+
+  /**
+   * Sets the factory instances for input and output managers.
+   * Can be overridden by subclasses to use different factories.
+   */
+  protected void setupFactoryManagers() {
+    WPIFactory wpi = new WPIFactory();
+    InputManager.setFactory(wpi);
+    OutputManager.setFactory(wpi);
+    OutputManager.factory().setSettingsInstance(new WPISettings());
+  }
 
   /**
    * A Flowable of booleans representing changes in enabled state over time.
@@ -73,22 +87,18 @@ public abstract class Robot extends SampleRobot {
 
   @Override
   protected final void disabled() {
-
   }
 
   @Override
   public final void autonomous() {
-
   }
 
   @Override
   public final void operatorControl() {
-
   }
 
   @Override
   public final void test() {
-
   }
 
   @Override
