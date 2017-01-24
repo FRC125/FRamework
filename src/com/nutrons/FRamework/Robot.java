@@ -1,10 +1,13 @@
 package com.nutrons.FRamework;
 
+import static com.nutrons.FRamework.util.CompMode.AUTO;
+import static com.nutrons.FRamework.util.CompMode.TELE;
+import static com.nutrons.FRamework.util.CompMode.TEST;
+
 import com.nutrons.FRamework.util.CompMode;
 import com.nutrons.FRamework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
-import static com.nutrons.FRamework.util.CompMode.*;
 
 public abstract class Robot extends SampleRobot {
 
@@ -12,7 +15,7 @@ public abstract class Robot extends SampleRobot {
 
   /**
    * Bootstraps a StreamManager with appropriate factories.
-   * Subclasses should setup factories in this constructor.
+   * Subclasses can setup different factories in this constructor.
    */
   public Robot() {
 
@@ -23,16 +26,22 @@ public abstract class Robot extends SampleRobot {
    */
   @Override
   protected final void robotInit() {
-    this.sm = this.createStreamManager();
+    this.sm = this.provideStreamManager();
   }
 
-  protected abstract StreamManager createStreamManager();
+  /**
+   * Creates an instance of StreamManager, and then
+   * registers all of its subsystems before returning
+   *
+   * @return A StreamManager instance with all of its subsystems registered.
+   */
+  protected abstract StreamManager provideStreamManager();
 
   /**
    * A Flowable of booleans representing changes in enabled state over time.
    * Will emit item only when state changes.
    */
-  protected final Flowable<Boolean> enabledStream() {
+  public final Flowable<Boolean> enabledStream() {
     return FlowOperators.toFlow(this::isEnabled).distinctUntilChanged();
   }
 
@@ -41,7 +50,7 @@ public abstract class Robot extends SampleRobot {
    * in the competition mode to test, auto or teleop.
    * Emits an item only when mode changes.
    */
-  protected final Flowable<CompMode> competitionStream() {
+  public final Flowable<CompMode> competitionStream() {
     return Flowable.merge(
         FlowOperators.toFlow(this::isAutonomous).filter(x -> x).map((x) -> AUTO),
         FlowOperators.toFlow(this::isOperatorControl).filter(x -> x).map((x) -> TELE),

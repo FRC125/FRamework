@@ -1,6 +1,6 @@
 package com.nutrons.FRamework;
 
-import com.nutrons.FRamework.consumers.LoopControllerEvent;
+import com.nutrons.FRamework.consumers.ControllerEvent;
 import com.nutrons.FRamework.subsystems.Settings;
 import io.reactivex.functions.Consumer;
 import java.util.HashMap;
@@ -12,7 +12,7 @@ public class OutputFactory {
   private static OutputFactory instance;
   private Settings settingsInstance;
 
-  private Map<Integer, Consumer<LoopControllerEvent>> controllers;
+  private Map<Integer, Consumer<ControllerEvent>> controllers;
 
   private OutputFactory() {
     this.controllers = new HashMap<>();
@@ -35,7 +35,7 @@ public class OutputFactory {
    *
    * @param controllers Mapping from port number to controller
    */
-  public void setControllers(Map<Integer, Consumer<LoopControllerEvent>> controllers) {
+  public void setControllers(Map<Integer, Consumer<ControllerEvent>> controllers) {
     this.controllers.clear();
     this.controllers.putAll(controllers);
   }
@@ -53,7 +53,7 @@ public class OutputFactory {
   /**
    * Retrieves a motor based on the port.
    */
-  public Consumer<LoopControllerEvent> motor(int port) {
+  public Consumer<ControllerEvent> motor(int port) {
     if (!this.controllers.containsKey(port)) {
       throw new RuntimeException("Motor not registered");
     }

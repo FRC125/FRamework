@@ -1,6 +1,6 @@
 package com.nutrons.FRamework.consumers;
 
-public class LoopPropertiesEvent implements LoopControllerEvent {
+public class LoopPropertiesEvent implements ControllerEvent {
 
   private final double kP;
   private final double kI;
@@ -19,7 +19,6 @@ public class LoopPropertiesEvent implements LoopControllerEvent {
     this.kF = kF;
   }
 
-  @Override
   public void actOn(Talon talon) {
     talon.setLoopProperties(setpoint, kP, kI, kD, kF);
   }

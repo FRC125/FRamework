@@ -18,6 +18,16 @@ public class StreamManager {
    * Manages subsystems and the competition loop.
    * Subclasses should register subsystems in their constructor.
    *
+   * @param robot the initial WPI Robot class
+   */
+  public StreamManager(Robot robot) {
+    this(robot.enabledStream(), robot.competitionStream());
+  }
+
+  /**
+   * Manages subsystems and the competition loop.
+   * Subclasses should register subsystems in their constructor.
+   *
    * @param enabled a Flowable of booleans, representing changes in the enabled state of the robot
    * @param mode    a Flowable of CompModes, representing changes in the competition game mode
    */
@@ -39,23 +49,9 @@ public class StreamManager {
   }
 
   /**
-   * @return A Flowable representing the "enabled" state of the robot over time.
-   */
-  public final Flowable<Boolean> enabled() {
-    return this.enabled;
-  }
-
-  /**
-   * @return A Flowable representing the "competition mode" of the robot over time.
-   */
-  public final Flowable<CompMode> mode() {
-    return this.mode;
-  }
-
-  /**
-   * Register a subsystem, so that when the Robot is initialized,
+   * Register a subsystem, so that during Robot setup,
    * the StreamManager will notify the subsystem that it should
-   * subscribe its consumers to streams.
+   * subscribe its consumers (such as motors) to streams.
    */
   protected final void registerSubsystem(Subsystem subsystem) {
     this.subsystems.add(subsystem);

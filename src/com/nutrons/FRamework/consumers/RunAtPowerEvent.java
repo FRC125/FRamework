@@ -2,7 +2,7 @@ package com.nutrons.FRamework.consumers;
 
 import com.ctre.CANTalon;
 
-public class RunAtPowerEvent implements LoopControllerEvent {
+public class RunAtPowerEvent implements ControllerEvent {
   private final double power;
 
   public RunAtPowerEvent(double power) {
@@ -13,9 +13,8 @@ public class RunAtPowerEvent implements LoopControllerEvent {
     return this.power;
   }
 
-  @Override
   public void actOn(Talon talon) {
-    talon.setMode(CANTalon.TalonControlMode.PercentVbus);
+    talon.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
     talon.set(power);
   }
 }

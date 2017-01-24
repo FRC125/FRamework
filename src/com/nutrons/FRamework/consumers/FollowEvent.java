@@ -2,17 +2,16 @@ package com.nutrons.FRamework.consumers;
 
 import com.ctre.CANTalon;
 
-public class LoopFollowEvent implements LoopControllerEvent {
+public class FollowEvent implements ControllerEvent {
 
   private final int target;
 
-  public LoopFollowEvent(int targetToFollow) {
+  public FollowEvent(int targetToFollow) {
     this.target = targetToFollow;
   }
 
-  @Override
   public void actOn(Talon talon) {
-    talon.setMode(CANTalon.TalonControlMode.Follower);
+    talon.changeControlMode(CANTalon.TalonControlMode.Follower);
     talon.set(target);
   }
 }
