@@ -6,8 +6,8 @@ import static com.nutrons.framework.util.CompMode.TEST;
 
 import com.nutrons.framework.factories.InputManager;
 import com.nutrons.framework.factories.OutputManager;
-import com.nutrons.framework.factories.WPIFactory;
-import com.nutrons.framework.subsystems.WPISettings;
+import com.nutrons.framework.factories.WpiFactory;
+import com.nutrons.framework.subsystems.WpiSettings;
 import com.nutrons.framework.util.CompMode;
 import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -45,10 +45,10 @@ public abstract class Robot extends SampleRobot {
    * Can be overridden by subclasses to use different factories.
    */
   protected void setupFactoryManagers() {
-    WPIFactory wpi = new WPIFactory();
+    WpiFactory wpi = new WpiFactory();
     InputManager.setFactory(wpi);
     OutputManager.setFactory(wpi);
-    OutputManager.factory().setSettingsInstance(new WPISettings());
+    OutputManager.factory().setSettingsInstance(new WpiSettings());
   }
 
   /**

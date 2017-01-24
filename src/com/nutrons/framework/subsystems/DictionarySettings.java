@@ -11,6 +11,9 @@ public class DictionarySettings implements Settings {
   private final HashMap<String, Integer> ints;
   private final HashMap<String, Double> doubles;
 
+  /**
+   * Constructs a settings table with the initial values provided in the maps.
+   */
   public DictionarySettings(Map<String, Integer> ints, Map<String, Double> doubles) {
     this.ints = new HashMap<>();
     this.doubles = new HashMap<>();
@@ -24,15 +27,14 @@ public class DictionarySettings implements Settings {
 
   @Override
   public int getInt(String key) {
-    return ints.containsKey(key) ? ints.get(key) : 0;
+    return ints.getOrDefault(key, 0);
   }
 
   @Override
   public double getDouble(String key) {
-    return doubles.containsKey(key) ? doubles.get(key) : 0.0;
+    return doubles.getOrDefault(key, 0.0);
   }
 
-  @Override
   public void registerSubscriptions() {
 
   }

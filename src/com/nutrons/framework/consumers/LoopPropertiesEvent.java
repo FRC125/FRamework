@@ -2,24 +2,25 @@ package com.nutrons.framework.consumers;
 
 public class LoopPropertiesEvent implements ControllerEvent {
 
-  private final double kP;
-  private final double kI;
-  private final double kD;
-  private final double kF;
+  private final double pval;
+  private final double ival;
+  private final double dval;
+  private final double fval;
   private final double setpoint;
 
   /**
    * Sets the coefficients for a closed loop controller.
    */
-  public LoopPropertiesEvent(double setpoint, double kP, double kI, double kD, double kF) {
+  public LoopPropertiesEvent(double setpoint, double pval,
+                             double ival, double dval, double fval) {
     this.setpoint = setpoint;
-    this.kP = kP;
-    this.kI = kI;
-    this.kD = kD;
-    this.kF = kF;
+    this.pval = pval;
+    this.ival = ival;
+    this.dval = dval;
+    this.fval = fval;
   }
 
   public void actOn(Talon talon) {
-    talon.setLoopProperties(setpoint, kP, kI, kD, kF);
+    talon.setLoopProperties(setpoint, pval, ival, dval, fval);
   }
 }

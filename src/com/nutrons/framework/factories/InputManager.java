@@ -15,7 +15,7 @@ public class InputManager {
    */
   public static synchronized void setFactory(InputFactory factory) {
     if (InputManager.factory != null) {
-      throw new RuntimeException("The default InputFactory has ALREADY been set!");
+      throw new IllegalStateException("The default InputFactory has ALREADY been set!");
     }
     InputManager.factory = factory;
   }
@@ -28,7 +28,7 @@ public class InputManager {
    */
   public static synchronized InputFactory factory() {
     if (factory == null) {
-      throw new RuntimeException("The default InputFactory HAS NOT been set!");
+      throw new IllegalStateException("The default InputFactory HAS NOT been set!");
     }
     return factory;
   }

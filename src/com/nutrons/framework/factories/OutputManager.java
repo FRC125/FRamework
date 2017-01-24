@@ -15,7 +15,7 @@ public class OutputManager {
    */
   public static synchronized void setFactory(OutputFactory factory) {
     if (OutputManager.factory != null) {
-      throw new RuntimeException("The default OutputFactory has ALREADY been set!");
+      throw new IllegalStateException("The default OutputFactory has ALREADY been set!");
     }
     OutputManager.factory = factory;
   }
@@ -28,7 +28,7 @@ public class OutputManager {
    */
   public static synchronized OutputFactory factory() {
     if (factory == null) {
-      throw new RuntimeException("The default OutputFactory HAS NOT been set!");
+      throw new IllegalStateException("The default OutputFactory HAS NOT been set!");
     }
     return factory;
   }
