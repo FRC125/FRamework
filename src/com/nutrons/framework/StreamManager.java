@@ -53,7 +53,7 @@ public class StreamManager {
    * the StreamManager will notify the subsystem that it should
    * subscribe its consumers (such as motors) to streams.
    */
-  protected final void registerSubsystem(Subsystem subsystem) {
+  public final void registerSubsystem(Subsystem subsystem) {
     this.subsystems.add(subsystem);
   }
 }
