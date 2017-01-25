@@ -10,11 +10,6 @@ public class Talon extends LoopSpeedController {
     this.talon = new CANTalon(port);
   }
 
-  @Override
-  public void accept(ControllerEvent motorEvent) {
-    motorEvent.actOn(this);
-  }
-
   void set(double value) {
     this.talon.set(value);
   }
@@ -23,9 +18,10 @@ public class Talon extends LoopSpeedController {
     this.talon.changeControlMode(mode);
   }
 
-  void setLoopProperties(double setpoint, double p, double i, double d, double f) {
+  void setLoopProperties(double setpoint, double pval,
+                         double ival, double dval, double fval) {
     this.talon.setSetpoint(setpoint);
-    this.talon.setPID(p, i, d);
-    this.talon.setF(f);
+    this.talon.setPID(pval, ival, dval);
+    this.talon.setF(fval);
   }
 }

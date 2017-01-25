@@ -5,12 +5,12 @@ import edu.wpi.first.wpilibj.Preferences;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-public class WPISettings implements Settings {
+public class WpiSettings implements Settings {
   private volatile Preferences prefs;
   private HashMap<String, Integer> ints;
   private HashMap<String, Double> doubles;
 
-  public WPISettings() {
+  public WpiSettings() {
     this.ints = new HashMap<>();
     this.doubles = new HashMap<>();
   }
@@ -24,13 +24,13 @@ public class WPISettings implements Settings {
 
   @Override
   public int getInt(String key) {
-    ints.put(key, prefs.getInt(key, ints.containsKey(key) ? ints.get(key) : 0));
+    ints.put(key, prefs.getInt(key, ints.getOrDefault(key, 0)));
     return ints.get(key);
   }
 
   @Override
   public double getDouble(String key) {
-    doubles.put(key, prefs.getDouble(key, doubles.containsKey(key) ? doubles.get(key) : 0.0));
+    doubles.put(key, prefs.getDouble(key, doubles.getOrDefault(key, 0.0)));
     return doubles.get(key);
   }
 }

@@ -12,14 +12,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WPIFactory implements InputFactory, OutputFactory {
+public class WpiFactory implements InputFactory, OutputFactory {
 
   private Map<Integer, Joystick> joysticks;
   private Settings settingsInstance;
 
   private Map<Integer, Consumer<ControllerEvent>> controllers;
 
-  public WPIFactory() {
+  public WpiFactory() {
     this.joysticks = new HashMap<>();
     this.controllers = new HashMap<>();
   }
@@ -34,23 +34,23 @@ public class WPIFactory implements InputFactory, OutputFactory {
   }
 
   @Override
-  public Flowable<Double> controllerX(int instance) {
-    return memoizedJoy(instance, 0);
+  public Flowable<Double> controllerX1(int instance) {
+    return memoizedJoy(instance, InputMap.XBOX_X_1);
   }
 
   @Override
   public Flowable<Double> controllerX2(int instance) {
-    return memoizedJoy(instance, 4);
+    return memoizedJoy(instance, InputMap.XBOX_X_2);
   }
 
   @Override
-  public Flowable<Double> controllerY(int instance) {
-    return memoizedJoy(instance, 1);
+  public Flowable<Double> controllerY1(int instance) {
+    return memoizedJoy(instance, InputMap.XBOX_Y_1);
   }
 
   @Override
   public Flowable<Double> controllerY2(int instance) {
-    return memoizedJoy(instance, 5);
+    return memoizedJoy(instance, InputMap.XBOX_Y_2);
   }
 
   /**
