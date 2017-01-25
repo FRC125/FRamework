@@ -10,11 +10,14 @@ public class TestEvents {
   @Test(expected = EventUnimplementedException.class)
   public void testUnimplemented() {
     new ControllerEvent() {
-    }.actOn(new SomeController());
+    }.actOn(new SomeController(1));
   }
 
   class SomeController extends LoopSpeedController {
 
+    public SomeController(int port) {
+      super(port);
+    }
   }
 
   @Test
@@ -23,6 +26,6 @@ public class TestEvents {
       public void actOn(SomeController controller) {
 
       }
-    }.actOn(new SomeController());
+    }.actOn(new SomeController(1));
   }
 }
