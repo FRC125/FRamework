@@ -10,46 +10,46 @@ import io.reactivex.Flowable;
  */
 public class WpiGamepad {
   private final int port;
-  private final Flowable<Double> axisX1;
-  private final Flowable<Double> axisY1;
-  private final Flowable<Double> axisX2;
-  private final Flowable<Double> axisY2;
+  private final Flowable<Double> axis1X;
+  private final Flowable<Double> axis1Y;
+  private final Flowable<Double> axis2X;
+  private final Flowable<Double> axis2Y;
   private final Joystick joystick;
 
-  public WpiGamepad(int port, int axisX1, int axisY1, int axisX2, int axisY2) {
+  public WpiGamepad(int port, int axis1X, int axis1Y, int axis2X, int axis2Y) {
     this.port = port;
     this.joystick = new Joystick(this.port);
-    this.axisX1 = toFlow(() -> this.joystick.getRawAxis(axisX1));
-    this.axisY1 = toFlow(() -> this.joystick.getRawAxis(axisY1));
-    this.axisX2 = toFlow(() -> this.joystick.getRawAxis(axisX2));
-    this.axisY2 = toFlow(() -> this.joystick.getRawAxis(axisY2));
+    this.axis1X = toFlow(() -> this.joystick.getRawAxis(axis1X));
+    this.axis1Y = toFlow(() -> this.joystick.getRawAxis(axis1Y));
+    this.axis2X = toFlow(() -> this.joystick.getRawAxis(axis2X));
+    this.axis2Y = toFlow(() -> this.joystick.getRawAxis(axis2Y));
   }
 
   /**
    * A Flowable providing data from the first joystick's x-axis
    **/
   public Flowable<Double> joy1X() {
-    return this.axisX1;
+    return this.axis1X;
   }
 
   /**
    * A Flowable providing data from the first joystick's y-axis
    **/
-  public Flowable<Double> joy2X() {
-    return this.axisX2;
+  public Flowable<Double> joy1Y() {
+    return this.axis1Y;
   }
 
   /**
    * A Flowable providing data from the second joystick's x-axis
    **/
-  public Flowable<Double> joyY1() {
-    return this.axisY1;
+  public Flowable<Double> joy2X() {
+    return this.axis2X;
   }
 
   /**
    * A Flowable providing data from the second joystick's y-axis
    **/
-  public Flowable<Double> joyY2() {
-    return this.axisY2;
+  public Flowable<Double> joy2Y() {
+    return this.axis2Y;
   }
 }
