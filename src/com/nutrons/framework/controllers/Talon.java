@@ -1,13 +1,17 @@
-package com.nutrons.framework.consumers;
+package com.nutrons.framework.controllers;
+
+import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import com.ctre.CANTalon;
+import io.reactivex.Flowable;
 
 public class Talon extends LoopSpeedController {
+  private final Flowable<FeedbackEvent> feedback;
   private CANTalon talon;
 
   public Talon(int port) {
-    super(port);
     this.talon = new CANTalon(port);
+    this.feedback = toFlow(() -> () -> this.talon.getError());
   }
 
   void set(double value) {
@@ -23,5 +27,10 @@ public class Talon extends LoopSpeedController {
     this.talon.setSetpoint(setpoint);
     this.talon.setPID(pval, ival, dval);
     this.talon.setF(fval);
+  }
+
+  @Override
+  public Flowable<FeedbackEvent> feedback() {
+    return this.feedback;
   }
 }
