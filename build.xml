@@ -69,7 +69,7 @@
       <fileset file="${opencv.jar}"/>
       <fileset file="${cscore.jar}"/>
       <fileset dir="${userLibs}" erroronmissingdir="false"/>
-      <fileset dir="lib/" includes="*.jar" excludes="*sources*,*javadoc*"/> <!-- include everything, I did not remove wpi's specific includes-->
+      <fileset dir="lib/" includes="*.jar" excludes="*sources*,*javadoc*,*checkstyle*,*junit*"/> <!-- include everything, I did not remove wpi's specific includes-->
     </path>
     <pathconvert property="classpathProp" refid="classpath.path"/>
     <echo>[athena-compile] Compiling ${src.dir} with classpath=${classpathProp} to ${build.dir}</echo>
