@@ -45,7 +45,7 @@ public class Serial {
                 serial.reset();
             }
             return serial.read(packetLength);
-        });
+        }).filter(x -> x.length == packetLength);
     }
 
     /**
