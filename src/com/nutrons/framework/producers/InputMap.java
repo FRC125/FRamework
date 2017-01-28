@@ -1,4 +1,4 @@
-package com.nutrons.framework.factories;
+package com.nutrons.framework.producers;
 
 class InputMap {
   static final int XBOX_X_1 = 0;

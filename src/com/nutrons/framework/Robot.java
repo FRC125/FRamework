@@ -4,10 +4,6 @@ import static com.nutrons.framework.util.CompMode.AUTO;
 import static com.nutrons.framework.util.CompMode.TELE;
 import static com.nutrons.framework.util.CompMode.TEST;
 
-import com.nutrons.framework.factories.InputManager;
-import com.nutrons.framework.factories.OutputManager;
-import com.nutrons.framework.factories.WpiFactory;
-import com.nutrons.framework.subsystems.WpiSettings;
 import com.nutrons.framework.util.CompMode;
 import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -18,7 +14,7 @@ public abstract class Robot extends SampleRobot {
   private StreamManager sm;
 
   /**
-   * Bootstraps a StreamManager with appropriate factories.
+   * Bootstraps a StreamManager.
    */
   public Robot() {
 
@@ -29,27 +25,23 @@ public abstract class Robot extends SampleRobot {
    */
   @Override
   protected final void robotInit() {
-    this.sm = this.provideStreamManager();
+    constructStreams();
+    sm = this.provideStreamManager();
   }
 
   /**
-   * Creates an instance of StreamManager, and then
-   * registers all of its subsystems before returning
+   * Construct input and output streams that will be passed
+   * as dependencies for creating subsystems.
+   */
+  protected abstract void constructStreams();
+
+  /**
+   * Creates an instance of each subsystem and a StreamManager, and then
+   * registers all of StreamManager's subsystems before returning
    *
    * @return A StreamManager instance with all of its subsystems registered.
    */
   protected abstract StreamManager provideStreamManager();
-
-  /**
-   * Sets the factory instances for input and output managers.
-   * Can be overridden by subclasses to use different factories.
-   */
-  protected void setupFactoryManagers() {
-    WpiFactory wpi = new WpiFactory();
-    InputManager.setFactory(wpi);
-    OutputManager.setFactory(wpi);
-    OutputManager.factory().setSettingsInstance(new WpiSettings());
-  }
 
   /**
    * A Flowable of booleans representing changes in enabled state over time.
