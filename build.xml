@@ -28,9 +28,9 @@
 
   <target name="init-ivy" depends="download-ivy">
     <!-- try to load ivy here from ivy home, in case the user has not already dropped
-            it into ant's lib dir (note that the latter copy will always take precedence).
-            We will not fail as long as local lib dir exists (it may be empty) and
-            ivy is in at least one of ant's lib dir or the local lib dir. -->
+         it into ant's lib dir (note that the latter copy will always take precedence).
+         We will not fail as long as local lib dir exists (it may be empty) and
+         ivy is in at least one of ant's lib dir or the local lib dir. -->
     <path id="ivy.lib.path">
       <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
     </path>
@@ -39,16 +39,16 @@
              uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
   </target>
   <ivy:retrieve/>
-    <target name="init-checkstyle">
+  <target name="init-checkstyle">
   	<path id="checkstyle.lib.path">
-              <fileset dir="lib" includes="*.jar"/>
+      <fileset dir="lib" includes="*.jar"/>
   	</path>
   	<!-- Sevntu custom checks are retrieved by Ivy into lib folder and will be accessible to checkstyle-->
   	<taskdef resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties" classpathref="checkstyle.lib.path"/>
   </target>
   <target name="checkstyle"
           description="Generates a report of code convention violations."
-  	depends="init-checkstyle">
+  		  depends="init-checkstyle">
     <!-- See http://checkstyle.sourceforge.net/anttask.html for full options of using checkstyle with ant-->
     <checkstyle config="docs/google_checks.xml"
                 failureProperty="checkstyle.failure"
@@ -69,7 +69,7 @@
       <fileset file="${opencv.jar}"/>
       <fileset file="${cscore.jar}"/>
       <fileset dir="${userLibs}" erroronmissingdir="false"/>
-      <fileset dir="lib/" includes="*.jar"/> <!-- include everything, I did not remove wpi's specific includes-->
+      <fileset dir="lib/" includes="*.jar" excludes="*sources*,*javadoc*"/> <!-- include everything, I did not remove wpi's specific includes-->
     </path>
     <pathconvert property="classpathProp" refid="classpath.path"/>
     <echo>[athena-compile] Compiling ${src.dir} with classpath=${classpathProp} to ${build.dir}</echo>
