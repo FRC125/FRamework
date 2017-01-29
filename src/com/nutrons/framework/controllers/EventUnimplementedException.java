@@ -1,4 +1,4 @@
-package com.nutrons.framework.consumers;
+package com.nutrons.framework.controllers;
 
 public class EventUnimplementedException extends RuntimeException {
   public EventUnimplementedException(String controller, String event) {

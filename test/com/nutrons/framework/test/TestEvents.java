@@ -1,8 +1,10 @@
 package com.nutrons.framework.test;
 
-import com.nutrons.framework.consumers.ControllerEvent;
-import com.nutrons.framework.consumers.EventUnimplementedException;
-import com.nutrons.framework.consumers.LoopSpeedController;
+import com.nutrons.framework.controllers.ControllerEvent;
+import com.nutrons.framework.controllers.EventUnimplementedException;
+import com.nutrons.framework.controllers.FeedbackEvent;
+import com.nutrons.framework.controllers.LoopSpeedController;
+import io.reactivex.Flowable;
 import org.junit.Test;
 
 public class TestEvents {
@@ -10,13 +12,14 @@ public class TestEvents {
   @Test(expected = EventUnimplementedException.class)
   public void testUnimplemented() {
     new ControllerEvent() {
-    }.actOn(new SomeController(1));
+    }.actOn(new SomeController());
   }
 
   class SomeController extends LoopSpeedController {
 
-    public SomeController(int port) {
-      super(port);
+    @Override
+    public Flowable<FeedbackEvent> feedback() {
+      return Flowable.never();
     }
   }
 
@@ -26,6 +29,6 @@ public class TestEvents {
       public void actOn(SomeController controller) {
 
       }
-    }.actOn(new SomeController(1));
+    }.actOn(new SomeController());
   }
 }
