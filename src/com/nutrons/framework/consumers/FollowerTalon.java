@@ -8,9 +8,9 @@ public class FollowerTalon extends Talon {
    * @param talonPort the port which this talon operates on
    * @param targetToFollow the target talon to follow
    */
-  public FollowerTalon(int talonPort, double targetToFollow) {
+  public FollowerTalon(int talonPort, Talon targetToFollow) {
     super(talonPort);
     super.changeControlMode(CANTalon.TalonControlMode.Follower);
-    super.set(targetToFollow);
+    super.set(targetToFollow.getDeviceID());
   }
 }

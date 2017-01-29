@@ -24,4 +24,6 @@ public class Talon extends LoopSpeedController {
     this.talon.setPID(pval, ival, dval);
     this.talon.setF(fval);
   }
+
+  public double getDeviceID(){ return this.talon.getDeviceID(); }
 }
