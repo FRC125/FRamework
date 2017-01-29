@@ -13,9 +13,15 @@ public abstract class LoopSpeedController {
     this.consumer = x -> x.actOn(this);
   }
 
-  public Consumer<ControllerEvent> consumer() {
+  /**
+   * A consumer which will apply ControllerEvents to this speed controller.
+   */
+  public Consumer<ControllerEvent> output() {
     return this.consumer;
   }
 
+  /**
+   * A stream which contains feedback events produced by this speed controller.
+   */
   public abstract Flowable<FeedbackEvent> feedback();
 }
