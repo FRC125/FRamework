@@ -5,6 +5,8 @@ import io.reactivex.schedulers.Schedulers;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static java.lang.Math.abs;
+
 public class FlowOperators {
   /**
    * Generate a Flowable from a periodic call to a Supplier.
@@ -24,5 +26,9 @@ public class FlowOperators {
    */
   public static <T> Flowable<T> toFlow(Supplier<T> supplier) {
     return toFlow(supplier, 100, TimeUnit.MILLISECONDS);
+  }
+
+  public static Flowable<Double> deadzone(Flowable<Double> input) {
+    return input.map((x) -> abs(x) < 0.2 ? 0.0 : x);
   }
 }
