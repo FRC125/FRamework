@@ -51,7 +51,7 @@ public class Serial {
     /**
      * A Flowable providing data from the serial
      **/
-    public Flowable<Double> dataStream() {
+    public Flowable<byte[]> dataStream() {
         return this.dataStream();
     }
 }
