@@ -1,4 +1,4 @@
-package com.nutrons.framework.consumers;
+package com.nutrons.framework.controllers;
 
 import com.ctre.CANTalon;
 
@@ -8,9 +8,9 @@ public class FollowerTalon extends Talon {
    * @param talonPort the port which this talon operates on
    * @param targetToFollow the target talon to follow
    */
-  public FollowerTalon(int talonPort, Talon targetToFollow) {
+  public FollowerTalon(int talonPort, double targetToFollow) {
     super(talonPort);
     super.changeControlMode(CANTalon.TalonControlMode.Follower);
-    super.set(targetToFollow.getDeviceID());
+    super.set(targetToFollow);
   }
 }

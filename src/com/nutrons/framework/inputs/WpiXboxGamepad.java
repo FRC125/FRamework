@@ -1,4 +1,4 @@
-package com.nutrons.framework.producers;
+package com.nutrons.framework.inputs;
 
 /**
  * A WpiGamepad with default configuration for an Xbox360 controller.

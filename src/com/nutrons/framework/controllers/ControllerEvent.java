@@ -1,4 +1,4 @@
-package com.nutrons.framework.consumers;
+package com.nutrons.framework.controllers;
 
 public interface ControllerEvent {
   default void actOn(LoopSpeedController controller) {
