@@ -33,4 +33,9 @@ public class Talon extends LoopSpeedController {
   public Flowable<FeedbackEvent> feedback() {
     return this.feedback;
   }
+
+  @Override
+  public void accept(ControllerEvent event) {
+    event.actOn(this);
+  }
 }
