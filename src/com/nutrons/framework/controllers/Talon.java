@@ -1,5 +1,6 @@
 package com.nutrons.framework.controllers;
 
+import static com.ctre.CANTalon.TalonControlMode;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import com.ctre.CANTalon;
@@ -7,7 +8,7 @@ import io.reactivex.Flowable;
 
 public class Talon extends LoopSpeedController {
   private final Flowable<FeedbackEvent> feedback;
-  private CANTalon talon;
+  private final CANTalon talon;
 
   /**
    * Creates a talon on the given port.
@@ -31,7 +32,7 @@ public class Talon extends LoopSpeedController {
     this.talon.set(value);
   }
 
-  void changeControlMode(CANTalon.TalonControlMode mode) {
+  void changeControlMode(TalonControlMode mode) {
     this.talon.changeControlMode(mode);
   }
 

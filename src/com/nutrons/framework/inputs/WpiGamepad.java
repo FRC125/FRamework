@@ -1,4 +1,4 @@
-package com.nutrons.framework.producers;
+package com.nutrons.framework.inputs;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
