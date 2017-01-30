@@ -28,7 +28,12 @@ public class FlowOperators {
     return toFlow(supplier, 100, TimeUnit.MILLISECONDS);
   }
 
-  public static Flowable<Double> deadzone(Flowable<Double> input) {
+  /**
+   * Modifies motor input to prevent motors running at very small values
+   * @param input the raw motor input values
+   * @return the motor input values with values smaller than 0.2 removed
+   */
+  public static Flowable<Double> deadband(Flowable<Double> input) {
     return input.map((x) -> abs(x) < 0.2 ? 0.0 : x);
   }
 }

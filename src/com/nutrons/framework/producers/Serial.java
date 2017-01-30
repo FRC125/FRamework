@@ -1,7 +1,6 @@
 package com.nutrons.framework.producers;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
-
 import edu.wpi.first.wpilibj.SerialPort;
 
 import io.reactivex.Flowable;
@@ -25,7 +24,7 @@ public class Serial {
     }
 
     /**
-     * Create Serial streams from a WPI "Serial"
+     * Create Serial streams from a WPI Serial
      * bufferSize represents how many bytes to cache unread before clearing buffer, packetLength represents the length of each read from the buffer
      */
     public Serial(int baudrate, SerialPort.Port port, int bufferSize, int packetLength, char terminationCharacter) {
@@ -34,11 +33,7 @@ public class Serial {
         this.packetLength = packetLength;
         this.terminationCharacter = terminationCharacter;
 
-        if (terminationCharacter == '\n') {
-            serial.enableTermination();
-        } else {
-            this.serial.enableTermination(terminationCharacter);
-        }
+        this.serial.enableTermination(terminationCharacter);
 
         this.dataStream = toFlow(() -> {
             if (serial.getBytesReceived() > this.bufferSize) {
