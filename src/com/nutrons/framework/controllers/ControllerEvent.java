@@ -1,11 +1,8 @@
 package com.nutrons.framework.controllers;
 
 public interface ControllerEvent {
-  /**default void actOn(LoopSpeedController controller) {
+  default void actOn(Talon talon) {
     throw new EventUnimplementedException(
-        controller.getClass().toString(), this.getClass().toString());
-  }**/
-  default void actOn(Talon t) {
-    System.out.println("asdf");
+        talon.getClass().toString(), this.getClass().toString());
   }
 }
