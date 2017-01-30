@@ -42,8 +42,7 @@
   <target name="deploy-native" depends="get-target-ip">
     <scp todir="admin@${target}:/usr/local/frc/lib/" password="" trust="true">
 	  <fileset dir="${native-libs}">
-		<filename name="libCTRLibDriver.so"/>
-		<filename name="libCTRLibDriver.so.debug"/>
+		<filename name="libTalonSRXLib.so"/>
 	  </fileset>
 	</scp>
   </target>
