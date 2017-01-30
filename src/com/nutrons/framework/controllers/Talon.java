@@ -10,9 +10,22 @@ public class Talon extends LoopSpeedController {
   private final Flowable<FeedbackEvent> feedback;
   private final CANTalon talon;
 
+  /**
+   * Creates a talon on the given port.
+   */
   public Talon(int port) {
     this.talon = new CANTalon(port);
     this.feedback = toFlow(() -> () -> this.talon.getError());
+  }
+
+  /**
+   * Creates a talon that initially follows another talon.
+   * @param toFollow the talon to follow
+   */
+  public Talon(int port, Talon toFollow) {
+    this(port);
+    this.changeControlMode(CANTalon.TalonControlMode.Follower);
+    this.set(toFollow.id());
   }
 
   void set(double value) {
@@ -33,5 +46,14 @@ public class Talon extends LoopSpeedController {
   @Override
   public Flowable<FeedbackEvent> feedback() {
     return this.feedback;
+  }
+
+  @Override
+  public void accept(ControllerEvent event) {
+    event.actOn(this);
+  }
+
+  int id() {
+    return this.talon.getDeviceID();
   }
 }
