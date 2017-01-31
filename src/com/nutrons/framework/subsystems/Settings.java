@@ -8,7 +8,7 @@ import io.reactivex.Flowable;
 public class Settings implements Subsystem {
 
     public Flowable<Double> getProperty(String key) {
-        return FlowOperators.toFlow( () ->Preferences
+        return FlowOperators.toFlow(() ->Preferences
                 .getInstance()
                 .getDouble(key, 0.0) )
                 .distinctUntilChanged();

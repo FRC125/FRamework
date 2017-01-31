@@ -67,7 +67,7 @@ public class WpiGamepad {
     public WpiButton(WpiGamepad joystick, int buttonNumber){
       this.buttonNumber = buttonNumber;
       this.button = new JoystickButton(joystick.joystick, buttonNumber);
-      this.values = FlowOperators.toFlow( () -> this.button.get());
+      this.values = FlowOperators.toFlow(() -> this.button.get());
     }
 
     public Flowable<Boolean> values(){
