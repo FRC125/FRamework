@@ -5,8 +5,6 @@ import edu.wpi.first.wpilibj.SerialPort;
 
 import io.reactivex.Flowable;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 /**
  * A wrapper around WPI's SerialE class which provides Flowables for data sent to the roboRIO over serial
  */
@@ -31,8 +29,12 @@ public class Serial {
      * Create Serial streams from a WPI Serial
      * @param bufferSize represents how many bytes to cache unread before clearing buffer
      * @param packetLength represents the length of each read from the buffer
+     * @param terminationCharacter allows users to set a custom termination character - default is escape character or '\n'
      */
-    public Serial(SerialPort.Port port, int bufferSize, int packetLength, char terminationCharacter) {
+    public Serial(SerialPort.Port port,
+                  int bufferSize,
+                  int packetLength,
+                  char terminationCharacter) {
         this(DEFAULT_BAUD_RATE, port, bufferSize, packetLength, terminationCharacter);
     }
 
@@ -41,6 +43,7 @@ public class Serial {
      * @param bufferSize represents how many bytes to cache unread before clearing buffer
      * @param packetLength represents the length of each read from the buffer
      * @param terminationCharacter allows users to set a custom termination character - default is escape character or '\n'
+     * @param baudrate See <a href="https://en.wikipedia.org/wiki/Symbol_rate">Symbol Rate/a>
      */
     public Serial(int baudrate,
                   SerialPort.Port port,

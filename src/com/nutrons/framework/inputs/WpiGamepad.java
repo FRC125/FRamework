@@ -59,19 +59,5 @@ public class WpiGamepad {
     return this.axis2Y;
   }
 
-  public class WpiButton{
-    JoystickButton button;
-    int buttonNumber;
-    Flowable<Boolean> values;
-
-    public WpiButton(WpiGamepad joystick, int buttonNumber){
-      this.buttonNumber = buttonNumber;
-      this.button = new JoystickButton(joystick.joystick, buttonNumber);
-      this.values = FlowOperators.toFlow(() -> this.button.get());
-    }
-
-    public Flowable<Boolean> values(){
-        return this.values;
-    }
-  }
+  public Joystick getJoystick() { return this.joystick; }
 }
