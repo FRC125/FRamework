@@ -1,11 +1,11 @@
 package com.nutrons.framework.util;
 
+import static java.lang.Math.abs;
+
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
-import static java.lang.Math.abs;
 
 public class FlowOperators {
   /**
@@ -30,6 +30,7 @@ public class FlowOperators {
 
   /**
    * Modifies motor input to prevent motors running at very small values
+   *
    * @param input the raw motor input values
    * @return the motor input values with values smaller than 0.2 removed
    */
@@ -37,5 +38,7 @@ public class FlowOperators {
     return input.map((x) -> abs(x) < 0.2 ? 0.0 : x);
   }
 
-  public static <T> T getLastValue(Flowable<T>  input) { return input.blockingLatest().iterator().next(); }
+  public static <T> T getLastValue(Flowable<T> input) {
+    return input.blockingLatest().iterator().next();
+  }
 }
