@@ -10,7 +10,7 @@ public class LoopModeEvent implements ControllerEvent {
   }
 
   public void actOn(Talon talon) {
-    switch(this.mode) {
+    switch (this.mode) {
       case MANUAL:
         talon.changeControlMode(TalonControlMode.PercentVbus);
         break;
