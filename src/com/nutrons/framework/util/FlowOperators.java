@@ -13,8 +13,8 @@ public class FlowOperators {
    * @param <T>     the type of the Flowable and Supplier
    */
   public static <T> Flowable<T> toFlow(Supplier<T> supplier, long ignored, TimeUnit unit) {
-    return Flowable.interval(ignored, unit, Schedulers.io())
-        .subscribeOn(Schedulers.io()).map((x) -> supplier.get());
+    return Flowable.interval(ignored, unit, Schedulers.trampoline())
+        .observeOn(Schedulers.io()).map((x) -> supplier.get()).observeOn(Schedulers.computation());
   }
 
   /**
