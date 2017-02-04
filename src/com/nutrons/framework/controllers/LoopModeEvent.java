@@ -10,6 +10,7 @@ public class LoopModeEvent implements ControllerEvent {
 
   /**
    * Visit a Talon object.
+   *
    * @param talon Talon controller to apply event to.
    */
   public void actOn(Talon talon) {

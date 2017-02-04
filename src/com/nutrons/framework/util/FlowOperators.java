@@ -1,8 +1,11 @@
 package com.nutrons.framework.util;
 
+import static java.lang.Math.abs;
+
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class FlowOperators {
@@ -25,5 +28,23 @@ public class FlowOperators {
    */
   public static <T> Flowable<T> toFlow(Supplier<T> supplier) {
     return toFlow(supplier, 100, TimeUnit.MILLISECONDS);
+  }
+
+  /**
+   * Modifies motor input to prevent motors running at very small values
+   *
+   * @param input the raw motor input values
+   * @return the motor input values with values smaller than 0.2 removed
+   */
+  public static Flowable<Double> deadband(Flowable<Double> input) {
+    return input.map((x) -> abs(x) < 0.2 ? 0.0 : x);
+  }
+
+  public static Function<Double, Double> deadbandMap(Flowable<Double> input) {
+    return x -> abs(x) < 0.2 ? 0.0 : x;
+  }
+
+  public static <T> T getLastValue(Flowable<T> input) {
+    return input.blockingLatest().iterator().next();
   }
 }

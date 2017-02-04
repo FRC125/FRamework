@@ -33,6 +33,7 @@ public class TestMotorEvents {
     ControllerEvent runEvent = new RunAtPowerEvent(0.5);
     talon.accept(runEvent);
 
+    verify(realController).changeControlMode(CanControlMode.Power);
     verify(realController).set(0.5);
   }
 

@@ -11,6 +11,7 @@ public enum CanControlMode {
 
   /**
    * Convert CanControlMode to the native Talon enum.
+   *
    * @param mode Mode to convert from.
    * @return Native Talon mode
    */

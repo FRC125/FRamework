@@ -17,10 +17,15 @@ public class RunAtPowerEvent implements ControllerEvent {
     return this.power;
   }
 
-  // TODO make sure Talons use power from -1.0 to 1.0, then force this requirement in the constructor.
   @Override
   public void actOn(Talon talon) {
     talon.changeControlMode(CanControlMode.Power);
+
+    if (Math.abs(power) > 1.0) {
+      throw new EventUnimplementedException(
+          "Power greater than magnitude of 1.0 is not supported for Talons");
+    }
+
     talon.set(power);
   }
 }
