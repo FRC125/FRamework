@@ -16,6 +16,7 @@ public class Serial {
   private final Flowable<byte[]> dataStream;
   private final char terminationCharacter;
   private static final int DEFAULT_BAUD_RATE = 9600;
+  private static final char DEFAULT_TERMINATION_CHARACTER = '\n';
 
   /**
    * Create Serial streams from a WPI Serial.
@@ -24,7 +25,7 @@ public class Serial {
    * @param packetLength represents the length of each read from the buffer
    */
   public Serial(int bufferSize, int packetLength) {
-    this(DEFAULT_BAUD_RATE, SerialPort.Port.kUSB, bufferSize, packetLength, '\n');
+    this(DEFAULT_BAUD_RATE, SerialPort.Port.kUSB, bufferSize, packetLength, DEFAULT_TERMINATION_CHARACTER);
   }
 
   /**
@@ -62,19 +63,19 @@ public class Serial {
     this.terminationCharacter = terminationCharacter;
 
     this.serial.enableTermination(terminationCharacter);
-
-    this.dataStream = toFlow(() -> {
-      if (serial.getBytesReceived() > this.bufferSize) {
-        serial.reset();
-      }
-      return serial.read(packetLength);
-    }).filter(x -> x.length == packetLength);
   }
 
   /**
    * A Flowable providing data from the serial.
    **/
-  public Flowable<byte[]> dataStream() {
+  public Flowable<byte[]> getDataStream() {
+    this.dataStream = toFlow(() -> {
+      if (serial.getBytesReceived() > this.bufferSize) { //Clear out old values
+        serial.reset();
+      }
+      return serial.read(packetLength);
+    }).filter(x -> x.length == packetLength);
+
     return this.dataStream();
   }
 }
