@@ -5,4 +5,8 @@ public class EventUnimplementedException extends RuntimeException {
     super(String.format("Controller \"%s\" is not supported by the event \"%s\"",
         controller, event));
   }
+
+  public EventUnimplementedException(String message){
+    super(message);
+  }
 }
