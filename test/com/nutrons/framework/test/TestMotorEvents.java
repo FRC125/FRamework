@@ -7,9 +7,11 @@ import com.nutrons.framework.controllers.CanControlMode;
 import com.nutrons.framework.controllers.CanControllerProxy;
 import com.nutrons.framework.controllers.ControllerEvent;
 import com.nutrons.framework.controllers.ControllerMode;
+import com.nutrons.framework.controllers.FollowEvent;
 import com.nutrons.framework.controllers.LoopModeEvent;
 import com.nutrons.framework.controllers.RunAtPowerEvent;
 import com.nutrons.framework.controllers.Talon;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -17,10 +19,17 @@ import org.junit.Test;
  */
 public class TestMotorEvents {
 
+  private CanControllerProxy realController;
+  private Talon talon;
+
+  @Before
+  public void initialize(){
+    this.realController = mock(CanControllerProxy.class);
+    this.talon = new Talon(realController);
+  }
+
   @Test
   public void testPowerEvent() {
-    CanControllerProxy realController = mock(CanControllerProxy.class);
-    Talon talon = new Talon(realController);
     ControllerEvent runEvent = new RunAtPowerEvent(0.5);
     talon.accept(runEvent);
 
@@ -29,11 +38,18 @@ public class TestMotorEvents {
 
   @Test
   public void testSpeedEvent() {
-    CanControllerProxy realController = mock(CanControllerProxy.class);
-    Talon talon = new Talon(realController);
     ControllerEvent speedEvent = new LoopModeEvent(ControllerMode.LOOP_SPEED);
     speedEvent.actOn(talon);
 
     verify(realController).changeControlMode(CanControlMode.Speed);
+  }
+
+  @Test
+  public void testFollowEvent(){
+    ControllerEvent speedEvent = new FollowEvent(1);
+    speedEvent.actOn(talon);
+
+    verify(realController).changeControlMode(CanControlMode.Follower);
+    verify(realController).set(1);
   }
 }
