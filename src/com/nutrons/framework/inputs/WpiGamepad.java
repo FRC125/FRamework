@@ -13,12 +13,14 @@ import java.util.Map;
  * A wrapper around WPI's "Joysticks" which provides Flowables for Gamepad data.
  */
 public class WpiGamepad {
+
   private final int port;
   private final Flowable<Double> axis1X;
   private final Flowable<Double> axis1Y;
   private final Flowable<Double> axis2X;
   private final Flowable<Double> axis2Y;
   private final Joystick joystick;
+  private final Map<Integer, Flowable<Boolean>> buttons;
 
   /**
    * Create Gamepad streams from a WPI "Joystick."
@@ -61,8 +63,6 @@ public class WpiGamepad {
   public Flowable<Double> joy2Y() {
     return this.axis2Y;
   }
-
-  private final Map<Integer, Flowable<Boolean>> buttons;
 
   private Flowable<Boolean> memoizedButton(int buttonNumber) {
     if (!buttons.containsKey(buttonNumber)) {
