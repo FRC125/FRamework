@@ -8,7 +8,8 @@ import com.ctre.CANTalon;
 public class WpiTalonProxy implements CanControllerProxy {
 
   private CANTalon talon;
-  public WpiTalonProxy(CANTalon talon){
+
+  public WpiTalonProxy(CANTalon talon) {
     this.talon = talon;
   }
 
@@ -23,13 +24,13 @@ public class WpiTalonProxy implements CanControllerProxy {
   }
 
   @Override
-  public void setPID(double pVal, double iVal, double dVal) {
-    this.talon.setPID(pVal,iVal,dVal);
+  public void setPid(double pval, double ival, double dval) {
+    this.talon.setPID(pval, ival, dval);
   }
 
   @Override
-  public void setF(double fVal) {
-    this.talon.setF(fVal);
+  public void setF(double fval) {
+    this.talon.setF(fval);
   }
 
   @Override
@@ -38,7 +39,7 @@ public class WpiTalonProxy implements CanControllerProxy {
   }
 
   @Override
-  public int getDeviceID() {
+  public int getDeviceId() {
     return this.talon.getDeviceID();
   }
 

@@ -1,7 +1,5 @@
 package com.nutrons.framework.controllers;
 
-import com.ctre.CANTalon;
-
 public class FollowEvent implements ControllerEvent {
 
   private final int target;

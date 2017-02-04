@@ -12,7 +12,7 @@ public class LoopPropertiesEvent implements ControllerEvent {
    * Sets the coefficients for a closed loop controller.
    */
   public LoopPropertiesEvent(double setpoint, double pval,
-                             double ival, double dval, double fval) {
+      double ival, double dval, double fval) {
     this.setpoint = setpoint;
     this.pval = pval;
     this.ival = ival;

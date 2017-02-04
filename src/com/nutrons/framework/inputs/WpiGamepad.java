@@ -9,6 +9,7 @@ import io.reactivex.Flowable;
  * A wrapper around WPI's "Joysticks" which provides Flowables for Gamepad data.
  */
 public class WpiGamepad {
+
   private final int port;
   private final Flowable<Double> axis1X;
   private final Flowable<Double> axis1Y;

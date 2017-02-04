@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class WpiSettings implements Settings {
+
   private volatile Preferences prefs;
   private HashMap<String, Integer> ints;
   private HashMap<String, Double> doubles;

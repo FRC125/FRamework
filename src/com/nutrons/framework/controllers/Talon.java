@@ -1,12 +1,12 @@
 package com.nutrons.framework.controllers;
 
-import static com.ctre.CANTalon.TalonControlMode;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import com.ctre.CANTalon;
 import io.reactivex.Flowable;
 
 public class Talon extends LoopSpeedController {
+
   private final Flowable<FeedbackEvent> feedback;
   private final CanControllerProxy talon;
 
@@ -17,13 +17,14 @@ public class Talon extends LoopSpeedController {
     this(new WpiTalonProxy(new CANTalon(port)));
   }
 
-  public Talon(CanControllerProxy talon){
+  public Talon(CanControllerProxy talon) {
     this.talon = talon;
     this.feedback = toFlow(() -> () -> this.talon.getError());
   }
 
   /**
    * Creates a talon that initially follows another talon.
+   *
    * @param toFollow the talon to follow
    */
   public Talon(int port, Talon toFollow) {
@@ -41,9 +42,9 @@ public class Talon extends LoopSpeedController {
   }
 
   void setLoopProperties(double setpoint, double pval,
-                         double ival, double dval, double fval) {
+      double ival, double dval, double fval) {
     this.talon.setSetpoint(setpoint);
-    this.talon.setPID(pval, ival, dval);
+    this.talon.setPid(pval, ival, dval);
     this.talon.setF(fval);
   }
 
@@ -58,6 +59,6 @@ public class Talon extends LoopSpeedController {
   }
 
   int id() {
-    return this.talon.getDeviceID();
+    return this.talon.getDeviceId();
   }
 }

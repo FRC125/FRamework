@@ -9,8 +9,13 @@ import java.security.InvalidParameterException;
 public enum CanControlMode {
   Speed, Power, Position, Follower;
 
-  public static TalonControlMode toTalonMode(CanControlMode mode){
-    switch (mode){
+  /**
+   * Convert CanControlMode to the native Talon enum.
+   * @param mode Mode to convert from.
+   * @return Native Talon mode
+   */
+  public static TalonControlMode toTalonMode(CanControlMode mode) {
+    switch (mode) {
       case Follower:
         return TalonControlMode.Follower;
       case Power:

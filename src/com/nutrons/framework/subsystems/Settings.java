@@ -3,6 +3,7 @@ package com.nutrons.framework.subsystems;
 import com.nutrons.framework.Subsystem;
 
 public interface Settings extends Subsystem {
+
   /**
    * Get int from settings table.
    */
