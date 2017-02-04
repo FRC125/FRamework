@@ -97,7 +97,8 @@
 
   <target name="test" depends="checkstyle,compile,init-ivy">
     <path id="classpath.path">
-      <fileset dir="${userLibs}" erroronmissingdir="false"/>
+      <fileset dir="${userLibs.dir}" erroronmissingdir="false" includes="*.jar"/>
+      <fileset file="${wpilib.jar}"/>
       <fileset dir="lib/" includes="*.jar"/> <!-- include everything, I did not remove wpi's specific includes-->
     </path>
     <javac srcdir="${test.dir}"
@@ -117,6 +118,8 @@
       <classpath location="lib/junit-4.12.jar"/>
       <classpath location="lib/hamcrest-core-1.3.jar"/>
 	  <classpath refid="classpath.path"/>
+
+
       <batchtest>
         <fileset dir="test">
           <include name="**/*Test*"/>

@@ -1,12 +1,13 @@
 package com.nutrons.framework.controllers;
 
-import com.ctre.CANTalon;
-
 public class RunAtPowerEvent implements ControllerEvent {
+
   private final double power;
 
   /**
    * An event which sets the controller to manually run at a given power.
+   *
+   * @param power the power to run the controller at, from -1.0 to 1.0
    */
   public RunAtPowerEvent(double power) {
     this.power = power;
@@ -18,10 +19,13 @@ public class RunAtPowerEvent implements ControllerEvent {
 
   @Override
   public void actOn(Talon talon) {
-    if(Math.abs(power) > 1.0) {
-        throw new EventUnimplementedException("Power greater than magnitude of 1.0 is not supported for Talons");
+    talon.changeControlMode(CanControlMode.Power);
+
+    if (Math.abs(power) > 1.0) {
+      throw new EventUnimplementedException(
+          "Power greater than magnitude of 1.0 is not supported for Talons");
     }
-    talon.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+
     talon.set(power);
   }
 }
