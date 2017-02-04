@@ -8,13 +8,17 @@ import io.reactivex.Flowable;
 
 public class Talon extends LoopSpeedController {
   private final Flowable<FeedbackEvent> feedback;
-  private final CANTalon talon;
+  private final CanControllerProxy talon;
 
   /**
    * Creates a talon on the given port.
    */
   public Talon(int port) {
-    this.talon = new CANTalon(port);
+    this(new WpiTalonProxy(new CANTalon(port)));
+  }
+
+  public Talon(CanControllerProxy talon){
+    this.talon = talon;
     this.feedback = toFlow(() -> () -> this.talon.getError());
   }
 
@@ -24,7 +28,7 @@ public class Talon extends LoopSpeedController {
    */
   public Talon(int port, Talon toFollow) {
     this(port);
-    this.changeControlMode(CANTalon.TalonControlMode.Follower);
+    this.changeControlMode(CanControlMode.Follower);
     this.set(toFollow.id());
   }
 
@@ -32,7 +36,7 @@ public class Talon extends LoopSpeedController {
     this.talon.set(value);
   }
 
-  void changeControlMode(TalonControlMode mode) {
+  void changeControlMode(CanControlMode mode) {
     this.talon.changeControlMode(mode);
   }
 

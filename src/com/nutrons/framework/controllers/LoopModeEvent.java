@@ -12,13 +12,13 @@ public class LoopModeEvent implements ControllerEvent {
   public void actOn(Talon talon) {
     switch(this.mode) {
       case MANUAL:
-        talon.changeControlMode(TalonControlMode.PercentVbus);
+        talon.changeControlMode(CanControlMode.Power);
         break;
       case LOOP_POSITION:
-        talon.changeControlMode(TalonControlMode.Position);
+        talon.changeControlMode(CanControlMode.Position);
         break;
       case LOOP_SPEED:
-        talon.changeControlMode(TalonControlMode.Speed);
+        talon.changeControlMode(CanControlMode.Speed);
         break;
     }
   }

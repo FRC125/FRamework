@@ -20,7 +20,7 @@ public class RunAtPowerEvent implements ControllerEvent {
   // TODO make sure Talons use power from -1.0 to 1.0, then force this requirement in the constructor.
   @Override
   public void actOn(Talon talon) {
-    talon.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+    talon.changeControlMode(CanControlMode.Power);
     talon.set(power);
   }
 }
