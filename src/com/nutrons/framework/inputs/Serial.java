@@ -63,19 +63,17 @@ public class Serial {
     this.terminationCharacter = terminationCharacter;
 
     this.serial.enableTermination(terminationCharacter);
+
+    this.dataStream = toFlow(() -> {
+      if (serial.getBytesReceived() > this.bufferSize) { //Clear out old values
+          serial.reset();
+      }
+      return serial.read(packetLength);
+    }).filter(x -> x.length == packetLength);
   }
 
   /**
    * A Flowable providing data from the serial.
    **/
-  public Flowable<byte[]> getDataStream() {
-    this.dataStream = toFlow(() -> {
-      if (serial.getBytesReceived() > this.bufferSize) { //Clear out old values
-        serial.reset();
-      }
-      return serial.read(packetLength);
-    }).filter(x -> x.length == packetLength);
-
-    return this.dataStream;
-  }
+  public Flowable<byte[]> getDataStream() { return this.dataStream; }
 }
