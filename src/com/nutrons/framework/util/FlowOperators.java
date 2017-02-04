@@ -38,6 +38,10 @@ public class FlowOperators {
     return input.map((x) -> abs(x) < 0.2 ? 0.0 : x);
   }
 
+  public static lambda deadbandMap(Flowable<Double> input) {
+    return input.map((x) -> abs(x) < 0.2 ? 0.0 : x).lambda();
+  }
+
   public static <T> T getLastValue(Flowable<T> input) {
     return input.blockingLatest().iterator().next();
   }

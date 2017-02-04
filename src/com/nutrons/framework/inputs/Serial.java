@@ -76,6 +76,6 @@ public class Serial {
       return serial.read(packetLength);
     }).filter(x -> x.length == packetLength);
 
-    return this.dataStream();
+    return this.dataStream;
   }
 }
