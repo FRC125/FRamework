@@ -10,6 +10,7 @@ import java.util.List;
  * This class sets up the I/O factories and initializes subsystems.
  */
 public class StreamManager {
+
   private List<Subsystem> subsystems;
   private Flowable<Boolean> enabled;
   private Flowable<CompMode> mode;
@@ -29,7 +30,7 @@ public class StreamManager {
    * Subclasses should register subsystems in their constructor.
    *
    * @param enabled a Flowable of booleans, representing changes in the enabled state of the robot
-   * @param mode    a Flowable of CompModes, representing changes in the competition game mode
+   * @param mode a Flowable of CompModes, representing changes in the competition game mode
    */
   public StreamManager(Flowable<Boolean> enabled, Flowable<CompMode> mode) {
     this.subsystems = new ArrayList<>();
