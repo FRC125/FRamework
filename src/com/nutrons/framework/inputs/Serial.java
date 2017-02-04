@@ -3,6 +3,7 @@ package com.nutrons.framework.inputs;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.reactivex.Flowable;
 
 /**
