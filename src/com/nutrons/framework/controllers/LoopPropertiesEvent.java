@@ -1,4 +1,4 @@
-package com.nutrons.framework.consumers;
+package com.nutrons.framework.controllers;
 
 public class LoopPropertiesEvent implements ControllerEvent {
 
@@ -20,6 +20,7 @@ public class LoopPropertiesEvent implements ControllerEvent {
     this.fval = fval;
   }
 
+  @Override
   public void actOn(Talon talon) {
     talon.setLoopProperties(setpoint, pval, ival, dval, fval);
   }

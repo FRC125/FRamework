@@ -1,9 +1,13 @@
-package com.nutrons.framework.producers;
+package com.nutrons.framework.inputs;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
+import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import io.reactivex.Flowable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A wrapper around WPI's "Joysticks" which provides Flowables for Gamepad data.
@@ -27,6 +31,7 @@ public class WpiGamepad {
     this.axis1Y = toFlow(() -> this.joystick.getRawAxis(axis1Y));
     this.axis2X = toFlow(() -> this.joystick.getRawAxis(axis2X));
     this.axis2Y = toFlow(() -> this.joystick.getRawAxis(axis2Y));
+    this.buttons = new HashMap<>();
   }
 
   /**
@@ -55,5 +60,28 @@ public class WpiGamepad {
    **/
   public Flowable<Double> joy2Y() {
     return this.axis2Y;
+  }
+
+  private final Map<Integer, Flowable<Boolean>> buttons;
+
+  private Flowable<Boolean> memoizedButton(int buttonNumber) {
+    if (!buttons.containsKey(buttonNumber)) {
+      synchronized (buttons) {
+        if (!buttons.containsKey(buttonNumber)) {
+          buttons.put(buttonNumber,
+              FlowOperators.toFlow(() ->
+                  new JoystickButton(this.joystick, buttonNumber).get())
+                  .distinctUntilChanged());
+        }
+      }
+    }
+    return buttons.get(buttonNumber);
+  }
+
+  /**
+   * A Flowable representing the values of the specified button on the gamepad.
+   */
+  public Flowable<Boolean> button(int buttonNumber) {
+    return memoizedButton(buttonNumber);
   }
 }

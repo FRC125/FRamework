@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="FRC Deployment" default="compile" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="FRamework" default="compile" xmlns:ivy="antlib:org.apache.ivy.ant">
 
   <property name="wpilib" value="wpilib"/>
   <property name="userLibs.dir" value="${wpilib}/userLibs"/>
@@ -38,6 +38,15 @@
     <taskdef resource="org/apache/ivy/ant/antlib.xml"
              uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
   </target>
+  
+  <target name="deploy-native" depends="get-target-ip">
+    <scp todir="admin@${target}:/usr/local/frc/lib/" password="" trust="true">
+	  <fileset dir="${native-libs}">
+		<filename name="libTalonSRXLib.so"/>
+	  </fileset>
+	</scp>
+  </target>
+  
   <ivy:retrieve/>
   <target name="init-checkstyle">
   	<path id="checkstyle.lib.path">
