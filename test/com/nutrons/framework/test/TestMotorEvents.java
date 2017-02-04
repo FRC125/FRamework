@@ -14,9 +14,6 @@ import com.nutrons.framework.controllers.Talon;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * Created by krzw9 on 1/31/2017.
- */
 public class TestMotorEvents {
 
   private CanControllerProxy realController;

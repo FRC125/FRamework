@@ -79,7 +79,7 @@
       <fileset file="${cscore.jar}"/>
       <fileset dir="${userLibs}" erroronmissingdir="false"/>
 	  <!-- The excludes were added to reduce jar size -->
-      <fileset dir="lib/" includes="*.jar" excludes="*sources*,*javadoc*,*checkstyle*,*junit*"/>
+      <fileset dir="lib/" includes="*.jar" excludes="*sources*,*javadoc*,*checkstyle*,*junit*, *mockito*"/>
     </path>
     <pathconvert property="classpathProp" refid="classpath.path"/>
     <echo>[athena-compile] Compiling ${src.dir} with classpath=${classpathProp} to ${build.dir}</echo>

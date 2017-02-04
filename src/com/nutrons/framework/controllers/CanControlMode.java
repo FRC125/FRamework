@@ -26,7 +26,7 @@ public enum CanControlMode {
       case Speed:
         return TalonControlMode.Speed;
       default:
-        throw new InvalidParameterException();
+        throw new InvalidParameterException("Invalid input mode");
     }
   }
 }
