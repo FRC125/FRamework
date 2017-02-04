@@ -64,12 +64,16 @@ public class WpiGamepad {
 
   private final Map<Integer, Flowable<Boolean>> buttons;
 
-  private synchronized Flowable<Boolean> memoizedButton(int buttonNumber) {
+  private Flowable<Boolean> memoizedButton(int buttonNumber) {
     if (!buttons.containsKey(buttonNumber)) {
-      buttons.put(buttonNumber,
-          FlowOperators.toFlow(() ->
-              new JoystickButton(this.joystick, buttonNumber).get())
-              .distinctUntilChanged());
+      synchronized (buttons) {
+        if (!buttons.containsKey(buttonNumber)) {
+          buttons.put(buttonNumber,
+              FlowOperators.toFlow(() ->
+                  new JoystickButton(this.joystick, buttonNumber).get())
+                  .distinctUntilChanged());
+        }
+      }
     }
     return buttons.get(buttonNumber);
   }
