@@ -6,6 +6,7 @@ import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class FlowOperators {
   /**
@@ -36,6 +37,10 @@ public class FlowOperators {
    */
   public static Flowable<Double> deadband(Flowable<Double> input) {
     return input.map((x) -> abs(x) < 0.2 ? 0.0 : x);
+  }
+
+  public static Function<Double, Double> deadbandMap(Flowable<Double> input) {
+    return x -> abs(x) < 0.2 ? 0.0 : x;
   }
 
   public static <T> T getLastValue(Flowable<T> input) {
