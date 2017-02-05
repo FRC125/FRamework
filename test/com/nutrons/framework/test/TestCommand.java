@@ -2,46 +2,50 @@ package com.nutrons.framework.test;
 
 import static junit.framework.TestCase.assertTrue;
 
-import com.nutrons.framework.Command;
+import com.nutrons.framework.util.Command;
 import io.reactivex.Flowable;
-import io.reactivex.functions.Action;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.disposables.Disposable;
+import java.util.concurrent.TimeUnit;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestCommand {
+  private Command wait;
+
+  @Before
+  public void setupCommands() {
+    wait = Command.create(() -> {
+      Thread.sleep(1000);
+    });
+  }
 
   @Test
-  public void single() throws Exception {
+  public void single() {
     final Integer[] arr = new Integer[1];
     arr[0] = 5;
     Command command = Command.create(() -> arr[0] = 10);
-    command.stream().subscribe(Action::run);
+    waitForDisposable(command.execute());
     assertTrue(arr[0] == 10);
   }
 
   @Test
   public void inSeriesTimed() {
     long start = System.currentTimeMillis();
-    Flowable<Action> actions = Command.createWithCondition(
-        () -> Thread.sleep(1000), () -> System.currentTimeMillis() + 100 > start)
-        .then(Command.createWithCondition(() -> Thread.sleep(1000),
-            () -> System.currentTimeMillis() + 100 > start)).stream().take(2);
-    assertTrue(actions.toList().blockingGet().size() == 2);
-    long start2 = System.currentTimeMillis();
-    actions.blockingSubscribe(Action::run);
-    assertTrue(start2 + 1700 < System.currentTimeMillis());
+    Command series = wait.endsWhen(() -> System.currentTimeMillis() - 2000 > start).then(wait);
+    waitForDisposable(series.execute());
+    assertTrue(System.currentTimeMillis() - 2000 > start);
   }
 
   @Test
   public void inParallelTimed() {
     long start = System.currentTimeMillis();
-    Flowable<Action> actions = Command.parallel(Command.createWithCondition(
-        () -> Thread.sleep(1000), () -> System.currentTimeMillis() + 100 > start),
-        Command.createWithCondition(() -> Thread.sleep(1000),
-            () -> System.currentTimeMillis() + 100 > start)).stream().take(2);
-    assertTrue(actions.toList().blockingGet().size() == 2);
-    long start2 = System.currentTimeMillis();
-    actions.subscribeOn(Schedulers.io()).subscribe(Action::run);
-    assertTrue(start2 + 1700 > System.currentTimeMillis());
+    Command para = Command.parallel(wait, wait);
+    waitForDisposable(para.execute());
+    assertTrue(System.currentTimeMillis() - 1400 < start);
+  }
+
+  private void waitForDisposable(Disposable d) {
+    Flowable.interval(30, TimeUnit.MILLISECONDS)
+        .takeWhile(x -> !d.isDisposed()).blockingSubscribe();
   }
 }
