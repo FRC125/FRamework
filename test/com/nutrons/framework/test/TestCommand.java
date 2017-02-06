@@ -24,6 +24,7 @@ public class TestCommand {
     final Integer[] arr = new Integer[1];
     arr[0] = 5;
     Command command = Command.create(() -> arr[0] = 10);
+    // Tests to see if this single command works.
     waitForDisposable(command.execute());
     assertTrue(arr[0] == 10);
   }
@@ -31,8 +32,8 @@ public class TestCommand {
   @Test
   public void inSeriesTimed() {
     long start = System.currentTimeMillis();
-    Command series = wait.endsWhen(() -> System.currentTimeMillis() - 2000 > start).then(wait);
-    waitForDisposable(series.execute());
+    Command series = wait.then(wait);
+   waitForDisposable(series.execute());
     assertTrue(System.currentTimeMillis() - 2000 > start);
   }
 

@@ -4,20 +4,23 @@ import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
-import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Action;
-import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import org.reactivestreams.Publisher;
 
 public class Command {
   private final Flowable<Action> output;
   private static final Flowable<Action> emptyPulse = toFlow(() -> (Action) () -> {
-  }).observeOn(Schedulers.io());
+  }).subscribeOn(Schedulers.io());
 
+  /**
+   * @param actions the actions this command will execute, sequentially.
+   */
   private Command(Flowable<Action> actions) {
-    this.output = actions.observeOn(Schedulers.io());
+    this.output = actions;
   }
 
   private Command(Action action) {
@@ -28,8 +31,9 @@ public class Command {
    * Begin an execution of the command.
    */
   public Disposable execute() {
-    return this.output.flatMap(x -> Maybe.fromAction(x)
-        .subscribeOn(Schedulers.io()).toFlowable()).subscribe();
+    return this.output.concatMap(x ->
+        Maybe.fromAction(x).toFlowable().subscribeOn(Schedulers.io()
+        )).subscribeOn(Schedulers.io()).subscribe();
   }
 
   /**
@@ -40,10 +44,44 @@ public class Command {
   }
 
   /**
-   * Create a command that executes the given actions contained within the Flowable.
+   * Create a command that executes the given actions contained within the Flowable in series.
    */
-  public static Command create(Flowable<Action> actions) {
-    return new Command(actions);
+  public static Command create(Flowable<Action> series) {
+    return new Command(series);
+  }
+
+  /**
+   * Copies this command into one which will not execute until 'starter' emits an item.
+   */
+  public Command startable(Publisher<?> starter) {
+    return new Command(Flowable.defer(() ->
+        Flowable.<Action>never().takeUntil(starter).concatWith(this.output)));
+  }
+
+  /**
+   * Copies this command into one which, when executed,
+   * will delay the execution of all actions until startCondition returns true.
+   */
+  public Command when(Supplier<Boolean> startCondition) {
+    Publisher ignition = emptyPulse.map(x -> startCondition.get()).filter(x -> x).share();
+    return this.startable(ignition);
+  }
+
+  /**
+   * Copies this command into one which will execute until 'terminator' emits an item.
+   */
+  public Command terminable(Publisher<?> terminator) {
+    return new Command(Flowable.defer(() ->
+        this.output.takeUntil(terminator)));
+  }
+
+  /**
+   * Copies this command into one which, when executed,
+   * will complete once endCondition returns true.
+   */
+  public Command until(Supplier<Boolean> endCondition) {
+    Publisher terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x).share();
+    return this.terminable(terminator);
   }
 
   /**
@@ -59,69 +97,33 @@ public class Command {
    * @param commands these commands will be executed from 'first to last' argument.
    */
   public static Command serial(Command... commands) {
-    Observable<Flowable<Action>> cmds = Observable.fromArray(commands).map(x -> x.output);
-    // Below, each Flowable is replaced, so that it is only called after the previous one completes.
-    Observable<Flowable<Action>> concatenated = cmds.scan((p, t) -> p.ignoreElements()
-        .<Action>toFlowable().concatWith(t));
-    // p is the previous Flowable in the sequence, and t is the current Flowable.
-    return new Command(Flowable.concat(concatenated.toList().blockingGet()));
+    return new Command(Flowable.concat(Flowable.fromArray(commands).map(x -> x.output)));
   }
 
   /**
    * Create a command that executes the provided commands in parallel.
    */
   public static Command parallel(Command... commands) {
-    return new Command(Flowable.fromArray(commands).flatMap(x -> x.output));
+    return new Command(Flowable.merge(
+        Flowable.fromArray(commands).map(c ->
+            c.output.concatMap(a ->
+                Maybe.<Action>fromAction(a).toFlowable().subscribeOn(Schedulers.io())
+            )
+        )
+    ));
   }
 
   /**
-   * Copy this command, to form one which will delay
-   * execution until the 'start trigger' Action is called.
+   * Copies this command into one which will delay execution for a period of time.
    */
-  public Pair<Command, Action> startTrigger() {
-    PublishProcessor<Action> pp = PublishProcessor.create();
-    return new Pair<>(new Command(pp.concatWith(this.output)), pp::onComplete);
+  public Command delayStart(long delay, TimeUnit unit) {
+    return this.startable(Flowable.timer(delay, unit));
   }
 
   /**
-   * Copy this command, to form one which has a 'start condition.'
-   * The start condition supplies true at any point in time
-   * after the command is considered to have commenced.
+   * Copies this command into one which will delay its completion until a certain time has passed.
    */
-  public Command startsWhen(Supplier<Boolean> startCondition) {
-    Pair<Command, Action> pair = this.startTrigger();
-    emptyPulse.filter(x -> startCondition.get()).firstElement()
-        .subscribeOn(Schedulers.io()).subscribe(x -> pair.right().run());
-    return pair.left();
-  }
-
-  /**
-   * Copy this command, to form one which will complete
-   * only when the 'end trigger' Action is called.
-   */
-  public Pair<Command, Action> endTrigger() {
-    PublishProcessor<Action> pp = PublishProcessor.create();
-    return new Pair<>(new Command(
-        this.output.mergeWith(Flowable.never()).takeUntil(pp)), pp::onComplete);
-  }
-
-  /**
-   * Copy this command, to form one which has an 'end condition.'
-   * The end condition supplies true at any point in time
-   * after the command is considered to have concluded.
-   */
-  public Command endsWhen(Supplier<Boolean> endCondition) {
-    Pair<Command, Action> pair = this.endTrigger();
-    emptyPulse.filter(x -> endCondition.get()).firstElement()
-        .subscribeOn(Schedulers.io()).subscribe(x -> pair.right().run());
-    return pair.left();
-  }
-
-  /**
-   * Provides a copy of this command, which starts and ends
-   * when the respective Suppliers provide the value of true.
-   */
-  public Command when(Supplier<Boolean> start, Supplier<Boolean> end) {
-    return this.startsWhen(start).endsWhen(end);
+  public Command delayFinish(long delay, TimeUnit unit) {
+    return parallel(this, new Command(Flowable.never()).terminable(Flowable.timer(delay, unit)));
   }
 }
