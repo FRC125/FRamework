@@ -51,7 +51,7 @@ public class WpiTalonProxy implements CanControllerProxy {
 
   @Override
   public double getError() {
-    return this.getError();
+    return this.talon.getError();
   }
 
   @Override

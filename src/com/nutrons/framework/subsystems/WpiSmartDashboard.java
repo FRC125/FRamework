@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class WpiSmartDashboard implements Subsystem{
 
     public Consumer<Double> getTextField(String key){
-
         return d -> {
             SmartDashboard.putNumber(key, d);
         };
