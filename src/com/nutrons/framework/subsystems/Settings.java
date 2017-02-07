@@ -8,7 +8,7 @@ import io.reactivex.Flowable;
 public class Settings implements Subsystem {
 
   /**
-   * Provides a Flowable for a specific property on the SmartDashboard's settings table.
+   * Provides a Flowable for a specific property on the WpiSmartDashboard's settings table.
    */
   public Flowable<Double> getProperty(String key) {
     return FlowOperators.toFlow(() -> Preferences

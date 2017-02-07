@@ -2,8 +2,12 @@ package com.nutrons.framework.inputs;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
+import com.nutrons.framework.util.IntervalCache;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.reactivex.Flowable;
+
+import java.util.function.Supplier;
 
 /**
  * A wrapper around WPI's SerialPort class which provides
@@ -16,7 +20,7 @@ public class Serial {
   private final SerialPort serial;
   private final int bufferSize;
   private final int packetLength;
-  private final Flowable<byte[]> dataStream;
+  private Flowable<byte[]> dataStream = null;
   private final char terminationCharacter;
 
   /**
@@ -66,12 +70,17 @@ public class Serial {
 
     this.serial.enableTermination(terminationCharacter);
 
-    this.dataStream = toFlow(() -> {
-      if (serial.getBytesReceived() > this.bufferSize) { //Clear out old values
-        serial.reset();
-      }
-      return serial.read(packetLength);
-    }).filter(x -> x.length == packetLength);
+    if(this.serial.getBytesReceived() >= 10) {
+
+      Supplier<byte[]> suppler = (Supplier<byte[]>)() -> {
+        if (serial.getBytesReceived() > this.bufferSize) { //Clear out old values
+          serial.reset();
+        }
+        return serial.read(packetLength);
+      };
+
+      this.dataStream = toFlow(new IntervalCache<byte[]>(100, suppler)).filter(x -> x.length == packetLength);
+    }
   }
 
   /**
