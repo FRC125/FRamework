@@ -5,7 +5,8 @@ import static com.nutrons.framework.util.FlowOperators.toFlow;
 import com.ctre.CANTalon;
 import io.reactivex.Flowable;
 
-public class Talon extends LoopSpeedController {
+public class
+Talon extends LoopSpeedController {
 
   private final Flowable<FeedbackEvent> feedback;
   private final CanControllerProxy talon;
