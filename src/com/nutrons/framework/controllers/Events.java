@@ -32,7 +32,7 @@ public class Events {
   }
 
   /**
-   * Change the mode of the controller
+   * Change the mode of the controller.
    *
    * @param mode mode in which to run the controller
    * @return a ControllerEvent setting the mode of the controller
@@ -42,7 +42,7 @@ public class Events {
   }
 
   /**
-   * Set a controller to follow another controller
+   * Set a controller to follow another controller.
    *
    * @param target port of controller to follow
    * @return a ControllerEvent setting the leader of the controller

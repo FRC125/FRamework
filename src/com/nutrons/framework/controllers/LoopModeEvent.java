@@ -24,6 +24,9 @@ public class LoopModeEvent implements ControllerEvent {
       case LOOP_SPEED:
         talon.changeControlMode(CanControlMode.Speed);
         break;
+      default:
+        talon.changeControlMode(CanControlMode.Position);
+        break;
     }
   }
 }
