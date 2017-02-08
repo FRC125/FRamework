@@ -19,7 +19,7 @@ public class RunAtPowerEvent implements ControllerEvent {
 
   @Override
   public void actOn(Talon talon) {
-    talon.changeControlMode(CanControlMode.Power);
+    talon.changeControlMode(ControlMode.MANUAL);
 
     if (Math.abs(power) > 1.0) {
       throw new EventUnimplementedException(

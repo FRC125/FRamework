@@ -22,7 +22,7 @@ public class Events {
   }
 
   /**
-   * Set the power of a motor
+   * Informs the RoboRIO to emit a signal which manually sets the controller's output.
    *
    * @param power Speed at which to run the motor (must be between 1.0 and -1.0)
    * @return a ControllerEvent setting the power of the controller
@@ -32,12 +32,12 @@ public class Events {
   }
 
   /**
-   * Change the mode of the controller.
+   * Changes the mode of the controller.
    *
    * @param mode mode in which to run the controller
    * @return a ControllerEvent setting the mode of the controller
    */
-  public static ControllerEvent mode(ControllerMode mode) {
+  public static ControllerEvent mode(ControlMode mode) {
     return new LoopModeEvent(mode);
   }
 
