@@ -3,7 +3,6 @@ package com.nutrons.framework.test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.nutrons.framework.controllers.CanControlMode;
 import com.nutrons.framework.controllers.CanControllerProxy;
 import com.nutrons.framework.controllers.ControllerEvent;
 import com.nutrons.framework.controllers.ControlMode;
