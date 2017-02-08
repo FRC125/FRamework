@@ -4,8 +4,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.nutrons.framework.controllers.CanControllerProxy;
-import com.nutrons.framework.controllers.ControllerEvent;
 import com.nutrons.framework.controllers.ControlMode;
+import com.nutrons.framework.controllers.ControllerEvent;
 import com.nutrons.framework.controllers.FollowEvent;
 import com.nutrons.framework.controllers.LoopModeEvent;
 import com.nutrons.framework.controllers.RunAtPowerEvent;
