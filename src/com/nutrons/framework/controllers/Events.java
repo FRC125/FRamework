@@ -1,6 +1,7 @@
 package com.nutrons.framework.controllers;
 
 public class Events {
+
   /**
    * Initiate a
    * <a href="https://en.wikipedia.org/wiki/PID_controller">PID</a> loop
@@ -13,10 +14,10 @@ public class Events {
    * @return a ControllerEvent that initiates a PID loop on the motor controller
    */
   public static ControllerEvent pid(double setPoint,
-                                    double pval,
-                                    double ival,
-                                    double dval,
-                                    double fval) {
+      double pval,
+      double ival,
+      double dval,
+      double fval) {
     return new LoopPropertiesEvent(setPoint, pval, ival, dval, fval);
   }
 

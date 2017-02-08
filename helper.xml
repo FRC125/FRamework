@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="FRC Deployment" default="compile" xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="FRC Deployment" default="compile">
 
   <property name="ivy.install.version" value="2.1.0-rc2"/>
   <condition property="ivy.home" value="${env.IVY_HOME}">
@@ -14,8 +14,9 @@
 
     <mkdir dir="${ivy.jar.dir}"/>
     <!-- download Ivy from web site so that it can be used even without any special installation -->
-    <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
-         dest="${ivy.jar.file}" usetimestamp="true"/>
+    <get
+      src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+      dest="${ivy.jar.file}" usetimestamp="true"/>
   </target>
 
   <target name="init-ivy" depends="download-ivy">
@@ -27,7 +28,7 @@
       <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
     </path>
     <taskdef resource="org/apache/ivy/ant/antlib.xml"
-             uri="antlib:org.apache.ivy.ant"
-             classpathref="ivy.lib.path"/>
+      uri="antlib:org.apache.ivy.ant"
+      classpathref="ivy.lib.path"/>
   </target>
 </project>

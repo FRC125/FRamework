@@ -20,7 +20,7 @@ public class TestMotorEvents {
   private Talon talon;
 
   @Before
-  public void initialize(){
+  public void initialize() {
     this.realController = mock(CanControllerProxy.class);
     this.talon = new Talon(realController);
   }
@@ -43,7 +43,7 @@ public class TestMotorEvents {
   }
 
   @Test
-  public void testFollowEvent(){
+  public void testFollowEvent() {
     ControllerEvent speedEvent = new FollowEvent(1);
     speedEvent.actOn(talon);
 
