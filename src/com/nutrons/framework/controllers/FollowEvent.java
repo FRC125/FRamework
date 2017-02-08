@@ -10,7 +10,7 @@ public class FollowEvent implements ControllerEvent {
 
   @Override
   public void actOn(Talon talon) {
-    talon.changeControlMode(CanControlMode.Follower);
+    talon.changeControlMode(ControlMode.FOLLOWER);
     talon.set(target);
   }
 }

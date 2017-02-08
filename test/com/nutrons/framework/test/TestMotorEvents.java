@@ -3,10 +3,9 @@ package com.nutrons.framework.test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.nutrons.framework.controllers.CanControlMode;
 import com.nutrons.framework.controllers.CanControllerProxy;
 import com.nutrons.framework.controllers.ControllerEvent;
-import com.nutrons.framework.controllers.ControllerMode;
+import com.nutrons.framework.controllers.ControlMode;
 import com.nutrons.framework.controllers.FollowEvent;
 import com.nutrons.framework.controllers.LoopModeEvent;
 import com.nutrons.framework.controllers.RunAtPowerEvent;
@@ -30,16 +29,16 @@ public class TestMotorEvents {
     ControllerEvent runEvent = new RunAtPowerEvent(0.5);
     talon.accept(runEvent);
 
-    verify(realController).changeControlMode(CanControlMode.Power);
+    verify(realController).changeControlMode(ControlMode.MANUAL);
     verify(realController).set(0.5);
   }
 
   @Test
   public void testSpeedEvent() {
-    ControllerEvent speedEvent = new LoopModeEvent(ControllerMode.LOOP_SPEED);
+    ControllerEvent speedEvent = new LoopModeEvent(ControlMode.LOOP_SPEED);
     speedEvent.actOn(talon);
 
-    verify(realController).changeControlMode(CanControlMode.Speed);
+    verify(realController).changeControlMode(ControlMode.LOOP_SPEED);
   }
 
   @Test
@@ -47,7 +46,7 @@ public class TestMotorEvents {
     ControllerEvent speedEvent = new FollowEvent(1);
     speedEvent.actOn(talon);
 
-    verify(realController).changeControlMode(CanControlMode.Follower);
+    verify(realController).changeControlMode(ControlMode.FOLLOWER);
     verify(realController).set(1);
   }
 }
