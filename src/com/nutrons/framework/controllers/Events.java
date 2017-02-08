@@ -36,7 +36,7 @@ public class Events {
    * @param mode mode in which to run the controller
    * @return a ControllerEvent setting the mode of the controller
    */
-  public static ControllerEvent mode(ControllerMode mode) {
+  public static ControllerEvent mode(ControlMode mode) {
     return new LoopModeEvent(mode);
   }
 

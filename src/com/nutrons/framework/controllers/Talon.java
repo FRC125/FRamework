@@ -29,7 +29,7 @@ public class Talon extends LoopSpeedController {
    */
   public Talon(int port, Talon toFollow) {
     this(port);
-    this.changeControlMode(CanControlMode.Follower);
+    this.changeControlMode(ControlMode.FOLLOWER);
     this.set(toFollow.id());
   }
 
@@ -37,7 +37,7 @@ public class Talon extends LoopSpeedController {
     this.talon.set(value);
   }
 
-  void changeControlMode(CanControlMode mode) {
+  void changeControlMode(ControlMode mode) {
     this.talon.changeControlMode(mode);
   }
 

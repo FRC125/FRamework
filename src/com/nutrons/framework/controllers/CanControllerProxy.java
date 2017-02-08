@@ -1,5 +1,7 @@
 package com.nutrons.framework.controllers;
 
+import edu.wpi.first.wpilibj.CANSpeedController;
+
 public interface CanControllerProxy {
 
   void set(double value);
@@ -14,7 +16,7 @@ public interface CanControllerProxy {
 
   int getDeviceId();
 
-  void changeControlMode(CanControlMode mode);
+  void changeControlMode(ControlMode mode);
 
   double getError();
 }

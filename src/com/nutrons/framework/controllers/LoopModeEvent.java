@@ -2,9 +2,9 @@ package com.nutrons.framework.controllers;
 
 public class LoopModeEvent implements ControllerEvent {
 
-  private final ControllerMode mode;
+  private final ControlMode mode;
 
-  public LoopModeEvent(ControllerMode mode) {
+  public LoopModeEvent(ControlMode mode) {
     this.mode = mode;
   }
 
@@ -16,13 +16,13 @@ public class LoopModeEvent implements ControllerEvent {
   public void actOn(Talon talon) {
     switch (this.mode) {
       case MANUAL:
-        talon.changeControlMode(CanControlMode.Power);
+        talon.changeControlMode(ControlMode.MANUAL);
         break;
       case LOOP_POSITION:
-        talon.changeControlMode(CanControlMode.Position);
+        talon.changeControlMode(ControlMode.LOOP_POSITION);
         break;
       case LOOP_SPEED:
-        talon.changeControlMode(CanControlMode.Speed);
+        talon.changeControlMode(ControlMode.LOOP_SPEED);
         break;
     }
   }

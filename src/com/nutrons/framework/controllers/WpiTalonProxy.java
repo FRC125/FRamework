@@ -1,5 +1,7 @@
 package com.nutrons.framework.controllers;
 
+import static com.ctre.CANTalon.TalonControlMode;
+
 import com.ctre.CANTalon;
 
 /**
@@ -44,8 +46,25 @@ public class WpiTalonProxy implements CanControllerProxy {
   }
 
   @Override
-  public void changeControlMode(CanControlMode mode) {
-    this.talon.changeControlMode(CanControlMode.toTalonMode(mode));
+  public void changeControlMode(ControlMode mode) {
+    TalonControlMode talonMode = TalonControlMode.PercentVbus;
+    switch (mode) {
+      case FOLLOWER:
+        talonMode = TalonControlMode.Follower;
+        break;
+      case LOOP_POSITION:
+        talonMode = TalonControlMode.Position;
+        break;
+      case LOOP_SPEED:
+        talonMode = TalonControlMode.Follower;
+        break;
+      case MANUAL:
+        talonMode = TalonControlMode.PercentVbus;
+        break;
+      default:
+        break;
+    }
+    this.talon.changeControlMode(talonMode);
   }
 
   @Override
