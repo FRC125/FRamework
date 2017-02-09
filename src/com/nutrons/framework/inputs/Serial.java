@@ -36,7 +36,7 @@ public class Serial {
    * @param bufferSize represents how many bytes to cache unread before clearing buffer
    * @param packetLength represents the length of each read from the buffer
    * @param terminationCharacter allows users to set a custom termination character - default is the
-   * newline character '\n'
+   *     newline character '\n'
    */
   public Serial(SerialPort.Port port,
       int bufferSize,
@@ -51,7 +51,7 @@ public class Serial {
    * @param bufferSize represents how many bytes to cache unread before clearing buffer
    * @param packetLength represents the length of each read from the buffer
    * @param terminationCharacter allows users to set a custom termination character - default is the
-   * newline character '\n'
+   *     newline character '\n'
    * @param baudrate See <a href="https://en.wikipedia.org/wiki/Symbol_rate">Symbol Rate</a>
    */
   public Serial(int baudrate,
