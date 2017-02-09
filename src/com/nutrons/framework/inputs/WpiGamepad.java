@@ -21,6 +21,7 @@ public class WpiGamepad {
   private final Flowable<Double> axis2Y;
   private final Joystick joystick;
   private final Map<Integer, Flowable<Boolean>> buttons;
+  private final Map<Integer, JoystickButton> joyButtons;
 
   /**
    * Create Gamepad streams from a WPI "Joystick."
@@ -76,6 +77,17 @@ public class WpiGamepad {
       }
     }
     return buttons.get(buttonNumber);
+  }
+
+  private boolean getJoyButton(int buttonNumber) {
+    if (!joyButtons.containsKey(buttonNumber)) {
+      synchronized (joyButtons) {
+        if (!joyButtons.containsKey(buttonNumber)) {
+          joyButtons.put(buttonNumber, new JoystickButton(this.joystick, buttonNumber).get()).distinctUntilChanged());
+        }
+      }
+    }
+    return joyButtons.get(buttonNumber).get();
   }
 
   /**
