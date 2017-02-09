@@ -35,6 +35,7 @@ public class WpiGamepad {
     this.axis2X = toFlow(() -> this.joystick.getRawAxis(axis2X));
     this.axis2Y = toFlow(() -> this.joystick.getRawAxis(axis2Y));
     this.buttons = new HashMap<>();
+    this.joyButtons = new HashMap<>();
   }
 
   /**
@@ -83,7 +84,7 @@ public class WpiGamepad {
     if (!joyButtons.containsKey(buttonNumber)) {
       synchronized (joyButtons) {
         if (!joyButtons.containsKey(buttonNumber)) {
-          joyButtons.put(buttonNumber, new JoystickButton(this.joystick, buttonNumber).get()).distinctUntilChanged();
+          joyButtons.put(buttonNumber, new JoystickButton(this.joystick, buttonNumber));
         }
       }
     }
