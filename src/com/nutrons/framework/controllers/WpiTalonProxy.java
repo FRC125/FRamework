@@ -3,6 +3,8 @@ import com.ctre.CANTalon.FeedbackDevice;
 
 import static com.ctre.CANTalon.TalonControlMode;
 
+import static com.ctre.CANTalon.TalonControlMode;
+
 import com.ctre.CANTalon;
 
 /**

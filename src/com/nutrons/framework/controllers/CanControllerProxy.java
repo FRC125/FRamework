@@ -1,11 +1,6 @@
 package com.nutrons.framework.controllers;
 
-<<<<<<< HEAD
 import com.ctre.CANTalon;
-import com.ctre.CANTalon.FeedbackDevice;
-=======
-import edu.wpi.first.wpilibj.CANSpeedController;
->>>>>>> master
 
 public interface CanControllerProxy {
 
