@@ -72,7 +72,7 @@ public class WpiGamepad {
         if (!buttons.containsKey(buttonNumber)) {
           buttons.put(buttonNumber,
               FlowOperators.toFlow(() ->
-                  new JoystickButton(this.joystick, buttonNumber).get())
+                  getJoyButton(buttonNumber).get())
                   .distinctUntilChanged());
         }
       }
@@ -80,7 +80,7 @@ public class WpiGamepad {
     return buttons.get(buttonNumber);
   }
 
-  private boolean getJoyButton(int buttonNumber) {
+  private JoystickButton getJoyButton(int buttonNumber) {
     if (!joyButtons.containsKey(buttonNumber)) {
       synchronized (joyButtons) {
         if (!joyButtons.containsKey(buttonNumber)) {
@@ -88,7 +88,11 @@ public class WpiGamepad {
         }
       }
     }
-    return joyButtons.get(buttonNumber).get();
+    return joyButtons.get(buttonNumber);
+  }
+
+  public boolean joyButton(int buttonNumber) {
+    return getJoyButton(buttonNumber).get();
   }
 
   /**
