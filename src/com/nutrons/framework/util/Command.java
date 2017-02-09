@@ -5,6 +5,7 @@ import static com.nutrons.framework.util.FlowOperators.toFlow;
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +64,8 @@ public class Command {
    * will delay the execution of all actions until startCondition returns true.
    */
   public Command when(Supplier<Boolean> startCondition) {
-    Publisher ignition = emptyPulse.map(x -> startCondition.get()).filter(x -> x).share();
+    ConnectableFlowable ignition = emptyPulse.map(x -> startCondition.get()).filter(x -> x).publish();
+    ignition.connect();
     return this.startable(ignition);
   }
 
@@ -77,11 +79,12 @@ public class Command {
 
   /**
    * Copies this command into one which, when executed,
-   * will complete once endCondition returns true.
+   * will only complete once endCondition returns true.
    */
   public Command until(Supplier<Boolean> endCondition) {
-    Publisher terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x).share();
-    return this.terminable(terminator);
+    ConnectableFlowable terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x).publish();
+    terminator.connect();
+    return new Command(this.output.mergeWith(Flowable.never())).terminable(terminator);
   }
 
   /**
@@ -125,5 +128,15 @@ public class Command {
    */
   public Command delayFinish(long delay, TimeUnit unit) {
     return parallel(this, new Command(Flowable.never()).terminable(Flowable.timer(delay, unit)));
+  }
+
+  public Command fromSwitch(Publisher<Command> commandStream) {
+    Flowable<Action> actions = Flowable.switchOnNext(Flowable.fromPublisher(commandStream)
+        .map(x -> x.output));
+    return new Command(actions);
+  }
+
+  public Command killAfter(long delay, TimeUnit unit) {
+    return new Command(this.terminable(Flowable.timer(delay, unit)).output);
   }
 }
