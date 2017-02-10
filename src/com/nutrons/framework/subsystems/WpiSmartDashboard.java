@@ -1,19 +1,32 @@
 package com.nutrons.framework.subsystems;
 
 import com.nutrons.framework.Subsystem;
-import io.reactivex.functions.Consumer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import io.reactivex.functions.Consumer;
 
-public class WpiSmartDashboard implements Subsystem{
+import java.util.HashMap;
+import java.util.Map;
 
-    public Consumer<Double> getTextField(String key){
-        return d -> {
-            SmartDashboard.putNumber(key, d);
-        };
+public class WpiSmartDashboard implements Subsystem {
+  private final Map<String, Consumer<Double>> fields;
+
+  public WpiSmartDashboard() {
+    this.fields = new HashMap<>();
+  }
+
+  public Consumer<Double> getTextField(String key) {
+    if (!fields.containsKey(key)) {
+      synchronized (fields) {
+        if (!fields.containsKey(key)) {
+          this.fields.put(key, x -> SmartDashboard.putNumber(key, x));
+        }
+      }
     }
+    return this.fields.get(key);
+  }
 
-    @Override
-    public void registerSubscriptions() {
-        //Left intentionally empty
-    }
+  @Override
+  public void registerSubscriptions() {
+    //Intentionally left empty
+  }
 }
