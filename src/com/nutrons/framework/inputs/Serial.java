@@ -19,7 +19,7 @@ public class Serial {
   private final SerialPort serial;
   private final int bufferSize;
   private final int packetLength;
-  private Flowable<byte[]> dataStream = null;
+  private final Flowable<byte[]> dataStream;
   private final char terminationCharacter;
 
   /**
