@@ -58,7 +58,7 @@ public class Talon extends LoopSpeedController {
     }
   }
 
-  void setSetpoint(double setpoint) {
+  void changeSetpoint(double setpoint) {
     this.talon.setSetpoint(setpoint);
 
   }

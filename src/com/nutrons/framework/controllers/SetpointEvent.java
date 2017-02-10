@@ -9,6 +9,6 @@ class SetpointEvent implements ControllerEvent {
 
   @Override
   public void actOn(Talon talon) {
-    talon.setSetpoint(setpoint);
+    talon.changeSetpoint(setpoint);
   }
 }
