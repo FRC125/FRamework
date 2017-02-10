@@ -1,6 +1,6 @@
 package com.nutrons.framework.controllers;
 
-import edu.wpi.first.wpilibj.CANSpeedController;
+import com.ctre.CANTalon;
 
 public interface CanControllerProxy {
 
@@ -19,4 +19,10 @@ public interface CanControllerProxy {
   void changeControlMode(ControlMode mode);
 
   double getError();
+
+  void resetPositionTo(double position);
+
+  double position();
+
+  void setFeedbackDevice(CANTalon.FeedbackDevice device);
 }

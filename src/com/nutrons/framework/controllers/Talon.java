@@ -1,9 +1,9 @@
 package com.nutrons.framework.controllers;
 
-import static com.nutrons.framework.util.FlowOperators.toFlow;
-
 import com.ctre.CANTalon;
 import io.reactivex.Flowable;
+
+import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Talon extends LoopSpeedController {
 
@@ -19,9 +19,14 @@ public class Talon extends LoopSpeedController {
 
   public Talon(CanControllerProxy talon) {
     this.talon = talon;
-    this.feedback = toFlow(() -> () -> this.talon.getError());
+    this.feedback = toFlow(() -> this.talon::getError);
   }
 
+  public Talon(int port, CANTalon.FeedbackDevice feedbackDevice) {
+    this(port);
+    this.talon.setFeedbackDevice(feedbackDevice);
+  }
+  
   /**
    * Creates a talon that initially follows another talon.
    *
@@ -51,6 +56,16 @@ public class Talon extends LoopSpeedController {
   @Override
   public Flowable<FeedbackEvent> feedback() {
     return this.feedback;
+  }
+
+  @Override
+  public void resetPositionTo(double position) {
+    this.talon.resetPositionTo(position);
+  }
+
+  @Override
+  public double position() {
+    return this.talon.position();
   }
 
   @Override

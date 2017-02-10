@@ -1,8 +1,8 @@
 package com.nutrons.framework.controllers;
 
-import static com.ctre.CANTalon.TalonControlMode;
-
 import com.ctre.CANTalon;
+
+import static com.ctre.CANTalon.TalonControlMode;
 
 /**
  * Created by krzw9 on 1/31/2017.
@@ -69,6 +69,21 @@ public class WpiTalonProxy implements CanControllerProxy {
 
   @Override
   public double getError() {
-    return this.getError();
+    return this.talon.getError();
+  }
+
+  @Override
+  public void resetPositionTo(double position) {
+    this.talon.setPosition(position);
+  }
+
+  @Override
+  public double position() {
+    return this.talon.getPosition();
+  }
+
+  @Override
+  public void setFeedbackDevice(CANTalon.FeedbackDevice device) {
+    this.talon.setFeedbackDevice(device);
   }
 }
