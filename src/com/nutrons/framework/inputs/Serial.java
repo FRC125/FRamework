@@ -2,8 +2,10 @@ package com.nutrons.framework.inputs;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
+import com.nutrons.framework.Subsystem;
 import edu.wpi.first.wpilibj.SerialPort;
 import io.reactivex.Flowable;
+import io.reactivex.processors.PublishProcessor;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -12,7 +14,7 @@ import java.util.function.Supplier;
  * A wrapper around WPI's SerialPort class which provides
  * Flowables for data sent to the roboRIO over serial.
  */
-public class Serial {
+public class Serial implements Subsystem{
 
   private static final int DEFAULT_BAUD_RATE = 9600;
   private static final char DEFAULT_TERMINATION_CHARACTER = '\n';
@@ -21,6 +23,7 @@ public class Serial {
   private final int packetLength;
   private final Flowable<byte[]> dataStream;
   private final char terminationCharacter;
+  private final PublishProcessor<byte[]> wait;
 
   /**
    * Create Serial streams from a WPI Serial.
@@ -68,6 +71,7 @@ public class Serial {
     this.terminationCharacter = terminationCharacter;
 
     this.serial.enableTermination(terminationCharacter);
+    this.wait = PublishProcessor.create();
 
     Supplier<byte[]> suppler = (Supplier<byte[]>)() -> {
       if (serial.getBytesReceived() > this.bufferSize) { //Clear out old values
@@ -75,7 +79,7 @@ public class Serial {
       }
       return serial.read(packetLength);
     };
-    this.dataStream = toFlow(suppler, 220, TimeUnit.MILLISECONDS).filter(x -> x.length == packetLength);
+    this.dataStream = wait.concatWith(toFlow(suppler, 200, TimeUnit.MILLISECONDS).filter(x -> x.length == packetLength));
   }
 
   /**
@@ -83,5 +87,10 @@ public class Serial {
    **/
   public Flowable<byte[]> getDataStream() {
     return this.dataStream;
+  }
+
+  @Override
+  public void registerSubscriptions() {
+       wait.onComplete();
   }
 }
