@@ -1,7 +1,8 @@
 package com.nutrons.framework.controllers;
 
-public enum ControllerMode {
+public enum ControlMode {
   MANUAL,
   LOOP_SPEED,
-  LOOP_POSITION
+  LOOP_POSITION,
+  FOLLOWER
 }

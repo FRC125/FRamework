@@ -1,7 +1,5 @@
 package com.nutrons.framework.controllers;
 
-import com.ctre.CANTalon;
-
 public class FollowEvent implements ControllerEvent {
 
   private final int target;
@@ -12,7 +10,7 @@ public class FollowEvent implements ControllerEvent {
 
   @Override
   public void actOn(Talon talon) {
-    talon.changeControlMode(CANTalon.TalonControlMode.Follower);
+    talon.changeControlMode(ControlMode.FOLLOWER);
     talon.set(target);
   }
 }

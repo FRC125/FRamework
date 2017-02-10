@@ -1,24 +1,31 @@
 package com.nutrons.framework.controllers;
 
-import static com.ctre.CANTalon.TalonControlMode;
-
 public class LoopModeEvent implements ControllerEvent {
-  private final ControllerMode mode;
 
-  public LoopModeEvent(ControllerMode mode) {
+  private final ControlMode mode;
+
+  public LoopModeEvent(ControlMode mode) {
     this.mode = mode;
   }
 
+  /**
+   * Visit a Talon object.
+   *
+   * @param talon Talon controller to apply event to.
+   */
   public void actOn(Talon talon) {
-    switch(this.mode) {
+    switch (this.mode) {
       case MANUAL:
-        talon.changeControlMode(TalonControlMode.PercentVbus);
+        talon.changeControlMode(ControlMode.MANUAL);
         break;
       case LOOP_POSITION:
-        talon.changeControlMode(TalonControlMode.Position);
+        talon.changeControlMode(ControlMode.LOOP_POSITION);
         break;
       case LOOP_SPEED:
-        talon.changeControlMode(TalonControlMode.Speed);
+        talon.changeControlMode(ControlMode.LOOP_SPEED);
+        break;
+      default:
+        talon.changeControlMode(ControlMode.LOOP_POSITION);
         break;
     }
   }
