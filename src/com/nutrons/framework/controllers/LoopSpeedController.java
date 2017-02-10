@@ -13,4 +13,5 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
     this.resetPositionTo(0.0);
   }
   public abstract double position();
+  public abstract void setOutputVoltage(double min, double max);
 }
