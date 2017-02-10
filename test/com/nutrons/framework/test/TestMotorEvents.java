@@ -4,8 +4,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.nutrons.framework.controllers.CanControllerProxy;
-import com.nutrons.framework.controllers.ControllerEvent;
 import com.nutrons.framework.controllers.ControlMode;
+import com.nutrons.framework.controllers.ControllerEvent;
 import com.nutrons.framework.controllers.FollowEvent;
 import com.nutrons.framework.controllers.LoopModeEvent;
 import com.nutrons.framework.controllers.RunAtPowerEvent;
@@ -19,7 +19,7 @@ public class TestMotorEvents {
   private Talon talon;
 
   @Before
-  public void initialize(){
+  public void initialize() {
     this.realController = mock(CanControllerProxy.class);
     this.talon = new Talon(realController);
   }
@@ -42,7 +42,7 @@ public class TestMotorEvents {
   }
 
   @Test
-  public void testFollowEvent(){
+  public void testFollowEvent() {
     ControllerEvent speedEvent = new FollowEvent(1);
     speedEvent.actOn(talon);
 
