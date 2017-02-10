@@ -2,11 +2,10 @@ package com.nutrons.framework.inputs;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
-import com.nutrons.framework.util.IntervalCache;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.reactivex.Flowable;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -70,17 +69,13 @@ public class Serial {
 
     this.serial.enableTermination(terminationCharacter);
 
-    if(this.serial.getBytesReceived() >= 10) {
-
-      Supplier<byte[]> suppler = (Supplier<byte[]>)() -> {
-        if (serial.getBytesReceived() > this.bufferSize) { //Clear out old values
-          serial.reset();
-        }
-        return serial.read(packetLength);
-      };
-
-      this.dataStream = toFlow(new IntervalCache<byte[]>(100, suppler)).filter(x -> x.length == packetLength);
-    }
+    Supplier<byte[]> suppler = (Supplier<byte[]>)() -> {
+      if (serial.getBytesReceived() > this.bufferSize) { //Clear out old values
+        serial.reset();
+      }
+      return serial.read(packetLength);
+    };
+    this.dataStream = toFlow(suppler, 220, TimeUnit.MILLISECONDS).filter(x -> x.length == packetLength);
   }
 
   /**
