@@ -3,7 +3,6 @@ package com.nutrons.framework.controllers;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import com.ctre.CANTalon;
-import com.nutrons.framework.util.FlowOperators;
 import io.reactivex.Flowable;
 
 public class Talon extends LoopSpeedController {
@@ -61,45 +60,5 @@ public class Talon extends LoopSpeedController {
 
   int id() {
     return this.talon.getDeviceId();
-  }
-
-  public double getPosition(){
-    return this.talon.getEncoderPosition();
-  }
-
-  public double getEncoderPosition() { return this.talon.getEncoderPosition(); }
-
-  public void configEncoderCodesPerRev(int value) { this.talon.configEncoderCodesPerRev(value);}
-
-  public void setFeedbackDevice(CANTalon.FeedbackDevice device){
-    this.talon.setFeedbackDevice(device);
-  }
-
-  public void setProfile(int profile){
-    this.talon.setProfile(profile);
-  }
-
-  public void reverseSensor(boolean flip){
-    this.talon.reverseSensor(flip);
-  }
-
-  public void reverseOutput(boolean flip){
-    this.talon.reverseOutput(flip);
-  }
-
-  public void setEncPosition(int newPosition){
-    this.talon.setEncPosition(newPosition);
-  }
-
-  public int getPulseWidthPosition(){
-    return this.talon.getPulseWidthPosition();
-  }
-
-  public void configNominalOutputVoltage(double forwardVoltage, double reverseVoltage){
-    this.talon.configNominalOutputVoltage(forwardVoltage, reverseVoltage);
-  }
-
-  public void configPeakOutputVoltage(double forwardVoltage, double reverseVoltage){
-    this.talon.configPeakOutputVoltage(forwardVoltage, reverseVoltage);
   }
 }

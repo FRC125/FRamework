@@ -1,7 +1,4 @@
 package com.nutrons.framework.controllers;
-import com.ctre.CANTalon.FeedbackDevice;
-
-import static com.ctre.CANTalon.TalonControlMode;
 
 import static com.ctre.CANTalon.TalonControlMode;
 
@@ -72,57 +69,6 @@ public class WpiTalonProxy implements CanControllerProxy {
 
   @Override
   public double getError() {
-    return this.talon.getError();
-  }
-
-  @Override
-  public double getPosition() {
-    return this.talon.getPosition();
-  }
-
-  @Override
-  public double getEncoderPosition() { return this.talon.getEncPosition(); }
-
-  @Override
-  public void configEncoderCodesPerRev(int value) { this.talon.configEncoderCodesPerRev(value);}
-
-  @Override
-  public void setFeedbackDevice(CANTalon.FeedbackDevice device){
-    this.talon.setFeedbackDevice(device);
-  }
-
-  @Override
-  public void setProfile(int profile){
-    this.talon.setProfile(profile);
-  }
-
-  @Override
-  public void reverseSensor(boolean flip){
-    this.talon.reverseSensor(flip);
-  }
-
-  @Override
-  public void reverseOutput(boolean flip){
-    this.talon.reverseOutput(flip);
-  }
-
-  @Override
-  public void setEncPosition(int newPosition){
-    this.talon.setEncPosition(newPosition);
-  }
-
-  @Override
-  public int getPulseWidthPosition(){
-    return this.talon.getPulseWidthPosition();
-  }
-
-  @Override
-  public void configNominalOutputVoltage(double forwardVoltage, double reverseVoltage){
-    this.talon.configNominalOutputVoltage(forwardVoltage, reverseVoltage);
-  }
-
-  @Override
-  public void configPeakOutputVoltage(double forwardVoltage, double reverseVoltage){
-    this.talon.configPeakOutputVoltage(forwardVoltage, reverseVoltage);
+    return this.getError();
   }
 }

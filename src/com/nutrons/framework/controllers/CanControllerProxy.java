@@ -1,6 +1,6 @@
 package com.nutrons.framework.controllers;
 
-import com.ctre.CANTalon;
+import edu.wpi.first.wpilibj.CANSpeedController;
 
 public interface CanControllerProxy {
 
@@ -19,26 +19,4 @@ public interface CanControllerProxy {
   void changeControlMode(ControlMode mode);
 
   double getError();
-
-  double getPosition();
-
-  double getEncoderPosition();
-
-  void configEncoderCodesPerRev(int value);
-
-  void setFeedbackDevice(CANTalon.FeedbackDevice device);
-
-  void setProfile(int profile);
-
-  void reverseSensor(boolean flip);
-
-  void reverseOutput(boolean flip);
-
-  void setEncPosition(int newPosition);
-
-  int getPulseWidthPosition();
-
-  void configNominalOutputVoltage(double forwardVoltage, double reverseVoltage);
-
-  void configPeakOutputVoltage(double forwardVoltage, double reverseVoltage);
 }
