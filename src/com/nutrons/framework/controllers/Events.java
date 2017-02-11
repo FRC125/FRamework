@@ -14,11 +14,27 @@ public class Events {
    * @return a ControllerEvent that initiates a PID loop on the motor controller
    */
   public static ControllerEvent pid(double setPoint,
-      double pval,
-      double ival,
-      double dval,
-      double fval) {
-    return new LoopPropertiesEvent(setPoint, pval, ival, dval, fval);
+                                    double pval,
+                                    double ival,
+                                    double dval,
+                                    double fval) {
+    ControllerEvent setpointEvent = new SetpointEvent(setPoint);
+    ControllerEvent pid = pid(pval, dval, ival, fval);
+    return new ControllerEvent() {
+      @Override
+      public void actOn(Talon talon) {
+        pid.actOn(talon);
+        setpointEvent.actOn(talon);
+      }
+    };
+  }
+
+  public static ControllerEvent pid(double pval, double ival, double dval, double fval) {
+    return new LoopPropertiesEvent(pval, ival, dval, fval);
+  }
+
+  public static ControllerEvent setpoint(double setpoint) {
+    return new SetpointEvent(setpoint);
   }
 
   /**
@@ -47,7 +63,7 @@ public class Events {
    * @param target port of controller to follow
    * @return a ControllerEvent setting the leader of the controller
    */
-  public static ControllerEvent follow(int target) {
+  public static ControllerEvent follow(LoopSpeedController target) {
     return new FollowEvent(target);
   }
 

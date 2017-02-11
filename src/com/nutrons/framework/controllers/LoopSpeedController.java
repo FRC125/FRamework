@@ -8,10 +8,27 @@ import io.reactivex.functions.Consumer;
  */
 public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   public abstract Flowable<FeedbackEvent> feedback();
-  public abstract void resetPositionTo(double position);
-  public void resetPosition() {
-    this.resetPositionTo(0.0);
+
+  @Override
+  public abstract void accept(ControllerEvent event);
+
+  public void setPID(double pval, double ival, double dval, double fval) {
+    this.accept(Events.pid(pval, ival, dval, fval));
   }
-  public abstract double position();
-  public abstract void setOutputVoltage(double min, double max);
+
+  public void setControlMode(ControlMode mode) {
+    this.accept(Events.mode(mode));
+  }
+
+  public void runAtPower(double power) {
+    this.accept(Events.power(power));
+  }
+
+  public void follow(LoopSpeedController leader) {
+    this.accept(Events.follow(leader));
+  }
+
+  public void setSetpoint(double setpoint) {
+    this.accept(Events.setpoint(setpoint));
+  }
 }
