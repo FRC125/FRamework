@@ -25,4 +25,6 @@ public interface CanControllerProxy {
   double position();
 
   void setFeedbackDevice(CANTalon.FeedbackDevice device);
+
+  void setOutputVoltage(double min, double max);
 }

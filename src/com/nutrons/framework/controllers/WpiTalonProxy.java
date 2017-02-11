@@ -86,4 +86,10 @@ public class WpiTalonProxy implements CanControllerProxy {
   public void setFeedbackDevice(CANTalon.FeedbackDevice device) {
     this.talon.setFeedbackDevice(device);
   }
+
+  @Override
+  public void setOutputVoltage(double min, double max) {
+    this.talon.configNominalOutputVoltage(Math.max(min, 0.0), Math.min(max, 0.0));
+    this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 0.0));
+  }
 }

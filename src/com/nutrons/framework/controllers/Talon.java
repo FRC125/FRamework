@@ -69,6 +69,11 @@ public class Talon extends LoopSpeedController {
   }
 
   @Override
+  public void setOutputVoltage(double min, double max) {
+    this.talon.setOutputVoltage(min, max);
+  }
+
+  @Override
   public void accept(ControllerEvent event) {
     event.actOn(this);
   }
