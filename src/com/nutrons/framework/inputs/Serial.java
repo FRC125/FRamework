@@ -80,7 +80,8 @@ public class Serial implements Subsystem{
       }
       return serial.read(packetLength);
     };
-    this.dataStream = toFlow(new IntervalCache<byte[]>(100, suppler)).filter(x -> x.length == packetLength);
+    this.dataStream = toFlow(new IntervalCache<byte[]>(100, suppler))
+            .filter(x -> x.length == packetLength);
   }
 
   /**
