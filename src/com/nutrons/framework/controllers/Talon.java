@@ -99,8 +99,8 @@ public class Talon extends LoopSpeedController {
   }
 
   void setOutputVoltage(double min, double max) {
-    this.talon.configNominalOutputVoltage(Math.max(min, 0.0), Math.min(max, 0.0));
-    this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 0.0));
+    this.talon.configNominalOutputVoltage(Math.max(min, 0.0), Math.min(max, 12.0f));
+    this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 12.0f));
   }
 
   public double position() {
