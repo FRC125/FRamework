@@ -3,6 +3,7 @@ package com.nutrons.framework.inputs;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import com.nutrons.framework.Subsystem;
+import com.nutrons.framework.util.IntervalCache;
 import edu.wpi.first.wpilibj.SerialPort;
 import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
@@ -79,7 +80,7 @@ public class Serial implements Subsystem{
       }
       return serial.read(packetLength);
     };
-    this.dataStream = wait.concatWith(toFlow(suppler, 200, TimeUnit.MILLISECONDS).filter(x -> x.length == packetLength));
+    this.dataStream = toFlow(new IntervalCache<byte[]>(100, suppler)).filter(x -> x.length == packetLength);
   }
 
   /**
