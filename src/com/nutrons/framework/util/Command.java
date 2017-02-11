@@ -130,7 +130,7 @@ public class Command {
     return parallel(this, new Command(Flowable.never()).terminable(Flowable.timer(delay, unit)));
   }
 
-  public Command fromSwitch(Publisher<Command> commandStream) {
+  public static Command fromSwitch(Publisher<Command> commandStream) {
     Flowable<Action> actions = Flowable.switchOnNext(Flowable.fromPublisher(commandStream)
         .map(x -> x.output));
     return new Command(actions);
