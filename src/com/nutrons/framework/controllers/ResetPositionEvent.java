@@ -1,7 +1,5 @@
 package com.nutrons.framework.controllers;
 
-import com.sun.org.glassfish.external.statistics.annotations.Reset;
-
 public class ResetPositionEvent implements ControllerEvent {
     private final double position;
 
