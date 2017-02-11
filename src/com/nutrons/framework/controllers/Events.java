@@ -1,5 +1,7 @@
 package com.nutrons.framework.controllers;
 
+import io.reactivex.Flowable;
+
 public class Events {
 
   /**
@@ -67,4 +69,11 @@ public class Events {
     return new FollowEvent(target);
   }
 
+  public static ControllerEvent setOutputVoltage(double min, double max) {
+    return new OutputVoltageEvent(min, max);
+  }
+
+  public static ControllerEvent resetPosition(double position) {
+    return new ResetPositionEvent(position);
+  }
 }

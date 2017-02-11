@@ -24,6 +24,11 @@ public class Talon extends LoopSpeedController {
     this.feedback = toFlow(() -> this.talon::getError);
   }
 
+  public Talon(int port, CANTalon.FeedbackDevice feedbackDevice) {
+    this(port);
+    this.talon.setFeedbackDevice(feedbackDevice);
+  }
+  
   /**
    * Creates a talon that initially follows another talon.
    *
@@ -91,5 +96,18 @@ public class Talon extends LoopSpeedController {
 
   int id() {
     return this.talon.getDeviceID();
+  }
+
+  void setOutputVoltage(double min, double max) {
+    this.talon.configNominalOutputVoltage(Math.max(min, 0.0), Math.min(max, 12.0f));
+    this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 12.0f));
+  }
+
+  public double position() {
+    return this.talon.getPosition();
+  }
+
+  void resetPositionTo(double position) {
+    this.talon.setPosition(position);
   }
 }
