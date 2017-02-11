@@ -133,7 +133,6 @@ public class Command {
     return parallel(this, new Command(Flowable.never()).terminable(Flowable.timer(delay, unit)));
   }
 
-<<<<<<< HEAD:src/com/nutrons/framework/commands/Command.java
   public static Command fromSwitch(Publisher<Command> commandStream) {
     Flowable<CommandWorkUnit> actions = Flowable.switchOnNext(Flowable.fromPublisher(commandStream)
         .map(x -> x.output));
