@@ -24,8 +24,32 @@ public class WpiSmartDashboard implements Subsystem {
     }
     return this.fields.get(key);
   }
+  
 
-  //TODO: Add remaining functionality
+  public Consumer<Boolean> getBoolean(String key) {
+    if (!fields.containsKey(key)) {
+      synchronized (fields) {
+        if (!fields.containsKey(key)) {
+          this.fields.put(key, x -> SmartDashboard.putBoolean(key, x));
+        }
+      }
+    }
+    return this.fields.get(key);
+  }
+  
+
+  public Consumer<String> getString(String key) {
+    if (!fields.containsKey(key)) {
+      synchronized (fields) {
+        if (!fields.containsKey(key)) {
+          this.fields.put(key, x -> SmartDashboard.putString(key, x));
+        }
+      }
+    }
+    return this.fields.get(key);
+  }
+ 
+
 
   @Override
   public void registerSubscriptions() {
