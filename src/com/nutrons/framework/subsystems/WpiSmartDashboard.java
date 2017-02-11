@@ -25,7 +25,6 @@ public class WpiSmartDashboard implements Subsystem {
     return this.fields.get(key);
   }
   
-
   public Consumer<Boolean> getBoolean(String key) {
     if (!fields.containsKey(key)) {
       synchronized (fields) {
@@ -37,7 +36,6 @@ public class WpiSmartDashboard implements Subsystem {
     return this.fields.get(key);
   }
   
-
   public Consumer<String> getString(String key) {
     if (!fields.containsKey(key)) {
       synchronized (fields) {
@@ -49,8 +47,6 @@ public class WpiSmartDashboard implements Subsystem {
     return this.fields.get(key);
   }
  
-
-
   @Override
   public void registerSubscriptions() {
     //Intentionally left empty
