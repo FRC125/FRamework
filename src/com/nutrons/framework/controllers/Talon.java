@@ -90,21 +90,6 @@ public class Talon extends LoopSpeedController {
   }
 
   @Override
-  public void resetPositionTo(double position) {
-
-  }
-
-  @Override
-  public double position() {
-    return 0;
-  }
-
-  @Override
-  public void setOutputVoltage(double min, double max) {
-
-  }
-
-  @Override
   public void accept(ControllerEvent event) {
     event.actOn(this);
   }
