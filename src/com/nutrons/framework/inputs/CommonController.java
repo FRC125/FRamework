@@ -2,9 +2,6 @@ package com.nutrons.framework.inputs;
 
 import io.reactivex.Flowable;
 
-/**
- * A WpiGamepad with default configuration for an Xbox360 controller.
- */
 public class CommonController extends WpiGamepad {
   private int xButton;
   private int aButton;
