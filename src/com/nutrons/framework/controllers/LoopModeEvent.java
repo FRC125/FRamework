@@ -14,19 +14,6 @@ public class LoopModeEvent implements ControllerEvent {
    * @param talon Talon controller to apply event to.
    */
   public void actOn(Talon talon) {
-    switch (this.mode) {
-      case MANUAL:
-        talon.changeControlMode(ControlMode.MANUAL);
-        break;
-      case LOOP_POSITION:
-        talon.changeControlMode(ControlMode.LOOP_POSITION);
-        break;
-      case LOOP_SPEED:
-        talon.changeControlMode(ControlMode.LOOP_SPEED);
-        break;
-      default:
-        talon.changeControlMode(ControlMode.LOOP_POSITION);
-        break;
-    }
+    talon.changeControlMode(mode);
   }
 }
