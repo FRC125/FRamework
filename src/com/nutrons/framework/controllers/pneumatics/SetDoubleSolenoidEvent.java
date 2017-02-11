@@ -14,7 +14,7 @@ public class SetDoubleSolenoidEvent implements PneumaticEvent {
      *
      * @param doubleSolenoid Double Solenoid to apply event to.
      */
-    public void actOn(DoubleSolenoid doubleSolenoid) {
+    public void actOn(WpiDoubleSolenoid doubleSolenoid) {
         doubleSolenoid.set(value);
     }
 }

@@ -14,7 +14,7 @@ public class SetSolenoidEvent implements PneumaticEvent {
      *
      * @param solenoid Solenoid to apply event to.
      */
-    public void actOn(Solenoid solenoid) {
+    public void actOn(WpiSolenoid solenoid) {
         solenoid.set(on);
     }
 }
