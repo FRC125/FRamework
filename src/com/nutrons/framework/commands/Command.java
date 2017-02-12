@@ -47,7 +47,7 @@ public class Command {
   public static Command from(Supplier<Disposable> resource) {
     return Command.create(() -> {
       Disposable disposable = resource.get();
-      return disposable::dispose;
+      return new TerminatorWrapper(disposable::dispose);
     });
   }
 
