@@ -1,8 +1,10 @@
 package com.nutrons.framework.test;
 
+import com.nutrons.framework.controllers.FlowingPID;
 import io.reactivex.Flowable;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Assert;
 import org.junit.Test;
 import static junit.framework.TestCase.assertEquals;
 
@@ -19,6 +21,13 @@ public class TestPidFlow {
         .subscribe(x -> vals.add(x));
 
     assertEquals(4.889, vals.get(4), 0.01);
+  }
+
+  @Test
+  public void testPidClass(){
+    Flowable<Double> errorStream = Flowable.just(1.,1.,1.,1.);
+    FlowingPID flowingPID = new FlowingPID(errorStream, 1., 0.1, 0.0);
+    assertEquals(1.0999, flowingPID.getOutput().blockingLast(), 0.01);
   }
 
 }

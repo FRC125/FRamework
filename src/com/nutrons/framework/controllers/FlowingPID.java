@@ -13,7 +13,7 @@ public class FlowingPID {
     private double DERIVATIVE;
     private Flowable<Double>  error;
     private Flowable<Double> controlOutput;
-    private static final double ALPHA = 0.3;
+    private static final double ALPHA = 0.9;
     
     public FlowingPID(Flowable<Double> error, double p, double i, double d) {
         this.PROPORTIONAL = p;
