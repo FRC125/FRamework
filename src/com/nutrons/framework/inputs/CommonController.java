@@ -3,6 +3,12 @@ package com.nutrons.framework.inputs;
 import io.reactivex.Flowable;
 
 public class CommonController extends WpiGamepad {
+  private final int axis1X;
+  private final int axis2X;
+  private final int axis1Y;
+  private final int axis2Y;
+  private final int ltrigger;
+  private final int rtrigger;
   private int xButton;
   private int aButton;
   private int bButton;
@@ -17,6 +23,8 @@ public class CommonController extends WpiGamepad {
                            int axis1Y,
                            int axis2X,
                            int axis2Y,
+                           int lTrigger,
+                           int rTrigger,
                            int buttonX,
                            int buttonY,
                            int buttonB,
@@ -25,7 +33,13 @@ public class CommonController extends WpiGamepad {
                            int ButtonSelect,
                            int bumperRight,
                            int bumperleft) {
-    super(port, axis1X, axis1Y, axis2X, axis2Y);
+    super(port);
+    this.axis1X = axis1X;
+    this.axis2X = axis2X;
+    this.axis1Y = axis1Y;
+    this.axis2Y = axis2Y;
+    this.ltrigger = lTrigger;
+    this.rtrigger = rTrigger;
     this.xButton = buttonX;
     this.yButton = buttonY;
     this.bButton = buttonB;
@@ -38,13 +52,15 @@ public class CommonController extends WpiGamepad {
 
   }
 
-  public static CommonController logitech(int port) {
+  public static CommonController logitechF310(int port) {
     return new CommonController(
         port,
         InputMap.LOGITECH_X_1,
         InputMap.LOGITECH_Y_1,
         InputMap.LOGITECH_X_2,
         InputMap.LOGITECH_Y_2,
+        InputMap.LOGITECH_LEFT_TRIGGER,
+        InputMap.LOGITECH_RIGHT_TRIGGER,
         InputMap.LOGITECH_X,
         InputMap.LOGITECH_Y,
         InputMap.LOGITECH_B,
@@ -54,12 +70,15 @@ public class CommonController extends WpiGamepad {
         InputMap.LOGITECH_RIGHT_BUMPER,
         InputMap.LOGITECH_LEFT_BUMPER);
   }
-  public static CommonController Xbox(int port){
+
+  public static CommonController xbox360(int port) {
     return new CommonController(port,
         InputMap.XBOX_X_1,
         InputMap.XBOX_Y_1,
         InputMap.XBOX_X_2,
         InputMap.XBOX_Y_2,
+        InputMap.XBOX_LEFT_TRIGGER,
+        InputMap.XBOX_RIGHT_TRIGGER,
         InputMap.XBOX_X,
         InputMap.XBOX_Y,
         InputMap.XBOX_B,
@@ -70,6 +89,21 @@ public class CommonController extends WpiGamepad {
         InputMap.XBOX_LEFT_BUMPER);
   }
 
+  public Flowable<Double> leftStickX() {
+    return axis(axis1X);
+  }
+
+  public Flowable<Double> leftStickY() {
+    return axis(axis1Y);
+  }
+
+  public Flowable<Double> rightStickX() {
+    return axis(axis2X);
+  }
+
+  public Flowable<Double> rightStickY() {
+    return axis(axis2Y);
+  }
 
   public Flowable<Boolean> xButton() {
     return button(xButton);
@@ -98,8 +132,17 @@ public class CommonController extends WpiGamepad {
   public Flowable<Boolean> rightBumper() {
     return button(rightBumper);
   }
-  public Flowable<Boolean> leftBumper(){
+
+  public Flowable<Boolean> leftBumper() {
     return button(leftBumper);
+  }
+
+  public Flowable<Double> lTrigger() {
+    return axis(ltrigger);
+  }
+
+  public Flowable<Double> rTrigger() {
+    return axis(rtrigger);
   }
 }
 
