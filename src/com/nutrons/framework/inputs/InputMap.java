@@ -6,6 +6,15 @@ class InputMap {
   static final int XBOX_X_2 = 4;
   static final int XBOX_Y_1 = 1;
   static final int XBOX_Y_2 = 5;
+  static final int XBOX_A = 1;
+  static final int XBOX_B = 2;
+  static final int XBOX_Y = 4;
+  static final int XBOX_X = 3;
+  static final int XBOX_START = 8;
+  static final int XBOX_SELECT = 7;
+  static final int XBOX_LEFT_BUMPER = 5;
+  static final int XBOX_RIGHT_BUMPER = 6;
+
   // Logitech Controller Map
   static final int LOGITECH_Y_1 = 1;
   static final int LOGITECH_Y_2 = 5;

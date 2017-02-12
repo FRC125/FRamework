@@ -54,6 +54,21 @@ public class CommonController extends WpiGamepad {
         InputMap.LOGITECH_RIGHT_BUMPER,
         InputMap.LOGITECH_LEFT_BUMPER);
   }
+  public static CommonController Xbox(int port){
+    return new CommonController(port,
+        InputMap.XBOX_X_1,
+        InputMap.XBOX_Y_1,
+        InputMap.XBOX_X_2,
+        InputMap.XBOX_Y_2,
+        InputMap.XBOX_X,
+        InputMap.XBOX_Y,
+        InputMap.XBOX_B,
+        InputMap.XBOX_A,
+        InputMap.XBOX_START,
+        InputMap.XBOX_SELECT,
+        InputMap.XBOX_RIGHT_BUMPER,
+        InputMap.XBOX_LEFT_BUMPER);
+  }
 
 
   public Flowable<Boolean> xButton() {
