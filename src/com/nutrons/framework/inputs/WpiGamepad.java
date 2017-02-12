@@ -1,9 +1,11 @@
 package com.nutrons.framework.inputs;
 
+import com.nutrons.framework.Subsystem;
 import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import io.reactivex.Flowable;
+import io.reactivex.flowables.ConnectableFlowable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,12 +13,13 @@ import java.util.Map;
 /**
  * A wrapper around WPI's "Joysticks" which provides Flowables for Gamepad data.
  */
-public class WpiGamepad {
+public class WpiGamepad implements Subsystem {
 
   private final int port;
   private final Joystick joystick;
-  private final Map<Integer, Flowable<Boolean>> buttons;
-  private final Map<Integer, Flowable<Double>> axes;
+  private final Map<Integer, ConnectableFlowable<Boolean>> buttons;
+  private final Map<Integer, ConnectableFlowable<Double>> axes;
+  private final RegisteredLock lock = new RegisteredLock();
 
   /**
    * Create Gamepad streams from a WPI "Joystick."
@@ -31,11 +34,14 @@ public class WpiGamepad {
 
   private Flowable<Double> memoizedAxis(int axisNumber) {
     if (!axes.containsKey(axisNumber)) {
-      synchronized (axes) {
+      synchronized (lock) {
         if (!axes.containsKey(axisNumber)) {
           axes.put(axisNumber,
               FlowOperators.toFlow(() ->
-                  this.joystick.getRawAxis(axisNumber)));
+                  this.joystick.getRawAxis(axisNumber)).onBackpressureDrop().publish());
+        }
+        if (lock.isRegistered()) {
+          buttons.get(axisNumber).connect();
         }
       }
     }
@@ -51,12 +57,15 @@ public class WpiGamepad {
 
   private Flowable<Boolean> memoizedButton(int buttonNumber) {
     if (!buttons.containsKey(buttonNumber)) {
-      synchronized (buttons) {
+      synchronized (lock) {
         if (!buttons.containsKey(buttonNumber)) {
           buttons.put(buttonNumber,
               FlowOperators.toFlow(() ->
                   new JoystickButton(this.joystick, buttonNumber).get())
-                  .distinctUntilChanged());
+                  .distinctUntilChanged().onBackpressureDrop().publish());
+        }
+        if (lock.isRegistered()) {
+          buttons.get(buttonNumber).connect();
         }
       }
     }
@@ -68,5 +77,27 @@ public class WpiGamepad {
    */
   public Flowable<Boolean> button(int buttonNumber) {
     return memoizedButton(buttonNumber);
+  }
+
+  @Override
+  public void registerSubscriptions() {
+    synchronized (lock) {
+      lock.register();
+      Flowable.<ConnectableFlowable>fromIterable(axes.values())
+          .mergeWith(Flowable.<ConnectableFlowable>fromIterable(buttons.values()))
+          .blockingSubscribe(ConnectableFlowable::connect);
+    }
+  }
+
+  private class RegisteredLock {
+    private boolean registered = false;
+
+    void register() {
+      this.registered = true;
+    }
+
+    boolean isRegistered() {
+      return registered;
+    }
   }
 }
