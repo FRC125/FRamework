@@ -1,54 +1,61 @@
-package com.nutrons.framework.util;
+package com.nutrons.framework.commands;
+
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.flowables.ConnectableFlowable;
+import io.reactivex.schedulers.Schedulers;
+import org.reactivestreams.Publisher;
+
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
-import io.reactivex.Flowable;
-import io.reactivex.Maybe;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.flowables.ConnectableFlowable;
-import io.reactivex.functions.Action;
-import io.reactivex.schedulers.Schedulers;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-import org.reactivestreams.Publisher;
-
 public class Command {
-  private final Flowable<Action> output;
-  private static final Flowable<Action> emptyPulse = toFlow(() -> (Action) () -> {
+  private final Flowable<CommandWorkUnit> output;
+  private static final Flowable<CommandWorkUnit> emptyPulse = toFlow(() -> (CommandWorkUnit) () -> (Terminator) () -> {
   }).subscribeOn(Schedulers.io());
 
-  /**
-   * @param actions the actions this command will execute, sequentially.
-   */
-  private Command(Flowable<Action> actions) {
-    this.output = actions;
+  private Command(CommandWorkUnit action) {
+    this(Flowable.just(action));
   }
 
-  private Command(Action action) {
-    this(Flowable.just(action));
+  private Command(Flowable<CommandWorkUnit> actions) {
+    this.output = actions;
   }
 
   /**
    * Begin an execution of the command.
    */
   public Disposable execute() {
-    return this.output.concatMap(x ->
-        Maybe.fromAction(x).toFlowable().subscribeOn(Schedulers.io()
-        )).subscribeOn(Schedulers.io()).subscribe();
+    return this.output.flatMap(x ->
+        Flowable.fromCallable(x::get).subscribeOn(Schedulers.io()
+        )).subscribeOn(Schedulers.io()).subscribe(Terminator::run);
   }
 
   /**
    * Create a command that executes the given action.
    */
-  public static Command create(Action action) {
-    return new Command(action);
+  public static Command create(Runnable action) {
+    return new Command(() -> {
+      action.run();
+      return () -> {
+      };
+    });
+  }
+
+  public static Command from(Supplier<Disposable> resource) {
+    return Command.create(() -> {
+      Disposable disposable = resource.get();
+      return disposable::dispose;
+    });
   }
 
   /**
-   * Create a command that executes the given actions contained within the Flowable in series.
+   * Create a command that executes the given supplier, and has custom termination functionality.
    */
-  public static Command create(Flowable<Action> series) {
-    return new Command(series);
+  public static Command create(CommandWorkUnit start) {
+    return new Command(start);
   }
 
   /**
@@ -56,7 +63,7 @@ public class Command {
    */
   public Command startable(Publisher<?> starter) {
     return new Command(Flowable.defer(() ->
-        Flowable.<Action>never().takeUntil(starter).concatWith(this.output)));
+        Flowable.<CommandWorkUnit>never().takeUntil(starter).concatWith(this.output)));
   }
 
   /**
@@ -100,20 +107,16 @@ public class Command {
    * @param commands these commands will be executed from 'first to last' argument.
    */
   public static Command serial(Command... commands) {
-    return new Command(Flowable.concat(Flowable.fromArray(commands).map(x -> x.output)));
+    return new Command(Flowable.defer(() ->
+        Flowable.fromArray(commands).concatMap(x -> x.output)));
   }
 
   /**
    * Create a command that executes the provided commands in parallel.
    */
   public static Command parallel(Command... commands) {
-    return new Command(Flowable.merge(
-        Flowable.fromArray(commands).map(c ->
-            c.output.concatMap(a ->
-                Maybe.<Action>fromAction(a).toFlowable().subscribeOn(Schedulers.io())
-            )
-        )
-    ));
+    return new Command(Flowable.defer(() ->
+        Flowable.merge(Flowable.fromArray(commands).map(c -> c.output))));
   }
 
   /**
@@ -131,7 +134,7 @@ public class Command {
   }
 
   public Command fromSwitch(Publisher<Command> commandStream) {
-    Flowable<Action> actions = Flowable.switchOnNext(Flowable.fromPublisher(commandStream)
+    Flowable<CommandWorkUnit> actions = Flowable.switchOnNext(Flowable.fromPublisher(commandStream)
         .map(x -> x.output));
     return new Command(actions);
   }

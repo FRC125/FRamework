@@ -1,24 +1,27 @@
 package com.nutrons.framework.test;
 
-import static junit.framework.TestCase.assertTrue;
-
-import com.nutrons.framework.util.Command;
+import com.nutrons.framework.commands.Command;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
-import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
+import static com.nutrons.framework.commands.Command.parallel;
+import static com.nutrons.framework.commands.Command.serial;
+import static junit.framework.TestCase.assertTrue;
+
 public class TestCommand {
-  private Command wait;
+  private Command delay;
 
   @Before
   public void setupCommands() {
-    wait = Command.create(() -> {
-      Thread.sleep(1000);
-    });
+    delay = Command.create(() -> {
+
+    }).delayFinish(1000, TimeUnit.MILLISECONDS);
   }
 
   @Test
@@ -32,29 +35,38 @@ public class TestCommand {
   }
 
   @Test
+  public void testDelay() {
+    long start = System.currentTimeMillis();
+    waitForDisposable(delay.execute());
+    assertTrue(System.currentTimeMillis() - 1000 > start);
+  }
+
+  @Test
   public void inSeriesTimed() {
     long start = System.currentTimeMillis();
-    Command series = wait.then(wait);
-   waitForDisposable(series.execute());
+    Command series = delay.then(delay);
+    waitForDisposable(series.execute());
     assertTrue(System.currentTimeMillis() - 2000 > start);
   }
 
   @Test
   public void inParallelTimed() {
     long start = System.currentTimeMillis();
-    Command para = Command.parallel(wait, wait);
+    Command para = Command.parallel(delay, delay);
     waitForDisposable(para.execute());
     assertTrue(System.currentTimeMillis() - 1400 < start);
   }
 
   @Test
   public void testTerminable() throws InterruptedException {
+    long start = System.currentTimeMillis();
     PublishProcessor pp = PublishProcessor.create();
-    Disposable d = Command.create(Flowable.interval(100, TimeUnit.MILLISECONDS).map(x -> () -> {}))
+    Disposable d = serial(delay, delay, delay, delay)
         .terminable(pp).execute();
     Thread.sleep(3000);
     pp.onComplete();
     waitForDisposable(d);
+    assertTrue(System.currentTimeMillis() - 4000 < start);
   }
 
   @Test
@@ -75,7 +87,8 @@ public class TestCommand {
   @Test
   public void testStartable() {
     long start = System.currentTimeMillis();
-    waitForDisposable(Command.create(() -> {})
+    waitForDisposable(Command.create(() -> {
+    })
         .startable(Flowable.timer(1, TimeUnit.SECONDS)).execute());
     assertTrue(System.currentTimeMillis() - 1000 > start);
   }
@@ -92,6 +105,14 @@ public class TestCommand {
     waitForDisposable(d);
     assertTrue(System.currentTimeMillis() - 1000 > start);
     assertTrue(record[0] == 1);
+  }
+
+  @Test
+  public void parallelAndSerial() {
+    long start = System.currentTimeMillis();
+    waitForDisposable(parallel(delay.then(delay), delay).execute());
+    assertTrue(System.currentTimeMillis() - 2000 > start);
+    assertTrue(System.currentTimeMillis() - 3000 < start);
   }
 
   static void waitForDisposable(Disposable d) {
