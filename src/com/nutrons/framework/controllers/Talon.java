@@ -1,27 +1,34 @@
 package com.nutrons.framework.controllers;
 
-import static com.nutrons.framework.util.FlowOperators.toFlow;
-
 import com.ctre.CANTalon;
 import io.reactivex.Flowable;
+
+import java.security.InvalidParameterException;
+
+import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Talon extends LoopSpeedController {
 
   private final Flowable<FeedbackEvent> feedback;
-  private final CanControllerProxy talon;
+  private final CANTalon talon;
 
   /**
    * Creates a talon on the given port.
    */
   public Talon(int port) {
-    this(new WpiTalonProxy(new CANTalon(port)));
+    this(new CANTalon(port));
   }
 
-  public Talon(CanControllerProxy talon) {
+  public Talon(CANTalon talon) {
     this.talon = talon;
-    this.feedback = toFlow(() -> () -> this.talon.getError());
+    this.feedback = toFlow(() -> this.talon::getError);
   }
 
+  public Talon(int port, CANTalon.FeedbackDevice feedbackDevice) {
+    this(port);
+    this.talon.setFeedbackDevice(feedbackDevice);
+  }
+  
   /**
    * Creates a talon that initially follows another talon.
    *
@@ -38,13 +45,42 @@ public class Talon extends LoopSpeedController {
   }
 
   void changeControlMode(ControlMode mode) {
-    this.talon.changeControlMode(mode);
+    switch (mode) {
+      case FOLLOWER:
+        this.talon.changeControlMode(CANTalon.TalonControlMode.Follower);
+        break;
+      case LOOP_POSITION:
+        this.talon.changeControlMode(CANTalon.TalonControlMode.Position);
+        break;
+      case LOOP_SPEED:
+        this.talon.changeControlMode(CANTalon.TalonControlMode.Speed);
+        break;
+      case MANUAL:
+        this.talon.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+        break;
+      default:
+        throw new InvalidParameterException("This ControlMode is not supported!");
+    }
   }
 
-  void setLoopProperties(double setpoint, double pval,
-      double ival, double dval, double fval) {
+  void changeSetpoint(double setpoint) {
     this.talon.setSetpoint(setpoint);
-    this.talon.setPid(pval, ival, dval);
+
+  }
+
+  void setP(double pval) {
+    this.talon.setP(pval);
+  }
+
+  void setI(double ival) {
+    this.talon.setI(ival);
+  }
+
+  void setD(double dval) {
+    this.talon.setD(dval);
+  }
+
+  void setF(double fval) {
     this.talon.setF(fval);
   }
 
@@ -58,7 +94,25 @@ public class Talon extends LoopSpeedController {
     event.actOn(this);
   }
 
+  @Override
+  public void setOutputFlipped(boolean flipped) {
+    talon.setInverted(flipped);
+  }
+
   int id() {
-    return this.talon.getDeviceId();
+    return this.talon.getDeviceID();
+  }
+
+  void setOutputVoltage(double min, double max) {
+    this.talon.configNominalOutputVoltage(Math.max(min, 0.0), Math.min(max, 12.0f));
+    this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 12.0f));
+  }
+
+  public double position() {
+    return this.talon.getPosition();
+  }
+
+  void resetPositionTo(double position) {
+    this.talon.setPosition(position);
   }
 }

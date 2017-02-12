@@ -20,12 +20,10 @@ public class RunAtPowerEvent implements ControllerEvent {
   @Override
   public void actOn(Talon talon) {
     talon.changeControlMode(ControlMode.MANUAL);
-
     if (Math.abs(power) > 1.0) {
       throw new EventUnimplementedException(
           "Power greater than magnitude of 1.0 is not supported for Talons");
     }
-
     talon.set(power);
   }
 }
