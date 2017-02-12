@@ -11,26 +11,14 @@ import java.util.function.Supplier;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
-public class Command {
-  private final Flowable<CommandWorkUnit> output;
-  private static final Flowable<CommandWorkUnit> emptyPulse = toFlow(() -> (CommandWorkUnit) () -> (Terminator) () -> {
-  }).subscribeOn(Schedulers.io());
+public class Command implements CommandWorkUnit {
+  private final CommandWorkUnit source;
+  private static final ConnectableFlowable<CommandWorkUnit> emptyPulse = toFlow(() -> (CommandWorkUnit) () -> Flowable.just(() -> {
+  })).subscribeOn(Schedulers.io()).onBackpressureDrop().publish();
 
-  private Command(CommandWorkUnit action) {
-    this(Flowable.just(action));
-  }
-
-  private Command(Flowable<CommandWorkUnit> actions) {
-    this.output = actions;
-  }
-
-  /**
-   * Begin an execution of the command.
-   */
-  public Disposable execute() {
-    return this.output.flatMap(x ->
-        Flowable.fromCallable(x::get).subscribeOn(Schedulers.io()
-        )).subscribeOn(Schedulers.io()).subscribe(Terminator::run);
+  private Command(CommandWorkUnit command) {
+    emptyPulse.connect();
+    this.source = command;
   }
 
   /**
@@ -39,15 +27,15 @@ public class Command {
   public static Command create(Runnable action) {
     return new Command(() -> {
       action.run();
-      return () -> {
-      };
+      return Flowable.just(() -> {
+      });
     });
   }
 
   public static Command from(Supplier<Disposable> resource) {
     return Command.create(() -> {
       Disposable disposable = resource.get();
-      return new TerminatorWrapper(disposable::dispose);
+      return Flowable.just(new TerminatorWrapper(disposable::dispose));
     });
   }
 
@@ -62,8 +50,8 @@ public class Command {
    * Copies this command into one which will not execute until 'starter' emits an item.
    */
   public Command startable(Publisher<?> starter) {
-    return new Command(Flowable.defer(() ->
-        Flowable.<CommandWorkUnit>never().takeUntil(starter).concatWith(this.output)));
+    return new Command(new SerialCommand(
+        () -> Flowable.defer(() -> Flowable.<Terminator>never().takeUntil(starter)), this));
   }
 
   /**
@@ -71,17 +59,19 @@ public class Command {
    * will delay the execution of all actions until startCondition returns true.
    */
   public Command when(Supplier<Boolean> startCondition) {
-    ConnectableFlowable ignition = emptyPulse.map(x -> startCondition.get()).filter(x -> x).publish();
-    ignition.connect();
+    Flowable ignition = Flowable.defer(() -> emptyPulse.map(x -> startCondition.get()).filter(x -> x).onBackpressureDrop());
     return this.startable(ignition);
   }
 
   /**
-   * Copies this command into one which will execute until 'terminator' emits an item.
+   * Copies this command into one which will end when terminator emits an item.
    */
   public Command terminable(Publisher<?> terminator) {
-    return new Command(Flowable.defer(() ->
-        this.output.takeUntil(terminator)));
+    return new Command(() -> {
+      Flowable<Terminator> terminatorFlowable = this.execute();
+      return Flowable.defer(() -> Flowable.<Terminator>never().takeUntil(terminator)
+          .mergeWith(Flowable.just(() -> terminatorFlowable.subscribe(Terminator::run))));
+    });
   }
 
   /**
@@ -89,9 +79,9 @@ public class Command {
    * will only complete once endCondition returns true.
    */
   public Command until(Supplier<Boolean> endCondition) {
-    ConnectableFlowable terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x).publish();
-    terminator.connect();
-    return new Command(this.output.mergeWith(Flowable.never())).terminable(terminator);
+    Flowable terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x).onBackpressureDrop();
+    return new Command(() ->
+        Flowable.<Terminator>never().mergeWith(this.execute())).terminable(terminator);
   }
 
   /**
@@ -107,16 +97,14 @@ public class Command {
    * @param commands these commands will be executed from 'first to last' argument.
    */
   public static Command serial(Command... commands) {
-    return new Command(Flowable.defer(() ->
-        Flowable.fromArray(commands).concatMap(x -> x.output)));
+    return new Command(new SerialCommand(commands));
   }
 
   /**
    * Create a command that executes the provided commands in parallel.
    */
   public static Command parallel(Command... commands) {
-    return new Command(Flowable.defer(() ->
-        Flowable.merge(Flowable.fromArray(commands).map(c -> c.output))));
+    return new Command(new ParallelCommand(commands));
   }
 
   /**
@@ -129,17 +117,27 @@ public class Command {
   /**
    * Copies this command into one which will delay its completion until a certain time has passed.
    */
-  public Command delayFinish(long delay, TimeUnit unit) {
-    return parallel(this, new Command(Flowable.never()).terminable(Flowable.timer(delay, unit)));
+  public Command delayTermination(long delay, TimeUnit unit) {
+    return parallel(this, new Command(Flowable::never).terminable(Flowable.timer(delay, unit)));
   }
 
-  public static Command fromSwitch(Publisher<Command> commandStream) {
-    Flowable<CommandWorkUnit> actions = Flowable.switchOnNext(Flowable.fromPublisher(commandStream)
-        .map(x -> x.output));
-    return new Command(actions);
+  public static Command fromSwitch(Publisher<CommandWorkUnit> commandStream) {
+    Flowable<Terminator> commands = Flowable.defer(() ->
+        Flowable.switchOnNext(Flowable.fromPublisher(commandStream).map(CommandWorkUnit::execute))
+    );
+    return new Command(() -> commands.scan((a, b) -> {
+      a.run();
+      return b;
+    }));
   }
 
   public Command killAfter(long delay, TimeUnit unit) {
-    return new Command(this.terminable(Flowable.timer(delay, unit)).output);
+    return this.terminable(Flowable.timer(delay, unit));
+  }
+
+  @Override
+  public Flowable<Terminator> execute() {
+    Flowable<Terminator> terms = source.execute().subscribeOn(Schedulers.io());
+    return terms.doOnComplete(() -> terms.subscribeOn(Schedulers.io()).subscribe(Terminator::run));
   }
 }

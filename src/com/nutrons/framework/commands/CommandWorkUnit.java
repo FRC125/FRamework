@@ -1,7 +1,7 @@
 package com.nutrons.framework.commands;
 
-import java.util.function.Supplier;
+import io.reactivex.Flowable;
 
-public interface CommandWorkUnit extends Supplier<Terminator> {
-
+public interface CommandWorkUnit {
+  Flowable<Terminator> execute();
 }
