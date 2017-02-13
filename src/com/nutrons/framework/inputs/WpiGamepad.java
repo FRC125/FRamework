@@ -17,7 +17,10 @@ public class WpiGamepad implements Subsystem {
 
   private final int port;
   private final Joystick joystick;
+
   private final Map<Integer, ConnectableFlowable<Boolean>> buttons;
+  private final Map<Integer, JoystickButton> joyButtons;
+
   private final Map<Integer, ConnectableFlowable<Double>> axes;
   private final RegisteredLock lock = new RegisteredLock();
 
@@ -30,6 +33,7 @@ public class WpiGamepad implements Subsystem {
     this.joystick = new Joystick(this.port);
     this.axes = new HashMap<>();
     this.buttons = new HashMap<>();
+    this.joyButtons = new HashMap<>();
   }
 
   private Flowable<Double> memoizedAxis(int axisNumber) {
@@ -61,7 +65,7 @@ public class WpiGamepad implements Subsystem {
         if (!buttons.containsKey(buttonNumber)) {
           buttons.put(buttonNumber,
               FlowOperators.toFlow(() ->
-                  new JoystickButton(this.joystick, buttonNumber).get())
+	  getJoyButton(buttonNumber).get())
                   .distinctUntilChanged().onBackpressureDrop().publish());
         }
         if (lock.isRegistered()) {
@@ -70,6 +74,21 @@ public class WpiGamepad implements Subsystem {
       }
     }
     return buttons.get(buttonNumber);
+  }
+
+  private JoystickButton getJoyButton(int buttonNumber) {
+    if (!joyButtons.containsKey(buttonNumber)) {
+      synchronized (joyButtons) {
+        if (!joyButtons.containsKey(buttonNumber)) {
+          joyButtons.put(buttonNumber, new JoystickButton(this.joystick, buttonNumber));
+        }
+      }
+    }
+    return joyButtons.get(buttonNumber);
+  }
+
+  public boolean joyButton(int buttonNumber) {
+    return getJoyButton(buttonNumber).get();
   }
 
   /**
