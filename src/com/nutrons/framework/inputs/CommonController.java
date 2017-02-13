@@ -3,55 +3,56 @@ package com.nutrons.framework.inputs;
 import io.reactivex.Flowable;
 
 public class CommonController extends WpiGamepad {
-  private final int axis1X;
-  private final int axis2X;
-  private final int axis1Y;
-  private final int axis2Y;
-  private final int ltrigger;
-  private final int rtrigger;
-  private int xButton;
-  private int aButton;
-  private int bButton;
-  private int yButton;
+  private final int leftStickX;
+  private final int rightStickX;
+  private final int leftStickY;
+  private final int rightStickY;
+  private final int leftTrigger;
+  private final int rightTrigger;
+  private int buttonX;
+  private int buttonA;
+  private int buttonB;
+  private int buttonY;
   private int startButton;
   private int rightBumper;
   private int leftBumper;
   private int selectButton;
 
   private CommonController(int port,
-                           int axis1X,
-                           int axis1Y,
-                           int axis2X,
-                           int axis2Y,
-                           int lTrigger,
-                           int rTrigger,
+                           int leftStickX,
+                           int leftStickY,
+                           int rightStickX,
+                           int rightStickY,
+                           int leftTrigger,
+                           int rightTrigger,
                            int buttonX,
                            int buttonY,
                            int buttonB,
                            int buttonA,
                            int buttonStart,
-                           int ButtonSelect,
-                           int bumperRight,
-                           int bumperleft) {
+                           int buttonSelect,
+                           int rightBumper,
+                           int leftBumper) {
     super(port);
-    this.axis1X = axis1X;
-    this.axis2X = axis2X;
-    this.axis1Y = axis1Y;
-    this.axis2Y = axis2Y;
-    this.ltrigger = lTrigger;
-    this.rtrigger = rTrigger;
-    this.xButton = buttonX;
-    this.yButton = buttonY;
-    this.bButton = buttonB;
-    this.aButton = buttonA;
+    this.leftStickX = leftStickX;
+    this.leftStickY = leftStickY;
+    this.rightStickX = rightStickX;
+    this.rightStickY = rightStickY;
+    this.leftTrigger = leftTrigger;
+    this.rightTrigger = rightTrigger;
+    this.buttonX = buttonX;
+    this.buttonY = buttonY;
+    this.buttonB = buttonB;
+    this.buttonA = buttonA;
     this.startButton = buttonStart;
-    this.selectButton = ButtonSelect;
-    this.rightBumper = bumperRight;
-    this.leftBumper = bumperleft;
-
-
+    this.selectButton = buttonSelect;
+    this.rightBumper = rightBumper;
+    this.leftBumper = leftBumper;
   }
 
+  /**
+   * Create a CommonController with bindings for the Logitech F310.
+   */
   public static CommonController logitechF310(int port) {
     return new CommonController(
         port,
@@ -71,6 +72,9 @@ public class CommonController extends WpiGamepad {
         InputMap.LOGITECH_LEFT_BUMPER);
   }
 
+  /**
+   * Create a CommonController with bindings for the Xbox 360.
+   */
   public static CommonController xbox360(int port) {
     return new CommonController(port,
         InputMap.XBOX_X_1,
@@ -90,35 +94,35 @@ public class CommonController extends WpiGamepad {
   }
 
   public Flowable<Double> leftStickX() {
-    return axis(axis1X);
+    return axis(leftStickX);
   }
 
   public Flowable<Double> leftStickY() {
-    return axis(axis1Y);
+    return axis(leftStickY);
   }
 
   public Flowable<Double> rightStickX() {
-    return axis(axis2X);
+    return axis(rightStickX);
   }
 
   public Flowable<Double> rightStickY() {
-    return axis(axis2Y);
+    return axis(rightStickY);
   }
 
-  public Flowable<Boolean> xButton() {
-    return button(xButton);
+  public Flowable<Boolean> buttonX() {
+    return button(buttonX);
   }
 
-  public Flowable<Boolean> aButton() {
-    return button(aButton);
+  public Flowable<Boolean> buttonA() {
+    return button(buttonA);
   }
 
-  public Flowable<Boolean> yButton() {
-    return button(yButton);
+  public Flowable<Boolean> buttonY() {
+    return button(buttonY);
   }
 
-  public Flowable<Boolean> bButton() {
-    return button(bButton);
+  public Flowable<Boolean> buttonB() {
+    return button(buttonB);
   }
 
   public Flowable<Boolean> startButton() {
@@ -137,12 +141,12 @@ public class CommonController extends WpiGamepad {
     return button(leftBumper);
   }
 
-  public Flowable<Double> lTrigger() {
-    return axis(ltrigger);
+  public Flowable<Double> leftTrigger() {
+    return axis(leftTrigger);
   }
 
-  public Flowable<Double> rTrigger() {
-    return axis(rtrigger);
+  public Flowable<Double> rightTrigger() {
+    return axis(rightTrigger);
   }
 }
 

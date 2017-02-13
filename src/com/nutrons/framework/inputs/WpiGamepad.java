@@ -65,7 +65,7 @@ public class WpiGamepad implements Subsystem {
         if (!buttons.containsKey(buttonNumber)) {
           buttons.put(buttonNumber,
               FlowOperators.toFlow(() ->
-	  getJoyButton(buttonNumber).get())
+                  getJoyButton(buttonNumber).get())
                   .distinctUntilChanged().onBackpressureDrop().publish());
         }
         if (lock.isRegistered()) {
