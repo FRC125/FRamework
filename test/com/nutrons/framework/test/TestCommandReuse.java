@@ -17,8 +17,8 @@ public class TestCommandReuse {
     int[] record = new int[2];
     record[0] = 0; // this is the value that the command will change
     record[1] = 0; // if 1, the command will end.
-    Command change = Command.create(() -> record[0] = 1).until(() -> record[1] == 1);
-    waitForCommand(parallel(change, Command.create(() -> record[1] = 1)
+    Command change = Command.fromAction(() -> record[0] = 1).until(() -> record[1] == 1);
+    waitForCommand(parallel(change, Command.fromAction(() -> record[1] = 1)
         .delayStart(2, TimeUnit.SECONDS)).execute());
     assertTrue(record[0] == 1);
     // now we try it again.
@@ -35,7 +35,7 @@ public class TestCommandReuse {
   @Test
   public void testIncrementReuse() throws InterruptedException {
     int[] record = new int[1];
-    Command inc = Command.create(() -> {
+    Command inc = Command.fromAction(() -> {
       synchronized (record) {
         record[0] += 1;
       }
