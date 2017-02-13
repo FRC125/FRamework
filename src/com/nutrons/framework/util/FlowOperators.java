@@ -13,21 +13,21 @@ public class FlowOperators {
   /**
    * Generate a Flowable from a periodic call to a Supplier. Safe Drops Backpressure
    *
-   * @param ignored the number of time units to wait before calling the supplier again
+   * @param delay the number of time units to wait before calling the supplier again
    * @param <T> the type of the Flowable and Supplier
    */
-  public static <T> Flowable<T> toFlow(Supplier<T> supplier, long ignored, TimeUnit unit) {
-    return toFlowBackpressure(supplier, ignored, unit).onBackpressureDrop();
+  public static <T> Flowable<T> toFlow(Supplier<T> supplier, long delay, TimeUnit unit) {
+    return toFlowBackpressure(supplier, delay, unit).onBackpressureDrop();
   }
 
   /**
    * Generate a Flowable from a periodic call to a Supplier. Does NOT drop Backpressure, Beware of overflow!
    *
-   * @param ignored the number of time units to wait before calling the supplier again
+   * @param delay the number of time units to wait before calling the supplier again
    * @param <T> the type of the Flowable and Supplier
    */
-  public static <T> Flowable<T> toFlowBackpressure(Supplier<T> supplier, long ignored, TimeUnit unit) {
-    return Flowable.interval(ignored, unit, Schedulers.trampoline())
+  public static <T> Flowable<T> toFlowBackpressure(Supplier<T> supplier, long delay, TimeUnit unit) {
+    return Flowable.interval(delay, unit, Schedulers.trampoline())
             .observeOn(Schedulers.io()).map((x) -> supplier.get()).observeOn(Schedulers.computation());
   }
 
