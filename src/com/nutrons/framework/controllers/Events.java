@@ -1,7 +1,5 @@
 package com.nutrons.framework.controllers;
 
-import io.reactivex.Flowable;
-
 public class Events {
 
   /**

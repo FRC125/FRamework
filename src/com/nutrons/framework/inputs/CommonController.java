@@ -166,6 +166,5 @@ public class CommonController extends WpiGamepad {
   public Flowable<Boolean> stickButtonRight() {
     return button(stickButtonRight);
   }
-
 }
 
