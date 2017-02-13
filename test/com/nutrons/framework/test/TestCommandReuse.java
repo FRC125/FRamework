@@ -27,7 +27,7 @@ public class TestCommandReuse {
     long start = System.currentTimeMillis();
     change.killAfter(1, TimeUnit.SECONDS).execute().blockingSubscribe();
     // assert that command only quit because 1 second passed, proving that the command is reusable.
-    assertTrue(start + 1000 < System.currentTimeMillis());
+    assertTrue(start + 900 < System.currentTimeMillis());
     // assert that command still functioned
     assertTrue(record[0] == 1);
   }
