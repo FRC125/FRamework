@@ -17,8 +17,8 @@ public class FlowOperators {
    * @param <T> the type of the Flowable and Supplier
    */
   public static <T> Flowable<T> toFlow(Supplier<T> supplier, long ignored, TimeUnit unit) {
-    return Flowable.interval(ignored, unit, Schedulers.io())
-        .subscribeOn(Schedulers.io()).map((x) -> supplier.get());
+    return Flowable.interval(ignored, unit, Schedulers.trampoline())
+        .observeOn(Schedulers.io()).map((x) -> supplier.get()).observeOn(Schedulers.computation());
   }
 
   /**
@@ -37,11 +37,15 @@ public class FlowOperators {
    * @return the motor input values with values smaller than 0.2 removed
    */
   public static Flowable<Double> deadband(Flowable<Double> input) {
-    return input.map((x) -> abs(x) < 0.2 ? 0.0 : x);
+    return input.map((x) -> abs(x) < 0.4 ? 0.0 : x);
   }
 
-  public static Function<Double, Double> deadbandMap(Flowable<Double> input) {
-    return x -> abs(x) < 0.2 ? 0.0 : x;
+  public static io.reactivex.functions.Function<Double, Double> deadbandMap(double minimum, double maximum, double remap) {
+    return bandMap(minimum, maximum, x -> remap);
+  }
+
+  public static io.reactivex.functions.Function<Double, Double> bandMap(double minimum, double maximum, Function<Double, Double> remap) {
+    return x -> x < maximum && x > minimum ? remap.apply(x) : x;
   }
 
   public static <T> T getLastValue(Flowable<T> input) {
