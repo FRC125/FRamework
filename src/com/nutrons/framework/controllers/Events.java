@@ -35,12 +35,12 @@ public class Events {
     return new LoopPropertiesEvent(pval, ival, dval, fval);
   }
 
-  public static ControllerEvent combine(ControllerEvent... Events) {
+  public static ControllerEvent combine(ControllerEvent... events) {
     return new ControllerEvent() {
       @Override
       public void actOn(Talon talon) {
-        for (ControllerEvent E : Events) {
-          E.actOn(talon);
+        for (ControllerEvent e : events) {
+          e.actOn(talon);
         }
       }
     };
