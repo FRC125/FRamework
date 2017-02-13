@@ -14,7 +14,6 @@ public class HeadingGyro {
     public HeadingGyro() {
         this.gyro = new ADXRS450_Gyro();
         this.gyroReadings = toFlow(() -> this.gyro.getAngle());
-        this.gyro.calibrate();
     }
 
     public void reset() {

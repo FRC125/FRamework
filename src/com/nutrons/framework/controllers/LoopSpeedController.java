@@ -31,6 +31,4 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   public void setSetpoint(double setpoint) {
     this.accept(Events.setpoint(setpoint));
   }
-
-  public abstract void setOutputFlipped(boolean flipped);
 }
