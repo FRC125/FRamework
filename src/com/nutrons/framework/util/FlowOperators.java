@@ -5,20 +5,29 @@ import static java.lang.Math.abs;
 import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class FlowOperators {
 
   /**
-   * Generate a Flowable from a periodic call to a Supplier.
+   * Generate a Flowable from a periodic call to a Supplier. Safe Drops Backpressure
    *
    * @param ignored the number of time units to wait before calling the supplier again
    * @param <T> the type of the Flowable and Supplier
    */
   public static <T> Flowable<T> toFlow(Supplier<T> supplier, long ignored, TimeUnit unit) {
+    return toFlowBackpressure(supplier, ignored, unit).onBackpressureDrop();
+  }
+
+  /**
+   * Generate a Flowable from a periodic call to a Supplier. Does NOT drop Backpressure, Beware of overflow!
+   *
+   * @param ignored the number of time units to wait before calling the supplier again
+   * @param <T> the type of the Flowable and Supplier
+   */
+  public static <T> Flowable<T> toFlowBackpressure(Supplier<T> supplier, long ignored, TimeUnit unit) {
     return Flowable.interval(ignored, unit, Schedulers.trampoline())
-        .observeOn(Schedulers.io()).map((x) -> supplier.get()).observeOn(Schedulers.computation());
+            .observeOn(Schedulers.io()).map((x) -> supplier.get()).observeOn(Schedulers.computation());
   }
 
   /**
@@ -40,11 +49,11 @@ public class FlowOperators {
     return input.map((x) -> abs(x) < 0.4 ? 0.0 : x);
   }
 
-  public static io.reactivex.functions.Function<Double, Double> deadbandMap(double minimum, double maximum, double remap) {
+  public static Function<Double, Double> deadbandMap(double minimum, double maximum, double remap) {
     return bandMap(minimum, maximum, x -> remap);
   }
 
-  public static io.reactivex.functions.Function<Double, Double> bandMap(double minimum, double maximum, Function<Double, Double> remap) {
+  public static Function<Double, Double> bandMap(double minimum, double maximum, Function<Double, Double> remap) {
     return x -> x < maximum && x > minimum ? remap.apply(x) : x;
   }
 
