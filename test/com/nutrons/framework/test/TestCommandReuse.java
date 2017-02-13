@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.concurrent.TimeUnit;
 
 import static com.nutrons.framework.commands.Command.parallel;
+import static com.nutrons.framework.commands.Command.serial;
 import static com.nutrons.framework.test.TestCommand.waitForCommand;
 import static junit.framework.TestCase.assertTrue;
 
@@ -29,5 +30,21 @@ public class TestCommandReuse {
     assertTrue(start + 1000 < System.currentTimeMillis());
     // assert that command still functioned
     assertTrue(record[0] == 1);
+  }
+
+  @Test
+  public void testIncrementReuse() throws InterruptedException {
+    int[] record = new int[1];
+    Command inc = Command.create(() -> {
+      synchronized (record) {
+        record[0] += 1;
+      }
+    });
+    serial(inc, inc, inc).execute();
+    Thread.sleep(3000);
+    assertTrue(record[0] == 3);
+    inc.execute();
+    Thread.sleep(1000);
+    assertTrue(record[0] == 4);
   }
 }

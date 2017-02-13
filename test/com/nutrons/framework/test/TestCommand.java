@@ -2,6 +2,7 @@ package com.nutrons.framework.test;
 
 import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.commands.Terminator;
+import com.nutrons.framework.commands.TerminatorWrapper;
 import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -47,6 +48,7 @@ public class TestCommand {
     Command series = delay.then(delay);
     waitForCommand(series.execute());
     assertTrue(System.currentTimeMillis() - 2000 > start);
+    assertTrue(System.currentTimeMillis() - 3000 < start);
   }
 
   @Test
@@ -129,5 +131,25 @@ public class TestCommand {
     })).delayTermination(1000, TimeUnit.SECONDS).killAfter(1, TimeUnit.SECONDS).execute();
     Thread.sleep(2000);
     assertTrue(record[0] == 1);
+  }
+
+  @Test
+  public void testSwitch() throws InterruptedException {
+    int[] record = new int[1];
+    record[0] = 0;
+    Command inc = Command.create(() -> {
+      synchronized (record) {
+        record[0] += 1;
+      }
+      return Flowable.just(new TerminatorWrapper(() -> {
+        synchronized (record) {
+          record[0] -= 1;
+        }
+      }));
+    });
+    Command.fromSwitch(Flowable.interval(1, TimeUnit.SECONDS).map(x -> inc).take(5))
+        .execute().blockingSubscribe();
+    Thread.sleep(2000);
+    assertTrue(record[0] == 0);
   }
 }

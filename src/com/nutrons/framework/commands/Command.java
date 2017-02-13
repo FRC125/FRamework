@@ -121,10 +121,10 @@ public class Command implements CommandWorkUnit {
     return parallel(this, new Command(Flowable::never).terminable(Flowable.timer(delay, unit)));
   }
 
-  public static Command fromSwitch(Publisher<CommandWorkUnit> commandStream) {
+  public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream) {
     Flowable<Terminator> commands = Flowable.defer(() ->
-        Flowable.switchOnNext(Flowable.fromPublisher(commandStream).map(CommandWorkUnit::execute))
-    );
+        Flowable.switchOnNext(Flowable.fromPublisher(commandStream).map(CommandWorkUnit::execute)
+            .subscribeOn(Schedulers.io())));
     return new Command(() -> commands.scan((a, b) -> {
       a.run();
       return b;
@@ -137,7 +137,9 @@ public class Command implements CommandWorkUnit {
 
   @Override
   public Flowable<Terminator> execute() {
-    Flowable<Terminator> terms = source.execute().subscribeOn(Schedulers.io());
-    return terms.doOnComplete(() -> terms.subscribeOn(Schedulers.io()).subscribe(Terminator::run));
+    Flowable<Terminator> terms = source.execute();
+    terms.subscribeOn(Schedulers.io()).toList()
+        .subscribe(t -> Flowable.fromIterable(t).subscribe(Terminator::run));
+    return terms;
   }
 }
