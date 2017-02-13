@@ -9,16 +9,16 @@ public class CommonController extends WpiGamepad {
   private final int rightStickY;
   private final int leftTrigger;
   private final int rightTrigger;
-  private int buttonX;
-  private int buttonA;
-  private int buttonB;
-  private int buttonY;
-  private int startButton;
-  private int rightBumper;
-  private int leftBumper;
-  private int selectButton;
-  private int stickButtonLeft;
-  private int stickButtonRight;
+  private final int buttonX;
+  private final int buttonA;
+  private final int buttonB;
+  private final int buttonY;
+  private final int startButton;
+  private final int rightBumper;
+  private final int leftBumper;
+  private final int selectButton;
+  private final int stickButtonLeft;
+  private final int stickButtonRight;
 
   private CommonController(int port,
                            int leftStickX,
@@ -73,7 +73,7 @@ public class CommonController extends WpiGamepad {
         InputMap.LOGITECH_B,
         InputMap.LOGITECH_A,
         InputMap.LOGITECH_START,
-        InputMap.LOGITECH__SELECT,
+        InputMap.LOGITECH_SELECT,
         InputMap.LOGITECH_RIGHT_BUMPER,
         InputMap.LOGITECH_LEFT_BUMPER,
         InputMap.LOGITECH_L3,

@@ -37,7 +37,7 @@ class InputMap {
     static final int LOGITECH_Y = 4;
 
     static final int LOGITECH_START = 9;
-    static final int LOGITECH__SELECT = 10;
+    static final int LOGITECH_SELECT = 10;
 
     static final int LOGITECH_LEFT_BUMPER = 5;
     static final int LOGITECH_RIGHT_BUMPER = 6;

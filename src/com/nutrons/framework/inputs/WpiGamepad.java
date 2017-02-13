@@ -42,7 +42,7 @@ public class WpiGamepad implements Subsystem {
         if (!axes.containsKey(axisNumber)) {
           axes.put(axisNumber,
               FlowOperators.toFlow(() ->
-                  this.joystick.getRawAxis(axisNumber)).onBackpressureDrop().publish());
+                  this.joystick.getRawAxis(axisNumber)).publish());
         }
         if (lock.isRegistered()) {
           buttons.get(axisNumber).connect();
@@ -66,7 +66,7 @@ public class WpiGamepad implements Subsystem {
           buttons.put(buttonNumber,
               FlowOperators.toFlow(() ->
                   getJoyButton(buttonNumber).get())
-                  .distinctUntilChanged().onBackpressureDrop().publish());
+                  .distinctUntilChanged().publish());
         }
         if (lock.isRegistered()) {
           buttons.get(buttonNumber).connect();
