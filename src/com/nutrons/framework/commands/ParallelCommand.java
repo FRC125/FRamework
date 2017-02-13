@@ -21,7 +21,7 @@ public class ParallelCommand implements CommandWorkUnit {
     final ExecuteLock lock = new ExecuteLock();
     final List<Terminator> terminators = new ArrayList<>();
     Flowable<Terminator> terminatorFlow = this.commands.flatMap(x -> x.execute().subscribeOn(Schedulers.io()))
-        .subscribeOn(Schedulers.io());
+        .subscribeOn(Schedulers.io()).publish().autoConnect();;
     terminatorFlow.subscribe(x -> {
       if (!lock.done) {
         synchronized (lock) {

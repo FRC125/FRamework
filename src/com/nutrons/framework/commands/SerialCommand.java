@@ -1,7 +1,6 @@
 package com.nutrons.framework.commands;
 
 import io.reactivex.Flowable;
-import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
 import java.util.ArrayList;
@@ -17,11 +16,10 @@ public class SerialCommand implements CommandWorkUnit {
 
   @Override
   public Flowable<Terminator> execute() {
-    PublishProcessor<Terminator> finisher = PublishProcessor.create();
     final ExecuteLock lock = new ExecuteLock();
     final List<Terminator> terminators = new ArrayList<>();
     Flowable<Terminator> terminatorFlow = this.commands.concatMap(x -> x.execute().subscribeOn(Schedulers.io()))
-        .subscribeOn(Schedulers.io());
+        .subscribeOn(Schedulers.io()).publish().autoConnect();
     terminatorFlow.subscribe(x -> {
       if (!lock.done) {
         synchronized (lock) {
