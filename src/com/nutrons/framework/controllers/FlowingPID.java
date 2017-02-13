@@ -20,9 +20,9 @@ public class FlowingPID {
         this.DERIVATIVE = d;
         this.error = error.onBackpressureDrop();
         Flowable<Double> errorP = error.map(x -> x * PROPORTIONAL).subscribeOn(Schedulers.io());
-        Flowable<Double> errorI = error.buffer(10, 1).map(list -> list.stream().reduce(0.0, (x, acc) -> x + acc)).map(x -> x * INTEGRAL).subscribeOn(Schedulers.io());;
-        Flowable<Double> errorD = error.buffer(2, 1).map(last -> last.stream().reduce(0.0, (x, y) -> x - y)).map(x -> x * DERIVATIVE).subscribeOn(Schedulers.io());;
-        this.controlOutput = combineLatest(errorP, errorI, errorD, (pr, in, de) -> pr + in + de).subscribeOn(Schedulers.io()).publish();
+        Flowable<Double> errorI = error.buffer(10, 1).map(list -> list.stream().reduce(0.0, (x, acc) -> x + acc)).map(x -> x * INTEGRAL).subscribeOn(Schedulers.io());
+        Flowable<Double> errorD = error.buffer(2, 1).map(last -> last.stream().reduce(0.0, (x, y) -> x - y)).map(x -> x * DERIVATIVE).subscribeOn(Schedulers.io());
+        this.controlOutput = combineLatest(errorP, errorI, errorD, (pr, in, de) -> pr + in + de).publish();
         this.controlOutput.connect();
     }
 
