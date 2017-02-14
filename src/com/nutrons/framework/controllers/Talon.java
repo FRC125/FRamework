@@ -11,6 +11,7 @@ public class Talon extends LoopSpeedController {
 
   private final Flowable<FeedbackEvent> feedback;
   private final CANTalon talon;
+  private boolean reverseFeedback;
 
   /**
    * Creates a talon on the given port.
@@ -97,6 +98,10 @@ public class Talon extends LoopSpeedController {
   @Override
   public void setOutputFlipped(boolean flipped) {
     talon.setInverted(flipped);
+  }
+
+  public void setReverseSensor(boolean flipped) {
+    talon.reverseSensor(flipped);
   }
 
   int id() {
