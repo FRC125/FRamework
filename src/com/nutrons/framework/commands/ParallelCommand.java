@@ -1,11 +1,11 @@
 package com.nutrons.framework.commands;
 
 import io.reactivex.Flowable;
-import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ParallelCommand implements CommandWorkUnit {
   private final Flowable<CommandWorkUnit> commands;
@@ -17,15 +17,15 @@ public class ParallelCommand implements CommandWorkUnit {
 
   @Override
   public Flowable<Terminator> execute() {
-    PublishProcessor<Terminator> finisher = PublishProcessor.create();
-    final ExecuteLock lock = new ExecuteLock();
+    final AtomicBoolean lock = new AtomicBoolean(false);
     final List<Terminator> terminators = new ArrayList<>();
     Flowable<Terminator> terminatorFlow = this.commands.flatMap(x -> x.execute().subscribeOn(Schedulers.io()))
-        .subscribeOn(Schedulers.io()).publish().autoConnect();;
+        .subscribeOn(Schedulers.io()).publish().autoConnect();
+    ;
     terminatorFlow.subscribe(x -> {
-      if (!lock.done) {
+      if (!lock.get()) {
         synchronized (lock) {
-          if (!lock.done) {
+          if (!lock.get()) {
             terminators.add(x);
             return;
           }
@@ -39,10 +39,10 @@ public class ParallelCommand implements CommandWorkUnit {
   }
 
   private class ParallelTerminator implements Runnable {
-    private final ExecuteLock lock;
+    private final AtomicBoolean lock;
     private final List<Terminator> terminators;
 
-    private ParallelTerminator(ExecuteLock lock, List<Terminator> terminators) {
+    private ParallelTerminator(AtomicBoolean lock, List<Terminator> terminators) {
       this.lock = lock;
       this.terminators = terminators;
     }
@@ -50,15 +50,11 @@ public class ParallelCommand implements CommandWorkUnit {
     @Override
     public void run() {
       synchronized (lock) {
-        lock.done = true;
+        lock.set(true);
         for (Terminator terminator : terminators) {
           terminator.run();
         }
       }
     }
-  }
-
-  private class ExecuteLock {
-    private boolean done = false;
   }
 }
