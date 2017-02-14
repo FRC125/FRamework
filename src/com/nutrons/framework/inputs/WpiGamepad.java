@@ -22,13 +22,14 @@ public class WpiGamepad implements Subsystem {
   private final Map<Integer, JoystickButton> joyButtons;
 
   private final Map<Integer, ConnectableFlowable<Double>> axes;
-  private final RegisteredLock lock = new RegisteredLock();
+  private final RegisteredLock lock;
 
   /**
    * Create Gamepad streams from a WPI "Joystick."
    * axisMN represents the channel on which the Mth joystick's N-axis resides.
    */
   public WpiGamepad(int port) {
+    this.lock = new RegisteredLock();
     this.port = port;
     this.joystick = new Joystick(this.port);
     this.axes = new HashMap<>();
