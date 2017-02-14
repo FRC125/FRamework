@@ -1,7 +1,6 @@
 package com.nutrons.framework.controllers;
 
 import io.reactivex.Flowable;
-import io.reactivex.Scheduler;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
 
@@ -29,6 +28,5 @@ public class FlowingPID {
     public Flowable<Double> getOutput() {
         return controlOutput;
     }
-
 
 }
