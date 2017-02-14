@@ -94,6 +94,11 @@ public class Talon extends LoopSpeedController {
     event.actOn(this);
   }
 
+  @Override
+  public void setOutputFlipped(boolean flipped) {
+    talon.setInverted(flipped);
+  }
+
   int id() {
     return this.talon.getDeviceID();
   }
