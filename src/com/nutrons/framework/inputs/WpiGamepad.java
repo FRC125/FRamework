@@ -1,81 +1,95 @@
 package com.nutrons.framework.inputs;
 
-import static com.nutrons.framework.util.FlowOperators.toFlow;
-
+import com.nutrons.framework.Subsystem;
 import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import io.reactivex.Flowable;
+import io.reactivex.flowables.ConnectableFlowable;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * A wrapper around WPI's "Joysticks" which provides Flowables for Gamepad data.
  */
-public class WpiGamepad {
+public class WpiGamepad implements Subsystem {
 
   private final int port;
-  private final Flowable<Double> axis1X;
-  private final Flowable<Double> axis1Y;
-  private final Flowable<Double> axis2X;
-  private final Flowable<Double> axis2Y;
   private final Joystick joystick;
-  private final Map<Integer, Flowable<Boolean>> buttons;
+
+  private final Map<Integer, ConnectableFlowable<Boolean>> buttons;
+  private final Map<Integer, JoystickButton> joyButtons;
+
+  private final Map<Integer, ConnectableFlowable<Double>> axes;
+  private final RegisteredLock lock;
 
   /**
    * Create Gamepad streams from a WPI "Joystick."
    * axisMN represents the channel on which the Mth joystick's N-axis resides.
    */
-  public WpiGamepad(int port, int axis1X, int axis1Y, int axis2X, int axis2Y) {
+  public WpiGamepad(int port) {
+    this.lock = new RegisteredLock();
     this.port = port;
     this.joystick = new Joystick(this.port);
-    this.axis1X = toFlow(() -> this.joystick.getRawAxis(axis1X));
-    this.axis1Y = toFlow(() -> this.joystick.getRawAxis(axis1Y));
-    this.axis2X = toFlow(() -> this.joystick.getRawAxis(axis2X));
-    this.axis2Y = toFlow(() -> this.joystick.getRawAxis(axis2Y));
+    this.axes = new HashMap<>();
     this.buttons = new HashMap<>();
+    this.joyButtons = new HashMap<>();
+  }
+
+  private Flowable<Double> memoizedAxis(int axisNumber) {
+    if (!axes.containsKey(axisNumber)) {
+      synchronized (lock) {
+        if (!axes.containsKey(axisNumber)) {
+          axes.put(axisNumber,
+              FlowOperators.toFlow(() ->
+                  this.joystick.getRawAxis(axisNumber)).publish());
+        }
+        if (lock.isRegistered()) {
+          buttons.get(axisNumber).connect();
+        }
+      }
+    }
+    return axes.get(axisNumber);
   }
 
   /**
-   * A Flowable providing data from the first joystick's x-axis.
-   **/
-  public Flowable<Double> joy1X() {
-    return this.axis1X;
-  }
-
-  /**
-   * A Flowable providing data from the first joystick's y-axis.
-   **/
-  public Flowable<Double> joy1Y() {
-    return this.axis1Y;
-  }
-
-  /**
-   * A Flowable providing data from the second joystick's x-axis.
-   **/
-  public Flowable<Double> joy2X() {
-    return this.axis2X;
-  }
-
-  /**
-   * A Flowable providing data from the second joystick's y-axis.
-   **/
-  public Flowable<Double> joy2Y() {
-    return this.axis2Y;
+   * A Flowable representing the sensor values of the given axes on this gamepad.
+   */
+  public Flowable<Double> axis(int axisNumber) {
+    return memoizedAxis(axisNumber);
   }
 
   private Flowable<Boolean> memoizedButton(int buttonNumber) {
     if (!buttons.containsKey(buttonNumber)) {
-      synchronized (buttons) {
+      synchronized (lock) {
         if (!buttons.containsKey(buttonNumber)) {
           buttons.put(buttonNumber,
               FlowOperators.toFlow(() ->
-                  new JoystickButton(this.joystick, buttonNumber).get())
-                  .distinctUntilChanged());
+                  getJoyButton(buttonNumber).get())
+                  .distinctUntilChanged().publish());
+        }
+        if (lock.isRegistered()) {
+          buttons.get(buttonNumber).connect();
         }
       }
     }
     return buttons.get(buttonNumber);
+  }
+
+  private JoystickButton getJoyButton(int buttonNumber) {
+    if (!joyButtons.containsKey(buttonNumber)) {
+      synchronized (joyButtons) {
+        if (!joyButtons.containsKey(buttonNumber)) {
+          joyButtons.put(buttonNumber, new JoystickButton(this.joystick, buttonNumber));
+        }
+      }
+    }
+    return joyButtons.get(buttonNumber);
+  }
+
+  public boolean joyButton(int buttonNumber) {
+    return getJoyButton(buttonNumber).get();
   }
 
   /**
@@ -83,5 +97,27 @@ public class WpiGamepad {
    */
   public Flowable<Boolean> button(int buttonNumber) {
     return memoizedButton(buttonNumber);
+  }
+
+  @Override
+  public void registerSubscriptions() {
+    synchronized (lock) {
+      lock.register();
+      Flowable.<ConnectableFlowable>fromIterable(axes.values())
+          .mergeWith(Flowable.<ConnectableFlowable>fromIterable(buttons.values()))
+          .blockingSubscribe(ConnectableFlowable::connect);
+    }
+  }
+
+  private class RegisteredLock {
+    private boolean registered = false;
+
+    void register() {
+      this.registered = true;
+    }
+
+    boolean isRegistered() {
+      return registered;
+    }
   }
 }
