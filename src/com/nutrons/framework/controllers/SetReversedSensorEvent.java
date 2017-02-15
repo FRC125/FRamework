@@ -9,6 +9,6 @@ public class SetReversedSensorEvent implements ControllerEvent {
 
   @Override
   public void actOn(Talon talon) {
-    talon.setReversedSensor(flipped);
+    talon.reverseSensor(flipped);
   }
 }
