@@ -1,14 +1,14 @@
 package com.nutrons.framework.controllers;
 
-public class SetReverseSensorEvent implements ControllerEvent {
+public class SetReversedSensorEvent implements ControllerEvent {
   private final boolean flipped;
 
-  public SetReverseSensorEvent(boolean flipped) {
+  public SetReversedSensorEvent(boolean flipped) {
     this.flipped = flipped;
   }
 
   @Override
   public void actOn(Talon talon) {
-    talon.setReverseSensor(flipped);
+    talon.setReversedSensor(flipped);
   }
 }

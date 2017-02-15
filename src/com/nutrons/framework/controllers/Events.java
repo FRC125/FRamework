@@ -43,8 +43,8 @@ public class Events {
     };
   }
 
-  public static ControllerEvent setReverseSensor(boolean flipped)  {
-    return new SetReverseSensorEvent(flipped);
+  public static ControllerEvent setReversedSensor(boolean flipped)  {
+    return new SetReversedSensorEvent(flipped);
 
   }
   public static ControllerEvent setpoint(double setpoint) {
