@@ -100,7 +100,7 @@ public class Talon extends LoopSpeedController {
     talon.setInverted(flipped);
   }
 
-  public void setReverseSensor(boolean flipped) {
+  void setReverseSensor(boolean flipped) {
     talon.reverseSensor(flipped);
   }
 

@@ -13,7 +13,7 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   public abstract void accept(ControllerEvent event);
 
   public void setPID(double pval, double ival, double dval, double fval) {
-    this.accept(Events.pid(pval, ival, dval, fval));
+    this.accept(Events.pid(pval, ival, dval, fval));git 
   }
 
   public void setControlMode(ControlMode mode) {
@@ -33,4 +33,8 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   }
 
   public abstract void setOutputFlipped(boolean flipped);
+
+  public void setReversedSensor(boolean flipped) {
+    this.accept(Events.setReverseSensor(flipped));
+  }
 }
