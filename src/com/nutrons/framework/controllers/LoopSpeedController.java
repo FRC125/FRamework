@@ -13,7 +13,7 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   public abstract void accept(ControllerEvent event);
 
   public void setPID(double pval, double ival, double dval, double fval) {
-    this.accept(Events.pid(pval, ival, dval, fval));git 
+    this.accept(Events.pid(pval, ival, dval, fval));
   }
 
   public void setControlMode(ControlMode mode) {
