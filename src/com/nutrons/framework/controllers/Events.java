@@ -1,8 +1,5 @@
 package com.nutrons.framework.controllers;
 
-import io.reactivex.Flowable;
-
-
 public class Events {
 
   /**
@@ -46,6 +43,10 @@ public class Events {
     };
   }
 
+  public static ControllerEvent setReversedSensor(boolean flipped)  {
+    return new SetReversedSensorEvent(flipped);
+
+  }
   public static ControllerEvent setpoint(double setpoint) {
     return new SetpointEvent(setpoint);
   }
