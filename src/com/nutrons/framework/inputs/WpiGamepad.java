@@ -9,6 +9,7 @@ import io.reactivex.flowables.ConnectableFlowable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A wrapper around WPI's "Joysticks" which provides Flowables for Gamepad data.
@@ -22,14 +23,14 @@ public class WpiGamepad implements Subsystem {
   private final Map<Integer, JoystickButton> joyButtons;
 
   private final Map<Integer, ConnectableFlowable<Double>> axes;
-  private final RegisteredLock lock;
+  private final AtomicBoolean lock;
 
   /**
    * Create Gamepad streams from a WPI "Joystick."
    * axisMN represents the channel on which the Mth joystick's N-axis resides.
    */
   public WpiGamepad(int port) {
-    this.lock = new RegisteredLock();
+    this.lock = new AtomicBoolean(false);
     this.port = port;
     this.joystick = new Joystick(this.port);
     this.axes = new HashMap<>();
@@ -45,7 +46,7 @@ public class WpiGamepad implements Subsystem {
               FlowOperators.toFlow(() ->
                   this.joystick.getRawAxis(axisNumber)).publish());
         }
-        if (lock.isRegistered()) {
+        if (lock.get()) {
           buttons.get(axisNumber).connect();
         }
       }
@@ -69,7 +70,7 @@ public class WpiGamepad implements Subsystem {
                   getJoyButton(buttonNumber).get())
                   .distinctUntilChanged().publish());
         }
-        if (lock.isRegistered()) {
+        if (lock.get()) {
           buttons.get(buttonNumber).connect();
         }
       }
@@ -102,22 +103,10 @@ public class WpiGamepad implements Subsystem {
   @Override
   public void registerSubscriptions() {
     synchronized (lock) {
-      lock.register();
+      lock.set(true);
       Flowable.<ConnectableFlowable>fromIterable(axes.values())
           .mergeWith(Flowable.<ConnectableFlowable>fromIterable(buttons.values()))
           .blockingSubscribe(ConnectableFlowable::connect);
-    }
-  }
-
-  private class RegisteredLock {
-    private boolean registered = false;
-
-    void register() {
-      this.registered = true;
-    }
-
-    boolean isRegistered() {
-      return registered;
     }
   }
 }
