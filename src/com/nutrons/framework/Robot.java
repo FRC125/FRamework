@@ -87,7 +87,7 @@ public abstract class Robot extends SampleRobot {
   protected final void disabled() {
   }
 
-  public Command registerAuto() {
+  protected Command registerAuto() {
     return null;
   }
 
