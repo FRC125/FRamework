@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import io.reactivex.Flowable;
 import io.reactivex.flowables.ConnectableFlowable;
+import io.reactivex.schedulers.Schedulers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -104,9 +105,10 @@ public class WpiGamepad implements Subsystem {
   public void registerSubscriptions() {
     synchronized (lock) {
       lock.set(true);
-      Flowable.<ConnectableFlowable>fromIterable(axes.values())
-          .mergeWith(Flowable.<ConnectableFlowable>fromIterable(buttons.values()))
-          .blockingSubscribe(ConnectableFlowable::connect);
+      Flowable.<ConnectableFlowable>fromIterable(buttons.values()).mergeWith(
+          Flowable.<ConnectableFlowable>fromIterable(axes.values()))
+          .flatMap(x -> Flowable.fromCallable(x::connect).subscribeOn(Schedulers.io()))
+          .subscribeOn(Schedulers.io()).subscribe();
     }
   }
 }
