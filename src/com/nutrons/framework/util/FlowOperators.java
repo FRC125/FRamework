@@ -1,12 +1,14 @@
 package com.nutrons.framework.util;
 
-import static java.lang.Math.abs;
-
 import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
 import io.reactivex.schedulers.Schedulers;
+
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static java.lang.Math.abs;
 
 public class FlowOperators {
 
@@ -14,7 +16,7 @@ public class FlowOperators {
    * Generate a Flowable from a periodic call to a Supplier. Safe Drops Backpressure
    *
    * @param ignored the number of time units to wait before calling the supplier again
-   * @param <T> the type of the Flowable and Supplier
+   * @param <T>     the type of the Flowable and Supplier
    */
   public static <T> Flowable<T> toFlow(Supplier<T> supplier, long ignored, TimeUnit unit) {
     return toFlowBackpressure(supplier, ignored, unit).onBackpressureDrop();
@@ -24,11 +26,11 @@ public class FlowOperators {
    * Generate a Flowable from a periodic call to a Supplier. Does NOT drop Backpressure, Beware of overflow!
    *
    * @param ignored the number of time units to wait before calling the supplier again
-   * @param <T> the type of the Flowable and Supplier
+   * @param <T>     the type of the Flowable and Supplier
    */
   public static <T> Flowable<T> toFlowBackpressure(Supplier<T> supplier, long ignored, TimeUnit unit) {
     return Flowable.interval(ignored, unit, Schedulers.trampoline())
-            .observeOn(Schedulers.io()).map((x) -> supplier.get()).observeOn(Schedulers.computation());
+        .observeOn(Schedulers.io()).map((x) -> supplier.get()).observeOn(Schedulers.computation());
   }
 
   /**
@@ -60,5 +62,23 @@ public class FlowOperators {
 
   public static <T> T getLastValue(Flowable<T> input) {
     return input.blockingLatest().iterator().next();
+  }
+
+  public static FlowableTransformer<Double, Double> pidLoop(double proportional,
+                                                            int integralBuffer,
+                                                            double integral,
+                                                            double derivative) {
+    return error -> {
+        Flowable<Double> errorP = error.map(x -> x * proportional);
+        Flowable<Double> errorI = error.buffer(integralBuffer, 1)
+            .map(list -> list.stream().reduce(0.0, (x, acc) -> x + acc))
+            .map(x -> x * integral);
+        Flowable<Double> errorD = error.buffer(2, 1)
+            .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
+            .map(x -> x * derivative);
+        Flowable<Double> output = Flowable.combineLatest(errorP, errorI, errorD,
+            (p, i, d) -> p + i + d);
+        return output;
+    };
   }
 }
