@@ -1,7 +1,5 @@
 package com.nutrons.framework.controllers;
 
-import io.reactivex.Flowable;
-
 public class Events {
 
   /**
@@ -9,10 +7,10 @@ public class Events {
    * <a href="https://en.wikipedia.org/wiki/PID_controller">PID</a> loop
    *
    * @param setPoint target location or velocity of PID loop
-   * @param pval proportion value of PID
-   * @param ival integral value of PID
-   * @param dval derivative value of PID
-   * @param fval offset value of PID
+   * @param pval     proportion value of PID
+   * @param ival     integral value of PID
+   * @param dval     derivative value of PID
+   * @param fval     offset value of PID
    * @return a ControllerEvent that initiates a PID loop on the motor controller
    */
   public static ControllerEvent pid(double setPoint,
@@ -34,7 +32,21 @@ public class Events {
   public static ControllerEvent pid(double pval, double ival, double dval, double fval) {
     return new LoopPropertiesEvent(pval, ival, dval, fval);
   }
+  public static ControllerEvent combine(ControllerEvent... events) {
+    return new ControllerEvent() {
+      @Override
+      public void actOn(Talon talon) {
+        for (ControllerEvent e : events) {
+          e.actOn(talon);
+        }
+      }
+    };
+  }
 
+  public static ControllerEvent setReversedSensor(boolean flipped)  {
+    return new SetReversedSensorEvent(flipped);
+
+  }
   public static ControllerEvent setpoint(double setpoint) {
     return new SetpointEvent(setpoint);
   }
