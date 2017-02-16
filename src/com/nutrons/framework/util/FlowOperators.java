@@ -2,10 +2,10 @@ package com.nutrons.framework.util;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.lang.Math.abs;
@@ -52,11 +52,19 @@ public class FlowOperators {
     return input.map((x) -> abs(x) < 0.4 ? 0.0 : x);
   }
 
-  public static io.reactivex.functions.Function<Double, Double> deadbandMap(double minimum, double maximum, double remap) {
+  /**
+   * Creates a function that will return the input value, unless that value is within the range
+   * specified by minimum and maximum. If so, the value will be changed to remap.
+   */
+  public static Function<Double, Double> deadbandMap(double minimum, double maximum, double remap) {
     return bandMap(minimum, maximum, x -> remap);
   }
 
-  public static io.reactivex.functions.Function<Double, Double> bandMap(double minimum, double maximum, Function<Double, Double> remap) {
+  /**
+   * Creates a function that will return the input value, unless that value is within the range
+   * specified by minimum and maximum. If so, the value will be passed through the remap function.
+   */
+  public static Function<Double, Double> bandMap(double minimum, double maximum, Function<Double, Double> remap) {
     return x -> x < maximum && x > minimum ? remap.apply(x) : x;
   }
 

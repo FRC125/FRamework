@@ -12,9 +12,12 @@ import java.util.function.Supplier;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Command implements CommandWorkUnit {
+  // emptyPulse sends items on an interval, and is used in the 'until' and 'when' methods
+  // to determine how often to test the predicates.
+  private static final ConnectableFlowable<CommandWorkUnit> emptyPulse =
+      toFlow(() -> (CommandWorkUnit) () -> Flowable.just(() -> {
+      })).subscribeOn(Schedulers.io()).onBackpressureDrop().publish();
   private final CommandWorkUnit source;
-  private static final ConnectableFlowable<CommandWorkUnit> emptyPulse = toFlow(() -> (CommandWorkUnit) () -> Flowable.just(() -> {
-  })).subscribeOn(Schedulers.io()).onBackpressureDrop().publish();
 
   private Command(CommandWorkUnit command) {
     emptyPulse.connect();
@@ -24,7 +27,7 @@ public class Command implements CommandWorkUnit {
   /**
    * Create a command that executes the given action.
    */
-  public static Command create(Runnable action) {
+  public static Command fromAction(Runnable action) {
     return new Command(() -> {
       action.run();
       return Flowable.just(() -> {
@@ -32,18 +35,48 @@ public class Command implements CommandWorkUnit {
     });
   }
 
-  public static Command from(Supplier<Disposable> resource) {
-    return Command.create(() -> {
+  /**
+   * Create a command from a disposable supplying function,
+   * such as a function which subscribes a stream to a consumer.
+   */
+  public static Command fromSubscription(Supplier<Disposable> resource) {
+    return Command.just(() -> {
       Disposable disposable = resource.get();
       return Flowable.just(new TerminatorWrapper(disposable::dispose));
     });
   }
 
   /**
-   * Create a command that executes the given supplier, and has custom termination functionality.
+   * Create a command that executes the given work unit, and has custom termination functionality.
    */
-  public static Command create(CommandWorkUnit start) {
+  public static Command just(CommandWorkUnit start) {
     return new Command(start);
+  }
+
+  /**
+   * Create a command that executes the provided commands sequentially.
+   *
+   * @param commands these commands will be executed from 'first to last' argument.
+   */
+  public static Command serial(Command... commands) {
+    return new Command(new SerialCommand(commands));
+  }
+
+  /**
+   * Create a command that executes the provided commands in parallel.
+   */
+  public static Command parallel(Command... commands) {
+    return new Command(new ParallelCommand(commands));
+  }
+
+  public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream) {
+    Flowable<Terminator> commands = Flowable.defer(() ->
+        Flowable.switchOnNext(Flowable.fromPublisher(commandStream).map(CommandWorkUnit::execute)
+            .subscribeOn(Schedulers.io())));
+    return new Command(() -> commands.scan((a, b) -> {
+      a.run();
+      return b;
+    }));
   }
 
   /**
@@ -92,22 +125,6 @@ public class Command implements CommandWorkUnit {
   }
 
   /**
-   * Create a command that executes the provided commands sequentially.
-   *
-   * @param commands these commands will be executed from 'first to last' argument.
-   */
-  public static Command serial(Command... commands) {
-    return new Command(new SerialCommand(commands));
-  }
-
-  /**
-   * Create a command that executes the provided commands in parallel.
-   */
-  public static Command parallel(Command... commands) {
-    return new Command(new ParallelCommand(commands));
-  }
-
-  /**
    * Copies this command into one which will delay execution for a period of time.
    */
   public Command delayStart(long delay, TimeUnit unit) {
@@ -121,23 +138,15 @@ public class Command implements CommandWorkUnit {
     return parallel(this, new Command(Flowable::never).terminable(Flowable.timer(delay, unit)));
   }
 
-  public static Command fromSwitch(Publisher<CommandWorkUnit> commandStream) {
-    Flowable<Terminator> commands = Flowable.defer(() ->
-        Flowable.switchOnNext(Flowable.fromPublisher(commandStream).map(CommandWorkUnit::execute))
-    );
-    return new Command(() -> commands.scan((a, b) -> {
-      a.run();
-      return b;
-    }));
-  }
-
   public Command killAfter(long delay, TimeUnit unit) {
     return this.terminable(Flowable.timer(delay, unit));
   }
 
   @Override
   public Flowable<Terminator> execute() {
-    Flowable<Terminator> terms = source.execute().subscribeOn(Schedulers.io());
-    return terms.doOnComplete(() -> terms.subscribeOn(Schedulers.io()).subscribe(Terminator::run));
+    Flowable<Terminator> terms = source.execute();
+    terms.subscribeOn(Schedulers.io()).toList()
+        .subscribe(t -> Flowable.fromIterable(t).subscribe(Terminator::run));
+    return terms;
   }
 }

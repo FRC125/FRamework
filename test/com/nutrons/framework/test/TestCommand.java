@@ -2,6 +2,7 @@ package com.nutrons.framework.test;
 
 import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.commands.Terminator;
+import com.nutrons.framework.commands.TerminatorWrapper;
 import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
@@ -19,7 +20,7 @@ public class TestCommand {
 
   @Before
   public void setupCommands() {
-    delay = Command.create(() -> {
+    delay = Command.fromAction(() -> {
 
     }).delayTermination(1000, TimeUnit.MILLISECONDS);
   }
@@ -28,7 +29,7 @@ public class TestCommand {
   public void single() {
     final Integer[] arr = new Integer[1];
     arr[0] = 5;
-    Command command = Command.create(() -> arr[0] = 10);
+    Command command = Command.fromAction(() -> arr[0] = 10);
     // Tests to see if this single command works.
     waitForCommand(command.execute());
     assertTrue(arr[0] == 10);
@@ -47,6 +48,7 @@ public class TestCommand {
     Command series = delay.then(delay);
     waitForCommand(series.execute());
     assertTrue(System.currentTimeMillis() - 2000 > start);
+    assertTrue(System.currentTimeMillis() - 3000 < start);
   }
 
   @Test
@@ -74,7 +76,7 @@ public class TestCommand {
     int[] record = new int[2];
     assertTrue(record[0] == 0);
     long start = System.currentTimeMillis();
-    Flowable<Terminator> d = Command.create(() -> record[0] = 1).until(() -> record[1] == 1).execute();
+    Flowable<Terminator> d = Command.fromAction(() -> record[0] = 1).until(() -> record[1] == 1).execute();
     Flowable.timer(1, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe(x -> record[1] = 1);
     waitForCommand(d);
     assertTrue(System.currentTimeMillis() - 1000 > start);
@@ -87,7 +89,7 @@ public class TestCommand {
   @Test
   public void testStartable() {
     long start = System.currentTimeMillis();
-    waitForCommand(Command.create(() -> {
+    waitForCommand(Command.fromAction(() -> {
     })
         .startable(Flowable.timer(1, TimeUnit.SECONDS)).execute());
     assertTrue(System.currentTimeMillis() - 1000 > start);
@@ -97,7 +99,7 @@ public class TestCommand {
   public void testWhen() throws InterruptedException {
     int[] record = new int[2];
     assertTrue(record[0] == 0);
-    Flowable<Terminator> d = Command.create(() -> record[0] = 1).when(() -> record[1] == 1).execute();
+    Flowable<Terminator> d = Command.fromAction(() -> record[0] = 1).when(() -> record[1] == 1).execute();
     Thread.sleep(1000);
     assertTrue(record[0] == 0);
     long start = System.currentTimeMillis();
@@ -123,11 +125,31 @@ public class TestCommand {
   public void killAfter() throws InterruptedException {
     int[] record = new int[1];
     long start = System.currentTimeMillis();
-    Command.create(() -> Flowable.just(() -> {
+    Command.just(() -> Flowable.just(() -> {
       assertTrue(System.currentTimeMillis() - 2000 < start);
       record[0] = 1;
     })).delayTermination(1000, TimeUnit.SECONDS).killAfter(1, TimeUnit.SECONDS).execute();
     Thread.sleep(2000);
     assertTrue(record[0] == 1);
+  }
+
+  @Test
+  public void testSwitch() throws InterruptedException {
+    int[] record = new int[1];
+    record[0] = 0;
+    Command inc = Command.just(() -> {
+      synchronized (record) {
+        record[0] += 1;
+      }
+      return Flowable.just(new TerminatorWrapper(() -> {
+        synchronized (record) {
+          record[0] -= 1;
+        }
+      }));
+    });
+    Command.fromSwitch(Flowable.interval(1, TimeUnit.SECONDS).map(x -> inc).take(5))
+        .execute().blockingSubscribe();
+    Thread.sleep(2000);
+    assertTrue(record[0] == 0);
   }
 }

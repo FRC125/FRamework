@@ -1,11 +1,11 @@
 package com.nutrons.framework.commands;
 
 import io.reactivex.Flowable;
-import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SerialCommand implements CommandWorkUnit {
   private final Flowable<CommandWorkUnit> commands;
@@ -17,15 +17,14 @@ public class SerialCommand implements CommandWorkUnit {
 
   @Override
   public Flowable<Terminator> execute() {
-    PublishProcessor<Terminator> finisher = PublishProcessor.create();
-    final ExecuteLock lock = new ExecuteLock();
+    final AtomicBoolean lock = new AtomicBoolean(false);
     final List<Terminator> terminators = new ArrayList<>();
     Flowable<Terminator> terminatorFlow = this.commands.concatMap(x -> x.execute().subscribeOn(Schedulers.io()))
-        .subscribeOn(Schedulers.io());
+        .subscribeOn(Schedulers.io()).publish().autoConnect();
     terminatorFlow.subscribe(x -> {
-      if (!lock.done) {
+      if (!lock.get()) {
         synchronized (lock) {
-          if (!lock.done) {
+          if (!lock.get()) {
             terminators.add(x);
             return;
           }
@@ -39,10 +38,10 @@ public class SerialCommand implements CommandWorkUnit {
   }
 
   private class SerialTerminator implements Runnable {
-    private final ExecuteLock lock;
+    private final AtomicBoolean lock;
     private final List<Terminator> terminators;
 
-    private SerialTerminator(ExecuteLock lock, List<Terminator> terminators) {
+    private SerialTerminator(AtomicBoolean lock, List<Terminator> terminators) {
       this.lock = lock;
       this.terminators = terminators;
     }
@@ -50,15 +49,11 @@ public class SerialCommand implements CommandWorkUnit {
     @Override
     public void run() {
       synchronized (lock) {
-        lock.done = true;
+        lock.set(true);
         for (Terminator terminator : terminators) {
           terminator.run();
         }
       }
     }
-  }
-
-  private class ExecuteLock {
-    private boolean done = false;
   }
 }
