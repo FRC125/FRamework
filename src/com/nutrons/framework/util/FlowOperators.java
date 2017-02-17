@@ -29,8 +29,8 @@ public class FlowOperators {
    * @param <T>     the type of the Flowable and Supplier
    */
   public static <T> Flowable<T> toFlowBackpressure(Supplier<T> supplier, long ignored, TimeUnit unit) {
-    return Flowable.interval(ignored, unit, Schedulers.trampoline())
-        .observeOn(Schedulers.io()).map((x) -> supplier.get()).observeOn(Schedulers.computation());
+    return Flowable.interval(ignored, unit).subscribeOn(Schedulers.io())
+        .map(x -> supplier.get()).observeOn(Schedulers.computation());
   }
 
   /**
