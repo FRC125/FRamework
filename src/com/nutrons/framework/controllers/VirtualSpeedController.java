@@ -12,4 +12,9 @@ public class VirtualSpeedController extends LoopSpeedController {
   public void accept(ControllerEvent controllerEvent) {
     controllerEvent.actOn(this);
   }
+
+  @Override
+  public void setOutputFlipped(boolean flipped) {
+
+  }
 }
