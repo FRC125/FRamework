@@ -1,6 +1,7 @@
 package com.nutrons.framework.util;
 
 import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
@@ -69,5 +70,23 @@ public class FlowOperators {
 
   public static <T> T getLastValue(Flowable<T> input) {
     return input.blockingLatest().iterator().next();
+  }
+
+  public static FlowableTransformer<Double, Double> pidLoop(double proportional,
+                                                            int integralBuffer,
+                                                            double integral,
+                                                            double derivative) {
+    return error -> {
+        Flowable<Double> errorP = error.map(x -> x * proportional);
+        Flowable<Double> errorI = error.buffer(integralBuffer, 1)
+            .map(list -> list.stream().reduce(0.0, (x, acc) -> x + acc))
+            .map(x -> x * integral);
+        Flowable<Double> errorD = error.buffer(2, 1)
+            .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
+            .map(x -> x * derivative);
+        Flowable<Double> output = Flowable.combineLatest(errorP, errorI, errorD,
+            (p, i, d) -> p + i + d);
+        return output;
+    };
   }
 }
