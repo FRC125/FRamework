@@ -75,13 +75,13 @@ public class Serial implements Subsystem {
       this.serial.enableTermination(terminationCharacter);
       this.wait = PublishProcessor.create();
 
-      Supplier<byte[]> suppler = (Supplier<byte[]>) () -> {
+      Supplier<byte[]> supplier = (Supplier<byte[]>) () -> {
         if (serial.getBytesReceived() > this.bufferSize) { //Clear out old values
           serial.reset();
         }
         return serial.read(packetLength);
       };
-      this.dataStream = toFlow(new IntervalCache<byte[]>(100, suppler))
+      this.dataStream = toFlow(new IntervalCache<byte[]>(100, supplier))
           .filter(x -> x.length == packetLength);
     } catch (ExceptionInInitializerError e) {
       System.out.println(e.getMessage());
