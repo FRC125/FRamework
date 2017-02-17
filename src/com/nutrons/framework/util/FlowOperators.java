@@ -89,4 +89,9 @@ public class FlowOperators {
         return output;
     };
   }
+  public static <T> T printID (T t) {
+    System.out.println(t);
+    return t;
+  }
+
 }
