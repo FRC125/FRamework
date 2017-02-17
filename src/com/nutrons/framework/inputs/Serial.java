@@ -31,7 +31,7 @@ public class Serial implements Subsystem {
    * @param bufferSize   represents how many bytes to cache unread before clearing buffer
    * @param packetLength represents the length of each read from the buffer
    */
-  public Serial(int bufferSize, int packetLength) throws Exception {
+  public Serial(int bufferSize, int packetLength) {
     this(DEFAULT_BAUD_RATE, SerialPort.Port.kUSB, bufferSize, packetLength,
         DEFAULT_TERMINATION_CHARACTER);
   }
@@ -47,7 +47,7 @@ public class Serial implements Subsystem {
   public Serial(SerialPort.Port port,
                 int bufferSize,
                 int packetLength,
-                char terminationCharacter) throws Exception {
+                char terminationCharacter) {
     this(DEFAULT_BAUD_RATE, port, bufferSize, packetLength, terminationCharacter);
   }
 
@@ -64,7 +64,7 @@ public class Serial implements Subsystem {
                 SerialPort.Port port,
                 int bufferSize,
                 int packetLength,
-                char terminationCharacter) throws Exception {
+                char terminationCharacter) {
 
     try {
       this.serial = new SerialPort(baudrate, port);
@@ -83,7 +83,7 @@ public class Serial implements Subsystem {
       };
       this.dataStream = toFlow(new IntervalCache<byte[]>(100, supplier))
           .filter(x -> x.length == packetLength);
-    } catch (Throwable e) {
+    } catch (RuntimeException e) {
       System.out.println(e.getMessage());
     }
   }
