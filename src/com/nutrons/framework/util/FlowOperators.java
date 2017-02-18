@@ -93,7 +93,8 @@ public class FlowOperators {
   public static FlowableTransformer<Double, Double> limitWithin(double minimum, double maximum) {
     return f -> f.map(x -> x < minimum ? minimum : x)
         .map(x -> x > maximum ? maximum : x);
-
+  }
+    
   public static <T> T printId(T t) {
     System.out.println(t);
     return t;
