@@ -129,7 +129,7 @@ public class TestCommand {
       System.out.println("hi");
       assertTrue(System.currentTimeMillis() - 2000 < start);
       record[0] = 1;
-    })).delayTermination(1000, TimeUnit.SECONDS).killAfter(1, TimeUnit.SECONDS).startExecution();
+    })).killAfter(1, TimeUnit.SECONDS).startExecution();
     Thread.sleep(4000);
     assertTrue(record[0] == 1);
   }

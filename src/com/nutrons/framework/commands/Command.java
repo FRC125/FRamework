@@ -132,10 +132,6 @@ public class Command implements CommandWorkUnit {
     return this.startable(Flowable.timer(delay, unit));
   }
 
-  public Command delayTermination(long delay, TimeUnit unit) {
-    return parallel(this, new Command(Flowable::never).terminable(Flowable.timer(delay, unit)));
-  }
-
   public Command killAfter(long delay, TimeUnit unit) {
     return Command.just(() -> {
       Flowable<Terminator> terms = this.terminable(Flowable.timer(delay, unit)).execute();
