@@ -77,19 +77,24 @@ public class FlowOperators {
                                                             double integral,
                                                             double derivative) {
     return error -> {
-        Flowable<Double> errorP = error.map(x -> x * proportional);
-        Flowable<Double> errorI = error.buffer(integralBuffer, 1)
-            .map(list -> list.stream().reduce(0.0, (x, acc) -> x + acc))
-            .map(x -> x * integral);
-        Flowable<Double> errorD = error.buffer(2, 1)
-            .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
-            .map(x -> x * derivative);
-        Flowable<Double> output = Flowable.combineLatest(errorP, errorI, errorD,
-            (p, i, d) -> p + i + d);
-        return output;
+      Flowable<Double> errorP = error.map(x -> x * proportional);
+      Flowable<Double> errorI = error.buffer(integralBuffer, 1)
+          .map(list -> list.stream().reduce(0.0, (x, acc) -> x + acc))
+          .map(x -> x * integral);
+      Flowable<Double> errorD = error.buffer(2, 1)
+          .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
+          .map(x -> x * derivative);
+      Flowable<Double> output = Flowable.combineLatest(errorP, errorI, errorD,
+          (p, i, d) -> p + i + d);
+      return output;
     };
   }
 
+  public static FlowableTransformer<Double, Double> limitWithin(double minimum, double maximum) {
+    return f -> f.map(x -> x < minimum ? minimum : x)
+        .map(x -> x > maximum ? maximum : x);
+  }
+    
   public static <T> T printId(T t) {
     System.out.println(t);
     return t;
