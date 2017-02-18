@@ -4,7 +4,6 @@ import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.commands.Terminator;
 import com.nutrons.framework.commands.TerminatorWrapper;
 import io.reactivex.Flowable;
-import io.reactivex.functions.Action;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import org.junit.Before;
@@ -19,11 +18,15 @@ import static junit.framework.TestCase.assertTrue;
 public class TestCommand {
   private Command delay;
 
+  static void waitForCommand(Flowable<Terminator> commandExecution) {
+    commandExecution.blockingSubscribe();
+  }
+
   @Before
   public void setupCommands() {
     delay = Command.fromAction(() -> {
 
-    }).killAfter(1000, TimeUnit.MILLISECONDS);
+    }).delayTermination(1000, TimeUnit.MILLISECONDS);
   }
 
   @Test
@@ -118,22 +121,15 @@ public class TestCommand {
     assertTrue(System.currentTimeMillis() - 3000 < start);
   }
 
-  static void waitForCommand(Flowable<Terminator> commandExecution) {
-    commandExecution.blockingSubscribe();
-  }
-
   @Test
   public void killAfter() throws InterruptedException {
     int[] record = new int[1];
     long start = System.currentTimeMillis();
-    Command.just(() -> {
-      System.out.println("executed");
-      return Flowable.<Terminator>just(() -> {
-        System.out.println("asdf");
-        record[0] = 1;
-        assertTrue(System.currentTimeMillis() - 2000 < start);
-      }).doOnComplete(() -> System.out.println("hi"));
-    }).killAfter(2, TimeUnit.SECONDS).execute().subscribe(Terminator::run);
+    Command.just(() -> Flowable.just(() -> {
+      System.out.println("hi");
+      assertTrue(System.currentTimeMillis() - 2000 < start);
+      record[0] = 1;
+    })).delayTermination(1000, TimeUnit.SECONDS).killAfter(1, TimeUnit.SECONDS).startExecution();
     Thread.sleep(4000);
     assertTrue(record[0] == 1);
   }
