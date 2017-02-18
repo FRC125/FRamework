@@ -65,7 +65,7 @@ public class StreamManager {
             System.out.println("Starting Autonomous" + auto.getClass().toString());
             return a;
           }).subscribe(x -> auto.terminable(mode.filter(y -> y != AUTO)
-          .mergeWith(enabled.filter(z -> z).map(z -> AUTO))).execute());
+          .mergeWith(enabled.filter(z -> z).map(z -> AUTO))).startExecution());
     }
     this.enabled.ignoreElements().blockingAwait();
     this.mode.ignoreElements().blockingAwait();
