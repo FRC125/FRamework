@@ -4,6 +4,7 @@ import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.commands.Terminator;
 import com.nutrons.framework.commands.TerminatorWrapper;
 import io.reactivex.Flowable;
+import io.reactivex.functions.Action;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import org.junit.Before;
@@ -22,7 +23,7 @@ public class TestCommand {
   public void setupCommands() {
     delay = Command.fromAction(() -> {
 
-    }).delayTermination(1000, TimeUnit.MILLISECONDS);
+    }).killAfter(1000, TimeUnit.MILLISECONDS);
   }
 
   @Test
@@ -125,11 +126,15 @@ public class TestCommand {
   public void killAfter() throws InterruptedException {
     int[] record = new int[1];
     long start = System.currentTimeMillis();
-    Command.just(() -> Flowable.just(() -> {
-      assertTrue(System.currentTimeMillis() - 2000 < start);
-      record[0] = 1;
-    })).delayTermination(1000, TimeUnit.SECONDS).killAfter(1, TimeUnit.SECONDS).execute();
-    Thread.sleep(2000);
+    Command.just(() -> {
+      System.out.println("executed");
+      return Flowable.<Terminator>just(() -> {
+        System.out.println("asdf");
+        record[0] = 1;
+        assertTrue(System.currentTimeMillis() - 2000 < start);
+      }).doOnComplete(() -> System.out.println("hi"));
+    }).killAfter(2, TimeUnit.SECONDS).execute().subscribe(Terminator::run);
+    Thread.sleep(4000);
     assertTrue(record[0] == 1);
   }
 
@@ -148,7 +153,7 @@ public class TestCommand {
       }));
     });
     Command.fromSwitch(Flowable.interval(1, TimeUnit.SECONDS).map(x -> inc).take(5))
-        .execute().blockingSubscribe();
+        .execute().blockingSubscribe(Terminator::run);
     Thread.sleep(2000);
     assertTrue(record[0] == 0);
   }

@@ -73,16 +73,7 @@ public abstract class Robot extends SampleRobot {
    */
   @Override
   public final void robotMain() {
-    Command auto = this.registerAuto();
-    this.sm.startCompetition();
-    System.out.println("Started Competition");
-    combineLatest(enabledStream(), competitionStream(), (x, y) -> x && y.compareTo(AUTO) == 0)
-            .subscribeOn(Schedulers.io())
-            .filter(x -> x)
-            .map((a) ->{ System.out.println("Starting Autonomous" + auto.getClass().toString());
-      return a;
-    }).subscribe(x -> auto.terminable(competitionStream().filter(y -> y != AUTO)).execute());
-
+    this.sm.startCompetition(() -> this.registerAuto());
   }
 
 
