@@ -120,4 +120,14 @@ public class Talon extends LoopSpeedController {
   void resetPositionTo(double position) {
     this.talon.setPosition(position);
   }
+
+  @Override
+  public boolean fwdLimitSwitchClosed(){
+    return this.talon.isFwdLimitSwitchClosed();
+  }
+
+  @Override
+  public boolean revLimitSwitchClosed(){
+    return this.talon.isRevLimitSwitchClosed();
+  }
 }

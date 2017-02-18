@@ -37,4 +37,8 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   public void setReversedSensor(boolean flipped) {
     this.accept(Events.setReversedSensor(flipped));
   }
+
+  public abstract boolean fwdLimitSwitchClosed();
+
+  public abstract boolean revLimitSwitchClosed();
 }
