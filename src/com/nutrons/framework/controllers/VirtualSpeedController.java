@@ -17,4 +17,9 @@ public class VirtualSpeedController extends LoopSpeedController {
   public void setOutputFlipped(boolean flipped) {
 
   }
+
+  @Override
+  public double speed() {
+    return 0;
+  }
 }

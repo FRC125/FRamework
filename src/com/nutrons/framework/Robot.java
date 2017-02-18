@@ -75,6 +75,7 @@ public abstract class Robot extends SampleRobot {
     if (auto != null) {
       this.competitionStream().filter(x -> x == AUTO).subscribe(x -> auto.terminable(competitionStream().filter(y -> y != AUTO)).execute());
     }
+    System.out.println("registering subsystems");
     this.sm.startCompetition();
   }
 
