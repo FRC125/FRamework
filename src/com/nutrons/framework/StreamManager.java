@@ -43,7 +43,12 @@ public class StreamManager {
    * and start the competition loop.
    */
   public final void startCompetition() {
-    Observable.fromIterable(this.subsystems).blockingSubscribe(Subsystem::registerSubscriptions);
+    Observable.fromIterable(this.subsystems).blockingSubscribe(x -> {
+      System.out.println("registering " + x.getClass().getName());
+      x.registerSubscriptions();
+      System.out.println("registered " + x.getClass().getName());
+    });
+    System.out.println("all subsystems registered");
     this.enabled.ignoreElements().blockingAwait();
     this.mode.ignoreElements().blockingAwait();
     Observable.never().blockingSubscribe();

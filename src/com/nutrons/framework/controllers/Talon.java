@@ -42,10 +42,12 @@ public class Talon extends LoopSpeedController {
   }
 
   void set(double value) {
+    System.out.println("Received set for value " + value);
     this.talon.set(value);
   }
 
   void changeControlMode(ControlMode mode) {
+    System.out.println("Change mode to " + mode.toString());
     switch (mode) {
       case FOLLOWER:
         this.talon.changeControlMode(CANTalon.TalonControlMode.Follower);
@@ -65,6 +67,7 @@ public class Talon extends LoopSpeedController {
   }
 
   void changeSetpoint(double setpoint) {
+    System.out.println("Changing setpoint to " + setpoint);
     this.talon.setSetpoint(setpoint);
 
   }
@@ -92,15 +95,23 @@ public class Talon extends LoopSpeedController {
 
   @Override
   public void accept(ControllerEvent event) {
+    System.out.println("Received event " + event.getClass().getName() + " on talon " + this.talon.getDeviceID());
     event.actOn(this);
   }
 
   @Override
   public void setOutputFlipped(boolean flipped) {
+    System.out.println("output: " + flipped);
     talon.setInverted(flipped);
   }
 
+  @Override
+  public double speed() {
+    return this.talon.getSpeed();
+  }
+
   void reverseSensor(boolean flipped) {
+    System.out.println("sensor: " + flipped);
     talon.reverseSensor(flipped);
   }
 
@@ -109,8 +120,10 @@ public class Talon extends LoopSpeedController {
   }
 
   void setOutputVoltage(double min, double max) {
-    this.talon.configNominalOutputVoltage(Math.max(min, 0.0), Math.min(max, 12.0f));
-    this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 12.0f));
+    this.talon.configNominalOutputVoltage(Math.max(min, 0.0), Math.min(max, 0.0));
+    this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 0.0));
+    System.out.println("nominal min = " + Math.max(min, 0.0) + " max = " + Math.min(max, 0.0));
+    System.out.println("peak min = " + Math.max(max, 0.0) + " max = " + Math.min(min, 0.0));
   }
 
   public double position() {
@@ -121,13 +134,18 @@ public class Talon extends LoopSpeedController {
     this.talon.setPosition(position);
   }
 
+
   @Override
   public boolean fwdLimitSwitchClosed(){
     return this.talon.isFwdLimitSwitchClosed();
   }
 
   @Override
-  public boolean revLimitSwitchClosed(){
+  public boolean revLimitSwitchClosed() {
     return this.talon.isRevLimitSwitchClosed();
+  }
+
+  public double getClosedLoopError() {
+    return this.talon.getClosedLoopError();
   }
 }

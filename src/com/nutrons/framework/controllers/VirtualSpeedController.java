@@ -27,4 +27,8 @@ public class VirtualSpeedController extends LoopSpeedController {
   public boolean revLimitSwitchClosed() {
     return false;
   }
+
+  public double speed() {
+    return 0;
+  }
 }
