@@ -4,6 +4,7 @@ import static com.nutrons.framework.util.CompMode.AUTO;
 import static com.nutrons.framework.util.CompMode.TELE;
 import static com.nutrons.framework.util.CompMode.TEST;
 
+import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.util.CompMode;
 import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
@@ -28,6 +29,7 @@ public abstract class Robot extends SampleRobot {
     constructStreams();
     sm = this.provideStreamManager();
   }
+
 
   /**
    * Construct input and output streams that will be passed
@@ -69,6 +71,10 @@ public abstract class Robot extends SampleRobot {
    */
   @Override
   public final void robotMain() {
+    Command auto = this.registerAuto();
+    if (auto != null) {
+      this.competitionStream().filter(x -> x == AUTO).subscribe(x -> auto.terminable(competitionStream().filter(y -> y != AUTO)).execute());
+    }
     this.sm.startCompetition();
   }
 
@@ -79,6 +85,10 @@ public abstract class Robot extends SampleRobot {
 
   @Override
   protected final void disabled() {
+  }
+
+  protected Command registerAuto() {
+    return null;
   }
 
   @Override
