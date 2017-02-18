@@ -132,9 +132,6 @@ public class Command implements CommandWorkUnit {
     return this.startable(Flowable.timer(delay, unit));
   }
 
-  /**
-   * Copies this command into one which will delay its completion until a certain time has passed.
-   */
   public Command delayTermination(long delay, TimeUnit unit) {
     return parallel(this, new Command(Flowable::never).terminable(Flowable.timer(delay, unit)));
   }
@@ -143,7 +140,6 @@ public class Command implements CommandWorkUnit {
     return Command.just(() -> {
       Flowable<Terminator> terms = this.terminable(Flowable.timer(delay, unit)).execute();
       return terms.doOnComplete(() -> {
-        System.out.println("completed");
         FlattenedTerminator.from(terms).toSingle()
             .subscribe(Terminator::run);
       });

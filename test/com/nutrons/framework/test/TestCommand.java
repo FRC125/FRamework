@@ -26,7 +26,7 @@ public class TestCommand {
   public void setupCommands() {
     delay = Command.fromAction(() -> {
 
-    }).delayTermination(1000, TimeUnit.MILLISECONDS);
+    }).killAfter(1000, TimeUnit.MILLISECONDS);
   }
 
   @Test

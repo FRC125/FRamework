@@ -2,9 +2,12 @@ package com.nutrons.framework.util;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
+import java.awt.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -98,5 +101,25 @@ public class FlowOperators {
   public static <T> T printId(T t) {
     System.out.println(t);
     return t;
+  }
+
+  public static Disposable combineDisposable(Disposable... disposables) {
+    CompositeDisposable cd = new CompositeDisposable();
+    CompositeDisposable dvd = new CompositeDisposable();
+    dvd.add(new Disposable() {
+      @Override
+      public void dispose() {
+        System.out.println("disposing");
+        cd.dispose();
+        System.out.println("done disposing");
+      }
+
+      @Override
+      public boolean isDisposed() {
+        return cd.isDisposed();
+      }
+    });
+    Flowable.fromArray(disposables).blockingSubscribe(cd::add);
+    return dvd;
   }
 }
