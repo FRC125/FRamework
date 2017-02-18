@@ -18,6 +18,10 @@ import static junit.framework.TestCase.assertTrue;
 public class TestCommand {
   private Command delay;
 
+  static void waitForCommand(Flowable<Terminator> commandExecution) {
+    commandExecution.blockingSubscribe();
+  }
+
   @Before
   public void setupCommands() {
     delay = Command.fromAction(() -> {
@@ -117,19 +121,16 @@ public class TestCommand {
     assertTrue(System.currentTimeMillis() - 3000 < start);
   }
 
-  static void waitForCommand(Flowable<Terminator> commandExecution) {
-    commandExecution.blockingSubscribe();
-  }
-
   @Test
   public void killAfter() throws InterruptedException {
     int[] record = new int[1];
     long start = System.currentTimeMillis();
     Command.just(() -> Flowable.just(() -> {
+      System.out.println("hi");
       assertTrue(System.currentTimeMillis() - 2000 < start);
       record[0] = 1;
-    })).delayTermination(1000, TimeUnit.SECONDS).killAfter(1, TimeUnit.SECONDS).execute();
-    Thread.sleep(2000);
+    })).delayTermination(1000, TimeUnit.SECONDS).killAfter(1, TimeUnit.SECONDS).startExecution();
+    Thread.sleep(4000);
     assertTrue(record[0] == 1);
   }
 
@@ -148,7 +149,7 @@ public class TestCommand {
       }));
     });
     Command.fromSwitch(Flowable.interval(1, TimeUnit.SECONDS).map(x -> inc).take(5))
-        .execute().blockingSubscribe();
+        .execute().blockingSubscribe(Terminator::run);
     Thread.sleep(2000);
     assertTrue(record[0] == 0);
   }
