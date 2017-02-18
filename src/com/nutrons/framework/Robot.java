@@ -3,12 +3,14 @@ package com.nutrons.framework;
 import static com.nutrons.framework.util.CompMode.AUTO;
 import static com.nutrons.framework.util.CompMode.TELE;
 import static com.nutrons.framework.util.CompMode.TEST;
+import static io.reactivex.Flowable.combineLatest;
 
 import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.util.CompMode;
 import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 
 public abstract class Robot extends SampleRobot {
 
@@ -72,11 +74,17 @@ public abstract class Robot extends SampleRobot {
   @Override
   public final void robotMain() {
     Command auto = this.registerAuto();
-    if (auto != null) {
-      this.competitionStream().filter(x -> x == AUTO).subscribe(x -> auto.terminable(competitionStream().filter(y -> y != AUTO)).execute());
-    }
     this.sm.startCompetition();
+    System.out.println("Started Competition");
+    combineLatest(enabledStream(), competitionStream(), (x, y) -> x && y.compareTo(AUTO) == 0)
+            .subscribeOn(Schedulers.io())
+            .filter(x -> x)
+            .map((a) ->{ System.out.println("Starting Autonomous" + auto.getClass().toString());
+      return a;
+    }).subscribe(x -> auto.terminable(competitionStream().filter(y -> y != AUTO)).execute());
+
   }
+
 
   @Override
   public final void startCompetition() {
