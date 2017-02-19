@@ -7,6 +7,6 @@ public class StopCompressorEvent implements PneumaticEvent {
   }
 
   public void actOn(WpiCompressor comp) {
-    comp.start();
+    comp.stop();
   }
 }
