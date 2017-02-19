@@ -28,6 +28,11 @@ public class VirtualSpeedController extends LoopSpeedController {
     return false;
   }
 
+  @Override
+  public double position() {
+    return 0;
+  }
+
   public double speed() {
     return 0;
   }

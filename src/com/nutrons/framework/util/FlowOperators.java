@@ -32,8 +32,8 @@ public class FlowOperators {
    * @param <T>     the type of the Flowable and Supplier
    */
   public static <T> Flowable<T> toFlowBackpressure(Supplier<T> supplier, long ignored, TimeUnit unit) {
-    return Flowable.interval(ignored, unit).subscribeOn(Schedulers.io())
-        .map(x -> supplier.get()).observeOn(Schedulers.computation());
+    return Flowable.interval(ignored, unit).onBackpressureDrop().subscribeOn(Schedulers.io())
+        .map(x -> supplier.get()).onBackpressureDrop().observeOn(Schedulers.computation());
   }
 
   /**
@@ -105,21 +105,7 @@ public class FlowOperators {
 
   public static Disposable combineDisposable(Disposable... disposables) {
     CompositeDisposable cd = new CompositeDisposable();
-    CompositeDisposable dvd = new CompositeDisposable();
-    dvd.add(new Disposable() {
-      @Override
-      public void dispose() {
-        System.out.println("disposing");
-        cd.dispose();
-        System.out.println("done disposing");
-      }
-
-      @Override
-      public boolean isDisposed() {
-        return cd.isDisposed();
-      }
-    });
     Flowable.fromArray(disposables).blockingSubscribe(cd::add);
-    return dvd;
+    return cd;
   }
 }

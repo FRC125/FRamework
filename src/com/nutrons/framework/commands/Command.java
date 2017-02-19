@@ -1,6 +1,8 @@
 package com.nutrons.framework.commands;
 
+import com.nutrons.framework.util.FlowOperators;
 import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
@@ -9,6 +11,7 @@ import org.reactivestreams.Publisher;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static com.nutrons.framework.util.FlowOperators.printId;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Command implements CommandWorkUnit {
@@ -79,6 +82,10 @@ public class Command implements CommandWorkUnit {
     }));
   }
 
+  public Command addFinalTerminator(Terminator terminator) {
+    return Command.just(() -> this.source.execute().flatMap(x -> Flowable.just(x, terminator)));
+  }
+
   /**
    * Copies this command into one which will not execute until 'starter' emits an item.
    */
@@ -101,9 +108,11 @@ public class Command implements CommandWorkUnit {
    */
   public Command terminable(Publisher<?> terminator) {
     return new Command(() -> {
-      Flowable<Terminator> terminatorFlowable = this.execute();
-      Terminator multi = FlattenedTerminator.from(terminatorFlowable);
-      return Flowable.defer(() -> Flowable.<Terminator>never().takeUntil(terminator)
+      ConnectableFlowable<?> flowterminator = Flowable.fromPublisher(terminator).publish();
+      flowterminator.connect();
+      Flowable<Terminator> sourceTerminator = this.execute();
+      Terminator multi = FlattenedTerminator.from(sourceTerminator);
+      return Flowable.defer(() -> Flowable.<Terminator>never().takeUntil(flowterminator)
           .mergeWith(Flowable.just(multi::run)));
     });
   }
@@ -113,9 +122,8 @@ public class Command implements CommandWorkUnit {
    * will only complete once endCondition returns true.
    */
   public Command until(Supplier<Boolean> endCondition) {
-    Flowable terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x).onBackpressureDrop();
-    return new Command(() ->
-        Flowable.<Terminator>never().mergeWith(this.execute())).terminable(terminator);
+    Flowable terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x).onBackpressureDrop().publish();
+    return new Command(this::execute).terminable(terminator);
   }
 
   /**
@@ -150,7 +158,7 @@ public class Command implements CommandWorkUnit {
 
   public Flowable<Terminator> startExecution() {
     Flowable<Terminator> terms = this.execute().subscribeOn(Schedulers.io());
-    terms.subscribe();
+    terms.toList().subscribe(x -> Observable.fromIterable(x).blockingSubscribe(Terminator::run));
     return terms;
   }
 }
