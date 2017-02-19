@@ -1,9 +1,9 @@
 package com.nutrons.framework.controllers;
 
 import com.ctre.CANTalon;
-import io.reactivex.Flowable;
 
 import java.security.InvalidParameterException;
+import io.reactivex.Flowable;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
@@ -29,7 +29,7 @@ public class Talon extends LoopSpeedController {
     this(port);
     this.talon.setFeedbackDevice(feedbackDevice);
   }
-  
+
   /**
    * Creates a talon that initially follows another talon.
    *

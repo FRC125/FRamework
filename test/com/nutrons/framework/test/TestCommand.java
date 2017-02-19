@@ -16,6 +16,7 @@ import static com.nutrons.framework.commands.Command.serial;
 import static junit.framework.TestCase.assertTrue;
 
 public class TestCommand {
+
   private Command delay;
 
   @Before
@@ -76,7 +77,8 @@ public class TestCommand {
     int[] record = new int[2];
     assertTrue(record[0] == 0);
     long start = System.currentTimeMillis();
-    Flowable<Terminator> d = Command.fromAction(() -> record[0] = 1).until(() -> record[1] == 1).execute();
+    Flowable<Terminator> d = Command.fromAction(() -> record[0] = 1).until(() -> record[1] == 1)
+        .execute();
     Flowable.timer(1, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe(x -> record[1] = 1);
     waitForCommand(d);
     assertTrue(System.currentTimeMillis() - 1000 > start);
@@ -99,7 +101,8 @@ public class TestCommand {
   public void testWhen() throws InterruptedException {
     int[] record = new int[2];
     assertTrue(record[0] == 0);
-    Flowable<Terminator> d = Command.fromAction(() -> record[0] = 1).when(() -> record[1] == 1).execute();
+    Flowable<Terminator> d = Command.fromAction(() -> record[0] = 1).when(() -> record[1] == 1)
+        .execute();
     Thread.sleep(1000);
     assertTrue(record[0] == 0);
     long start = System.currentTimeMillis();

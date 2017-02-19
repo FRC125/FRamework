@@ -1,17 +1,18 @@
 package com.nutrons.framework.commands;
 
-import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.flowables.ConnectableFlowable;
-import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Publisher;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+
+import io.reactivex.Flowable;
+import io.reactivex.flowables.ConnectableFlowable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+import org.reactivestreams.Publisher;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Command implements CommandWorkUnit {
+
   // emptyPulse sends items on an interval, and is used in the 'until' and 'when' methods
   // to determine how often to test the predicates.
   private static final ConnectableFlowable<CommandWorkUnit> emptyPulse =
@@ -69,6 +70,11 @@ public class Command implements CommandWorkUnit {
     return new Command(new ParallelCommand(commands));
   }
 
+  /**
+   * Creates a command that runs sequentially to another.
+   * @param commandStream A flowable of commands
+   * @retuns Second command after first is executed.
+   */
   public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream) {
     Flowable<Terminator> commands = Flowable.defer(() ->
         Flowable.switchOnNext(Flowable.fromPublisher(commandStream).map(CommandWorkUnit::execute)
@@ -92,7 +98,8 @@ public class Command implements CommandWorkUnit {
    * will delay the execution of all actions until startCondition returns true.
    */
   public Command when(Supplier<Boolean> startCondition) {
-    Flowable ignition = Flowable.defer(() -> emptyPulse.map(x -> startCondition.get()).filter(x -> x).onBackpressureDrop());
+    Flowable ignition = Flowable
+        .defer(() -> emptyPulse.map(x -> startCondition.get()).filter(x -> x).onBackpressureDrop());
     return this.startable(ignition);
   }
 
@@ -112,7 +119,8 @@ public class Command implements CommandWorkUnit {
    * will only complete once endCondition returns true.
    */
   public Command until(Supplier<Boolean> endCondition) {
-    Flowable terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x).onBackpressureDrop();
+    Flowable terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x)
+        .onBackpressureDrop();
     return new Command(() ->
         Flowable.<Terminator>never().mergeWith(this.execute())).terminable(terminator);
   }

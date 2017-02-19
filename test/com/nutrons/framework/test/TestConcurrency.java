@@ -12,7 +12,8 @@ public class TestConcurrency {
 
   @Test
   public void mergingInParallel() {
-    Flowable<Long> even = Flowable.interval(1000, TimeUnit.MILLISECONDS).map(x -> 2 * x).onBackpressureBuffer();
+    Flowable<Long> even = Flowable.interval(1000, TimeUnit.MILLISECONDS).map(x -> 2 * x)
+        .onBackpressureBuffer();
 
     // odd and even are concat-mapped, such that they become effectively callbacks.
     Flowable<Long> odd = even.concatMap(x -> callBackWith(x + 1, 2000));
@@ -26,7 +27,7 @@ public class TestConcurrency {
     lastVals[0] = -1;
     lastVals[1] = -1;
     combo.subscribe(x -> {
-      if(x % 2 == 0) {
+      if (x % 2 == 0) {
         assertTrue(lastVals[0] < x);
         lastVals[0] = x;
       } else {
@@ -37,7 +38,6 @@ public class TestConcurrency {
     assertTrue(combo.take(3).filter(x -> x == 0).toList().blockingGet().size() > 0);
     assertFalse(combo.take(3).filter(x -> x == 4).toList().blockingGet().size() > 0);
   }
-
 
 
   private Flowable<Long> callBackWith(long x, long time) {

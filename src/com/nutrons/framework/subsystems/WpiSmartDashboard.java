@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WpiSmartDashboard implements Subsystem {
+
   private final Map<String, Consumer<Double>> doubleFields;
   private final Map<String, Consumer<String>> stringFields;
   private final Map<String, Consumer<Boolean>> booleanFields;

@@ -3,6 +3,7 @@ package com.nutrons.framework.inputs;
 import io.reactivex.Flowable;
 
 public class CommonController extends WpiGamepad {
+
   private final int leftStickX;
   private final int rightStickX;
   private final int leftStickY;
@@ -21,22 +22,22 @@ public class CommonController extends WpiGamepad {
   private final int stickButtonRight;
 
   private CommonController(int port,
-                           int leftStickX,
-                           int leftStickY,
-                           int rightStickX,
-                           int rightStickY,
-                           int leftTrigger,
-                           int rightTrigger,
-                           int buttonX,
-                           int buttonY,
-                           int buttonB,
-                           int buttonA,
-                           int buttonStart,
-                           int buttonSelect,
-                           int rightBumper,
-                           int leftBumper,
-                           int stickButtonLeft,
-                           int stickButtonRight) {
+      int leftStickX,
+      int leftStickY,
+      int rightStickX,
+      int rightStickY,
+      int leftTrigger,
+      int rightTrigger,
+      int buttonX,
+      int buttonY,
+      int buttonB,
+      int buttonA,
+      int buttonStart,
+      int buttonSelect,
+      int rightBumper,
+      int leftBumper,
+      int stickButtonLeft,
+      int stickButtonRight) {
     super(port);
     this.leftStickX = leftStickX;
     this.leftStickY = leftStickY;
