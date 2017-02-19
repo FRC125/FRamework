@@ -110,6 +110,10 @@ public class Talon extends LoopSpeedController {
     return this.talon.getSpeed();
   }
 
+  public void setFeedbackDevice(CANTalon.FeedbackDevice device) {
+    this.talon.setFeedbackDevice(device);
+  }
+
   void reverseSensor(boolean flipped) {
     System.out.println("sensor: " + flipped);
     talon.reverseSensor(flipped);

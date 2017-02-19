@@ -73,7 +73,7 @@ public abstract class Robot extends SampleRobot {
    */
   @Override
   public final void robotMain() {
-    this.sm.startCompetition(() -> this.registerAuto());
+    this.sm.startCompetition(this::registerAuto, this::registerTele);
   }
 
 
@@ -87,6 +87,10 @@ public abstract class Robot extends SampleRobot {
   }
 
   protected Command registerAuto() {
+    return null;
+  }
+
+  protected Command registerTele() {
     return null;
   }
 

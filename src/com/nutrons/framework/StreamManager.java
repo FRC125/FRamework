@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import static com.nutrons.framework.util.CompMode.AUTO;
+import static com.nutrons.framework.util.CompMode.TELE;
 import static io.reactivex.Flowable.combineLatest;
 
 /**
@@ -49,7 +50,7 @@ public class StreamManager {
    * Called to by the bootstrapper to subscribe subsystem streams,
    * and start the competition loop.
    */
-  public final void startCompetition(Supplier<Command> autoSupplier) {
+  public final void startCompetition(Supplier<Command> autoSupplier, Supplier<Command> teleopSupplier) {
     Observable.fromIterable(this.subsystems).blockingSubscribe(x -> {
       System.out.println("registering " + x.getClass().getName());
       x.registerSubscriptions();
@@ -62,10 +63,21 @@ public class StreamManager {
           .subscribeOn(Schedulers.io())
           .filter(x -> x)
           .map((a) -> {
-            System.out.println("Starting Autonomous" + auto.getClass().toString());
+            System.out.println("Starting Autonomous: " + auto.getClass().toString());
             return a;
           }).subscribe(x -> auto.terminable(mode.filter(y -> y != AUTO)
           .mergeWith(enabled.filter(z -> z).map(z -> AUTO))).startExecution());
+    }
+    Command tele = teleopSupplier.get();
+    if (tele != null) {
+      combineLatest(this.enabled, this.mode, (x, y) -> x && y.compareTo(TELE) == 0)
+          .subscribeOn(Schedulers.io())
+          .filter(x -> x)
+          .map((a) -> {
+            System.out.println("Starting Teleop: " + tele.getClass().toString());
+            return a;
+          }).subscribe(x -> tele.terminable(mode.filter(y -> y != TELE)
+          .mergeWith(enabled.filter(z -> z).map(z -> TELE))).startExecution());
     }
     this.enabled.ignoreElements().blockingAwait();
     this.mode.ignoreElements().blockingAwait();
