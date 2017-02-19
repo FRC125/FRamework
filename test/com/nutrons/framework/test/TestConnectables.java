@@ -1,13 +1,12 @@
 package com.nutrons.framework.test;
 
+import static junit.framework.TestCase.assertTrue;
+
 import io.reactivex.Flowable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
-import org.junit.Test;
-
 import java.util.concurrent.TimeUnit;
-
-import static junit.framework.TestCase.assertTrue;
+import org.junit.Test;
 
 public class TestConnectables {
 
