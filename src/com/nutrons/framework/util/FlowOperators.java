@@ -93,9 +93,9 @@ public class FlowOperators {
   }
 
   public static Function<Double, Double> limitWithin(double minimum, double maximum) {
-    return x -> max(min(x, maximum), minimum); 
+    return x -> max(min(x, maximum), minimum);
   }
-    
+
   public static <T> T printId(T t) {
     System.out.println(t);
     return t;
