@@ -5,8 +5,8 @@ public class FollowEvent implements ControllerEvent {
   private final Talon target;
 
   /**
-   * Creates event that will follow another event in unison.
-   * @param targetToFollow is a event of LoopSpeedController.
+   * Sets a LoopSpeedController to follow another LoopSpeedController
+   * @param targetToFollow is a LoopSpeedController which will be followed.
    */
   public FollowEvent(LoopSpeedController targetToFollow) {
     if (targetToFollow instanceof Talon) {
