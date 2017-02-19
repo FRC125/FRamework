@@ -1,0 +1,5 @@
+Before Merging
+==
+
+- [ ] PR to NU17-framework submitted which checks out that repository to your latest commit and fixes any breaking changes you have made
+- [ ] The checks listed in NU17-FRamework all pass
