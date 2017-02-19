@@ -17,4 +17,18 @@ public class VirtualSpeedController extends LoopSpeedController {
   public void setOutputFlipped(boolean flipped) {
 
   }
+
+  @Override
+  public boolean fwdLimitSwitchClosed() {
+    return false;
+  }
+
+  @Override
+  public boolean revLimitSwitchClosed() {
+    return false;
+  }
+
+  public double speed() {
+    return 0;
+  }
 }
