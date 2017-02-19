@@ -20,7 +20,9 @@ public class TestConcurrency {
 
     even = even.concatMap(x -> callBackWith(x, 5000));
 
-    // Once they are merged, even numbers and odd numbers are expected to run in series relative to their own events, but parallel relative to eachother.
+    // Once they are merged, even numbers and odd numbers
+    // are expected to run in series relative to their own events,
+    // but parallel relative to eachother.
     Flowable<Long> combo = Flowable.merge(even, odd);
     // combo.subscribe(System.out::println);
     long[] lastVals = new long[2];

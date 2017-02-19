@@ -35,7 +35,6 @@ public class Events {
 
   /**
    * Combines actions that are preformed on the talon.
-   * @param events
    * @return combined event
    */
   public static ControllerEvent combine(ControllerEvent... events) {

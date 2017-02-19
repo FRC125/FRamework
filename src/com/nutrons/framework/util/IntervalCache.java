@@ -9,6 +9,9 @@ public class IntervalCache<T> implements Supplier<T> {
   private volatile long lastTimeRead;
   private volatile T lastValue;
 
+  /**
+   * Create a cache of recent events.
+   */
   public IntervalCache(long interval, Supplier<T> supplier) {
     this.interval = interval;
     this.supplier = supplier;

@@ -1,11 +1,10 @@
 package com.nutrons.framework.controllers;
 
-import com.ctre.CANTalon;
-
-import java.security.InvalidParameterException;
-import io.reactivex.Flowable;
-
 import static com.nutrons.framework.util.FlowOperators.toFlow;
+
+import com.ctre.CANTalon;
+import io.reactivex.Flowable;
+import java.security.InvalidParameterException;
 
 public class Talon extends LoopSpeedController {
 

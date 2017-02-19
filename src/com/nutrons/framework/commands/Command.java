@@ -1,15 +1,14 @@
 package com.nutrons.framework.commands;
 
-import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
+import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import io.reactivex.Flowable;
-import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import org.reactivestreams.Publisher;
-
-import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Command implements CommandWorkUnit {
 
@@ -72,6 +71,7 @@ public class Command implements CommandWorkUnit {
 
   /**
    * Creates a command that runs sequentially to another.
+   *
    * @param commandStream A flowable of commands
    * @retuns Second command after first is executed.
    */
