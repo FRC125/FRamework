@@ -28,7 +28,17 @@ public class VirtualSpeedController extends LoopSpeedController {
     return false;
   }
 
+  @Override
+  public void noSticky() {
+
+  }
+
   public double speed() {
     return 0;
+  }
+
+
+  public void enableControl(){
+
   }
 }

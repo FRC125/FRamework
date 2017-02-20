@@ -147,4 +147,14 @@ public class Talon extends LoopSpeedController {
   public void reverseOutput(boolean flip){
     this.talon.reverseOutput(flip);
   }
+
+  public void noSticky(){
+    this.talon.clearStickyFaults();
+  }
+
+  public void enableControl(){
+    this.talon.enable();
+    this.talon.enableControl();
+
+  }
 }

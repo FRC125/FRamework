@@ -43,4 +43,8 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   public abstract boolean fwdLimitSwitchClosed();
 
   public abstract boolean revLimitSwitchClosed();
+
+  public abstract void noSticky();
+
+  public abstract void enableControl();
 }
