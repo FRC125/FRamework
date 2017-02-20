@@ -10,8 +10,8 @@ public class Tuneable {
     this.label = label;
     this.defaultValue = defaultValue;
   }
-  public String getLabel(){
+  public double get(){
     Preferences.getInstance().getDouble(label, defaultValue);
-    return label;
+    return defaultValue;
   }
 }
