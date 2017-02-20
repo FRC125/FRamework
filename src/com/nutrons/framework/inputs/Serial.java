@@ -9,6 +9,7 @@ import io.reactivex.processors.PublishProcessor;
 import java.util.function.Supplier;
 
 import static com.nutrons.framework.util.FlowOperators.toFlow;
+import static com.nutrons.framework.util.FlowOperators.toFlowFast;
 
 /**
  * A wrapper around WPI's SerialPort class which provides
@@ -81,7 +82,7 @@ public class Serial implements Subsystem {
         }
         return serial.read(packetLength);
       };
-      this.dataStream = toFlow(new IntervalCache<byte[]>(100, supplier))
+      this.dataStream = toFlowFast(new IntervalCache<byte[]>(50, supplier))
           .filter(x -> x.length == packetLength);
     } catch (RuntimeException e) {
       System.out.println(e.getMessage());
