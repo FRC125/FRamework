@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ParallelCommand implements CommandWorkUnit {
+
   private final Flowable<CommandWorkUnit> commands;
 
   ParallelCommand(CommandWorkUnit... commands) {
@@ -19,7 +20,8 @@ public class ParallelCommand implements CommandWorkUnit {
   public Flowable<Terminator> execute() {
     final AtomicBoolean lock = new AtomicBoolean(false);
     final List<Terminator> terminators = new ArrayList<>();
-    Flowable<Terminator> terminatorFlow = this.commands.flatMap(x -> x.execute().subscribeOn(Schedulers.io()))
+    Flowable<Terminator> terminatorFlow = this.commands
+        .flatMap(x -> x.execute().subscribeOn(Schedulers.io()))
         .subscribeOn(Schedulers.io()).publish().autoConnect();
     ;
     terminatorFlow.subscribe(x -> {
@@ -39,6 +41,7 @@ public class ParallelCommand implements CommandWorkUnit {
   }
 
   private class ParallelTerminator implements Runnable {
+
     private final AtomicBoolean lock;
     private final List<Terminator> terminators;
 

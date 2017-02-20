@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SerialCommand implements CommandWorkUnit {
+
   private final Flowable<CommandWorkUnit> commands;
 
   SerialCommand(CommandWorkUnit... commands) {
@@ -19,7 +20,8 @@ public class SerialCommand implements CommandWorkUnit {
   public Flowable<Terminator> execute() {
     final AtomicBoolean lock = new AtomicBoolean(false);
     final List<Terminator> terminators = new ArrayList<>();
-    Flowable<Terminator> terminatorFlow = this.commands.concatMap(x -> x.execute().subscribeOn(Schedulers.io()))
+    Flowable<Terminator> terminatorFlow = this.commands
+        .concatMap(x -> x.execute().subscribeOn(Schedulers.io()))
         .subscribeOn(Schedulers.io()).publish().autoConnect();
     terminatorFlow.subscribe(x -> {
       if (!lock.get()) {
@@ -38,6 +40,7 @@ public class SerialCommand implements CommandWorkUnit {
   }
 
   private class SerialTerminator implements Runnable {
+
     private final AtomicBoolean lock;
     private final List<Terminator> terminators;
 
