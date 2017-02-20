@@ -1,10 +1,10 @@
 package com.nutrons.framework.test;
 
-import io.reactivex.Flowable;
-import org.junit.Test;
-
 import static com.nutrons.framework.util.FlowOperators.pidLoop;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
+
+import io.reactivex.Flowable;
+import org.junit.Test;
 
 public class TestPID {
 
