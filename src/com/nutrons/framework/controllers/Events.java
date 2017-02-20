@@ -88,4 +88,12 @@ public class Events {
   public static ControllerEvent resetPosition(double position) {
     return new ResetPositionEvent(position);
   }
+
+  public static ServoEvent setAngle(double angle) {
+    return new SetAngleEvent(angle);
+  }
+
+  public static ServoEvent set(double value) {
+    return new SetEvent(value);
+  }
 }
