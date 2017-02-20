@@ -65,8 +65,8 @@ public class StreamManager {
           .map((a) -> {
             System.out.println("Starting Autonomous: " + auto.getClass().toString());
             return a;
-          }).subscribe(x -> auto.terminable(mode.filter(y -> y != AUTO)
-          .mergeWith(enabled.filter(z -> !z).map(z -> AUTO))).execute(true));
+          }).subscribe(x -> auto.endsWhen(mode.filter(y -> y != AUTO)
+          .mergeWith(enabled.filter(z -> !z).map(z -> AUTO)), true).execute(true));
     }
     Command tele = teleopSupplier.get();
     if (tele != null) {
@@ -76,8 +76,8 @@ public class StreamManager {
           .map((a) -> {
             System.out.println("Starting Teleop: " + tele.getClass().toString());
             return a;
-          }).subscribe(x -> tele.terminable(mode.filter(y -> y != TELE)
-          .mergeWith(enabled.filter(z -> !z).map(z -> TELE))).execute(true));
+          }).subscribe(x -> tele.endsWhen(mode.filter(y -> y != TELE)
+          .mergeWith(enabled.filter(z -> !z).map(z -> TELE)), true).execute(true));
     }
     this.enabled.ignoreElements().blockingAwait();
     this.mode.ignoreElements().blockingAwait();

@@ -1,7 +1,9 @@
 package com.nutrons.framework.commands;
 
+import com.nutrons.framework.util.FlowOperators;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
@@ -10,6 +12,7 @@ import org.reactivestreams.Publisher;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static com.nutrons.framework.util.FlowOperators.printId;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Command implements CommandWorkUnit {
@@ -80,7 +83,7 @@ public class Command implements CommandWorkUnit {
   }
 
   public Command addFinalTerminator(Terminator terminator) {
-    return Command.just(x -> this.source.execute(x).flatMap(y -> Flowable.<Terminator>just(y, terminator)));
+    return Command.just(x -> this.source.execute(x).flatMap(y -> Flowable.<Terminator>just(y, terminator)).subscribeOn(Schedulers.io()));
   }
 
   /**
