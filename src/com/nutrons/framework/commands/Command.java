@@ -102,11 +102,22 @@ public class Command implements CommandWorkUnit {
   }
 
   /**
-   * Copies this command into one which will end when terminator emits an item.
+   * Copies this command into one which will end and terminate
+   * only when the terminator emits an item.
    */
   public Command terminable(Publisher<?> terminator) {
-    return new Command(x -> {
-      Flowable<Terminator> sourceTerminator = this.execute(x);
+    return this.endsWhen(terminator, false);
+  }
+
+  /**
+   * Copies this command into one which will end when terminator emits an item.
+   *
+   * @param terminatesAtEnd if true, the command will terminate only when the end is reached,
+   *                        if false, the command may terminate before the end is reached.
+   */
+  public Command endsWhen(Publisher<?> terminator, boolean terminatesAtEnd) {
+    return Command.just(x -> {
+      Flowable<Terminator> sourceTerminator = this.execute(terminatesAtEnd);
       Terminator multi = FlattenedTerminator.from(sourceTerminator);
       return Flowable.defer(() -> Flowable.<Terminator>never().takeUntil(terminator)
           .mergeWith(Flowable.just(multi::run)));
@@ -137,13 +148,17 @@ public class Command implements CommandWorkUnit {
     return this.startable(Flowable.timer(delay, unit));
   }
 
+  /**
+   * Copies this command into one which will delay termination until a period of time has passed.
+   */
+  public Command delayFinish(long delay, TimeUnit unit) {
+    return this.terminable(Flowable.timer(delay, unit));
+  }
+
   public Command killAfter(long delay, TimeUnit unit) {
     return Command.just(x -> {
       Flowable<Terminator> terms = this.terminable(Flowable.timer(delay, unit)).execute(x);
-      return terms.doOnComplete(() -> {
-        FlattenedTerminator.from(terms).toSingle()
-            .subscribe(Terminator::run);
-      });
+      return terms;
     });
   }
 
