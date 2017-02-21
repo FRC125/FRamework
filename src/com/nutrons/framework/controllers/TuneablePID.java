@@ -8,12 +8,12 @@ public class TuneablePID {
   private final Tuneable tuneableD;
   private final Tuneable tuneableF;
 
-  public TuneablePID(String label, Tuneable tuneableP, Tuneable tuneableI, Tuneable tuneableD, Tuneable tuneableF) {
+  public TuneablePID(String label) {
     this.label = label;
-    this.tuneableP = tuneableP;
-    this.tuneableI = tuneableI;
-    this.tuneableD = tuneableD;
-    this.tuneableF = tuneableF;
+    this.tuneableP = new Tuneable(label + "P", 0);
+    this.tuneableI = new Tuneable(label + "I", 0);
+    this.tuneableD = new Tuneable(label + "D", 0);
+    this.tuneableF = new Tuneable(label + "F", 0);
   }
 
   public LoopPropertiesEvent getPID() {
