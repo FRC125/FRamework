@@ -109,8 +109,9 @@ public class Command implements CommandWorkUnit {
   public Command terminable(Publisher<?> terminator) {
     return new Command(() -> {
       Flowable<Terminator> terminatorFlowable = this.execute();
+      Terminator multi = FlattenedTerminator.from(terminatorFlowable);
       return Flowable.defer(() -> Flowable.<Terminator>never().takeUntil(terminator)
-          .mergeWith(Flowable.just(() -> terminatorFlowable.subscribe(Terminator::run))));
+          .mergeWith(Flowable.just(multi::run)));
     });
   }
 
@@ -147,14 +148,25 @@ public class Command implements CommandWorkUnit {
   }
 
   public Command killAfter(long delay, TimeUnit unit) {
-    return this.terminable(Flowable.timer(delay, unit));
+    return Command.just(() -> {
+      Flowable<Terminator> terms = this.terminable(Flowable.timer(delay, unit)).execute();
+      return terms.doOnComplete(() -> {
+        System.out.println("completed");
+        FlattenedTerminator.from(terms).toSingle()
+            .subscribe(Terminator::run);
+      });
+    });
   }
 
   @Override
   public Flowable<Terminator> execute() {
     Flowable<Terminator> terms = source.execute();
-    terms.subscribeOn(Schedulers.io()).toList()
-        .subscribe(t -> Flowable.fromIterable(t).subscribe(Terminator::run));
+    return terms;
+  }
+
+  public Flowable<Terminator> startExecution() {
+    Flowable<Terminator> terms = this.execute().subscribeOn(Schedulers.io());
+    terms.subscribe();
     return terms;
   }
 }

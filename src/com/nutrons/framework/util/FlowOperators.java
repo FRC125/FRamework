@@ -9,6 +9,8 @@ import io.reactivex.schedulers.Schedulers;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class FlowOperators {
 
@@ -96,13 +98,12 @@ public class FlowOperators {
     };
   }
 
-  public static FlowableTransformer<Double, Double> limitWithin(double minimum, double maximum) {
-    return f -> f.map(x -> x < minimum ? minimum : x)
-        .map(x -> x > maximum ? maximum : x);
+  public static Function<Double, Double> limitWithin(double minimum, double maximum) {
+    return x -> max(min(x, maximum), minimum);
   }
 
-  public static <XT> XT printId(XT tx) {
-    System.out.println(tx);
-    return tx;
+  public static <T> T printId(T t) {
+    System.out.println(t);
+    return t;
   }
 }
