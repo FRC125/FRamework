@@ -24,5 +24,5 @@ public class TuneablePID {
     Preferences.getInstance().getDouble(label, tuneableI);
     Preferences.getInstance().getDouble(label, tuneableD);
     Preferences.getInstance().getDouble(label, tuneableP);
-  }
+ }
 }
