@@ -20,7 +20,7 @@ import java.util.Collections;
  * the VisionServer instance (there is only one VisionServer) instead of
  * creating new VisionServer instances.
  * 
- * @see VisionUpdate.java
+ * @see
  */
 
 public class VisionServer extends CrashTrackingRunnable {
@@ -40,6 +40,7 @@ public class VisionServer extends CrashTrackingRunnable {
     private volatile boolean mWantsAppRestart = false;
 
     public static VisionServer getInstance() {
+        System.out.println("VisionServer instance created");
         if (s_instance == null) {
             s_instance = new VisionServer(kAndroidAppTcpPort);
         }
@@ -70,6 +71,7 @@ public class VisionServer extends CrashTrackingRunnable {
                     OutputStream os = m_socket.getOutputStream();
                     os.write(toSend.getBytes());
                 } catch (IOException e) {
+                    System.out.println("Vision server IOException");
                     System.err.println("VisionServer: Could not send data to socket");
                 }
             }
@@ -133,7 +135,7 @@ public class VisionServer extends CrashTrackingRunnable {
      * Instantializes the VisionServer and connects to ADB via the specified
      * port.
      * 
-     * @param Port
+     * @param
      */
     private VisionServer(int port) {
         try {
@@ -166,6 +168,7 @@ public class VisionServer extends CrashTrackingRunnable {
      * @see VisionUpdate
      */
     public void addVisionUpdateReceiver(VisionUpdateReceiver receiver) {
+        System.out.println("added vision update receiver");
         if (!receivers.contains(receiver)) {
             receivers.add(receiver);
         }
