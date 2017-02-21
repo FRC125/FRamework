@@ -1,46 +1,40 @@
 package com.nutrons.framework.util;
 
-import static java.lang.Math.abs;
-
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class FlowOperators {
 
   /**
-   * Generate a Flowable from a periodic call to a Supplier. Does NOT drop Backpressure, Beware of
-   * overflow!
+   * Generate a Flowable from a periodic call to a Supplier. Drops on backpressure.
    *
    * @param ignored the number of time units to wait before calling the supplier again
-   * @param <XT> the type of the Flowable and Supplier
+   * @param <T>     the type of the Flowable and Supplier
    */
-  public static <XT> Flowable<XT> toFlowBackpressure(Supplier<XT> supplier, long ignored,
-      TimeUnit unit) {
+  public static <T> Flowable<T> toFlow(Supplier<T> supplier,
+                                       long ignored, TimeUnit unit) {
     return Flowable.interval(ignored, unit).subscribeOn(Schedulers.io())
-        .map(x -> supplier.get()).observeOn(Schedulers.computation());
-  }
-
-  /**
-   * Generate a Flowable from a periodic call to a Supplier. Safe Drops Backpressure
-   *
-   * @param ignored the number of time units to wait before calling the supplier again
-   * @param <XT> the type of the Flowable and Supplier
-   */
-  public static <XT> Flowable<XT> toFlow(Supplier<XT> supplier, long ignored, TimeUnit unit) {
-    return toFlowBackpressure(supplier, ignored, unit).onBackpressureDrop();
+        .map(x -> supplier.get()).onBackpressureDrop().observeOn(Schedulers.computation())
+        .onBackpressureDrop();
   }
 
   /**
    * Generate a Flowable from a periodical call to a Supplier.
    *
-   * @param <XT> the type of the Flowable and Supplier
+   * @param <T> the type of the Flowable and Supplier
    */
-  public static <XT> Flowable<XT> toFlow(Supplier<XT> supplier) {
+  public static <T> Flowable<T> toFlow(Supplier<T> supplier) {
     return toFlow(supplier, 100, TimeUnit.MILLISECONDS);
   }
 
@@ -58,7 +52,8 @@ public class FlowOperators {
    * Creates a function that will return the input value, unless that value is within the range
    * specified by minimum and maximum. If so, the value will be changed to remap.
    */
-  public static Function<Double, Double> deadbandMap(double minimum, double maximum, double remap) {
+  public static Function<Double, Double> deadbandMap(double minimum, double maximum,
+                                                     double remap) {
     return bandMap(minimum, maximum, x -> remap);
   }
 
@@ -67,21 +62,21 @@ public class FlowOperators {
    * specified by minimum and maximum. If so, the value will be passed through the remap function.
    */
   public static Function<Double, Double> bandMap(double minimum, double maximum,
-      Function<Double, Double> remap) {
+                                                 Function<Double, Double> remap) {
     return x -> x < maximum && x > minimum ? remap.apply(x) : x;
   }
 
-  public static <XT> XT getLastValue(Flowable<XT> input) {
+  public static <T> T getLastValue(Flowable<T> input) {
     return input.blockingLatest().iterator().next();
   }
 
   /**
-   * Creates a Pid Loop Function.
+   * Creates a PID Loop Function.
    */
   public static FlowableTransformer<Double, Double> pidLoop(double proportional,
-      int integralBuffer,
-      double integral,
-      double derivative) {
+                                                            int integralBuffer,
+                                                            double integral,
+                                                            double derivative) {
     return error -> {
       Flowable<Double> errorP = error.map(x -> x * proportional);
       Flowable<Double> errorI = error.buffer(integralBuffer, 1)
@@ -96,13 +91,18 @@ public class FlowOperators {
     };
   }
 
-  public static FlowableTransformer<Double, Double> limitWithin(double minimum, double maximum) {
-    return f -> f.map(x -> x < minimum ? minimum : x)
-        .map(x -> x > maximum ? maximum : x);
+  public static Function<Double, Double> limitWithin(double minimum, double maximum) {
+    return x -> max(min(x, maximum), minimum);
   }
 
-  public static <XT> XT printId(XT tx) {
-    System.out.println(tx);
-    return tx;
+  public static <T> T printId(T t) {
+    System.out.println(t);
+    return t;
+  }
+
+  public static Disposable combineDisposable(Disposable... disposables) {
+    CompositeDisposable cd = new CompositeDisposable();
+    Flowable.fromArray(disposables).blockingSubscribe(cd::add);
+    return cd;
   }
 }
