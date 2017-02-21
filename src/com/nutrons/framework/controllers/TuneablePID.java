@@ -3,12 +3,12 @@ package com.nutrons.framework.controllers;
 public class TuneablePID {
 
   private final String label;
-  private final double tuneableP;
-  private final double tuneableI;
-  private final double tuneableD;
-  private final double tuneableF;
+  private final Tuneable tuneableP;
+  private final Tuneable tuneableI;
+  private final Tuneable tuneableD;
+  private final Tuneable tuneableF;
 
-  public TuneablePID(String label, double tuneableP, double tuneableI, double tuneableD, double tuneableF) {
+  public TuneablePID(String label, Tuneable tuneableP, Tuneable tuneableI, Tuneable tuneableD, Tuneable tuneableF) {
     this.label = label;
     this.tuneableP = tuneableP;
     this.tuneableI = tuneableI;
@@ -17,6 +17,6 @@ public class TuneablePID {
   }
 
   public LoopPropertiesEvent getPID() {
-    return new LoopPropertiesEvent(tuneableP, tuneableI, tuneableD, tuneableF);
+    return new LoopPropertiesEvent(tuneableP.get(), tuneableI.get(), tuneableD.get(), tuneableF.get());
  }
 }
