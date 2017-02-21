@@ -1,10 +1,11 @@
 package com.nutrons.framework.controllers;
 
-import static com.nutrons.framework.util.FlowOperators.toFlow;
-
 import com.ctre.CANTalon;
 import io.reactivex.Flowable;
+
 import java.security.InvalidParameterException;
+
+import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Talon extends LoopSpeedController {
 
@@ -119,8 +120,6 @@ public class Talon extends LoopSpeedController {
   void setOutputVoltage(double min, double max) {
     this.talon.configNominalOutputVoltage(Math.max(min, 0.0), Math.min(max, 0.0));
     this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 0.0));
-    System.out.println("nominal min = " + Math.max(min, 0.0) + " max = " + Math.min(max, 0.0));
-    System.out.println("peak min = " + Math.max(max, 0.0) + " max = " + Math.min(min, 0.0));
   }
 
   @Override
