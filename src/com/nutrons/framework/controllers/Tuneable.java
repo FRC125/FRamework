@@ -21,4 +21,8 @@ public class Tuneable {
     Preferences.getInstance().getDouble("Tuneable F", F);
     return;
   }
+  public void tuneSetpoint(double Setpoint){
+    Preferences.getInstance().getDouble("Tuneable Setpoint", Setpoint);
+    return;
+  }
 }
