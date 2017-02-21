@@ -29,7 +29,7 @@ public class Talon extends LoopSpeedController {
     this(port);
     this.talon.setFeedbackDevice(feedbackDevice);
   }
-  
+
   /**
    * Creates a talon that initially follows another talon.
    *
@@ -107,6 +107,10 @@ public class Talon extends LoopSpeedController {
     return this.talon.getSpeed();
   }
 
+  public void setFeedbackDevice(CANTalon.FeedbackDevice device) {
+    this.talon.setFeedbackDevice(device);
+  }
+
   void reverseSensor(boolean flipped) {
     System.out.println("sensor: " + flipped);
     talon.reverseSensor(flipped);
@@ -121,6 +125,7 @@ public class Talon extends LoopSpeedController {
     this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 0.0));
   }
 
+  @Override
   public double position() {
     return this.talon.getPosition();
   }
@@ -142,19 +147,5 @@ public class Talon extends LoopSpeedController {
 
   public double getClosedLoopError() {
     return this.talon.getClosedLoopError();
-  }
-
-  public void reverseOutput(boolean flip){
-    this.talon.reverseOutput(flip);
-  }
-
-  public void noSticky(){
-    this.talon.clearStickyFaults();
-  }
-
-  public void enableControl(){
-    this.talon.enable();
-    this.talon.enableControl();
-
   }
 }

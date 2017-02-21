@@ -3,6 +3,7 @@ package com.nutrons.framework.controllers;
 import io.reactivex.Flowable;
 
 public class VirtualSpeedController extends LoopSpeedController {
+
   @Override
   public Flowable<FeedbackEvent> feedback() {
     return Flowable.empty();
@@ -29,16 +30,11 @@ public class VirtualSpeedController extends LoopSpeedController {
   }
 
   @Override
-  public void noSticky() {
-
+  public double position() {
+    return 0;
   }
 
   public double speed() {
     return 0;
-  }
-
-
-  public void enableControl(){
-
   }
 }

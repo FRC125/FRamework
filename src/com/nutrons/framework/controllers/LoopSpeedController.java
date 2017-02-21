@@ -7,6 +7,7 @@ import io.reactivex.functions.Consumer;
  * Provides a common interface for speed controllers that have closed loop capabilities.
  */
 public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
+
   public abstract Flowable<FeedbackEvent> feedback();
 
   @Override
@@ -44,7 +45,5 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
 
   public abstract boolean revLimitSwitchClosed();
 
-  public abstract void noSticky();
-
-  public abstract void enableControl();
+  public abstract double position();
 }

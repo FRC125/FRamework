@@ -5,10 +5,7 @@ import com.nutrons.framework.util.IntervalCache;
 import edu.wpi.first.wpilibj.SerialPort;
 import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
-
 import java.util.function.Supplier;
-
-import static com.nutrons.framework.util.FlowOperators.toFlow;
 import static com.nutrons.framework.util.FlowOperators.toFlowFast;
 
 /**
@@ -29,7 +26,7 @@ public class Serial implements Subsystem {
   /**
    * Create Serial streams from a WPI Serial.
    *
-   * @param bufferSize   represents how many bytes to cache unread before clearing buffer
+   * @param bufferSize represents how many bytes to cache unread before clearing buffer
    * @param packetLength represents the length of each read from the buffer
    */
   public Serial(int bufferSize, int packetLength) {
@@ -40,32 +37,32 @@ public class Serial implements Subsystem {
   /**
    * Create Serial streams from a WPI Serial.
    *
-   * @param bufferSize           represents how many bytes to cache unread before clearing buffer
-   * @param packetLength         represents the length of each read from the buffer
+   * @param bufferSize represents how many bytes to cache unread before clearing buffer
+   * @param packetLength represents the length of each read from the buffer
    * @param terminationCharacter allows users to set a custom termination character - default is the
-   *                             newline character '\n'
+   *     newline character '\n'
    */
   public Serial(SerialPort.Port port,
-                int bufferSize,
-                int packetLength,
-                char terminationCharacter) {
+      int bufferSize,
+      int packetLength,
+      char terminationCharacter) {
     this(DEFAULT_BAUD_RATE, port, bufferSize, packetLength, terminationCharacter);
   }
 
   /**
    * Create Serial streams from a WPI Serial
    *
-   * @param bufferSize           represents how many bytes to cache unread before clearing buffer
-   * @param packetLength         represents the length of each read from the buffer
+   * @param bufferSize represents how many bytes to cache unread before clearing buffer
+   * @param packetLength represents the length of each read from the buffer
    * @param terminationCharacter allows users to set a custom termination character - default is the
-   *                             newline character '\n'
-   * @param baudrate             See <a href="https://en.wikipedia.org/wiki/Symbol_rate">Symbol Rate</a>
+   *     newline character '\n'
+   * @param baudrate See <a href="https://en.wikipedia.org/wiki/Symbol_rate">Symbol Rate</a>
    */
   public Serial(int baudrate,
-                SerialPort.Port port,
-                int bufferSize,
-                int packetLength,
-                char terminationCharacter) {
+      SerialPort.Port port,
+      int bufferSize,
+      int packetLength,
+      char terminationCharacter) {
 
     try {
       this.serial = new SerialPort(baudrate, port);
@@ -84,8 +81,8 @@ public class Serial implements Subsystem {
       };
       this.dataStream = toFlowFast(new IntervalCache<byte[]>(100, supplier))
           .filter(x -> x.length == packetLength);
-    } catch (RuntimeException e) {
-      System.out.println(e.getMessage());
+    } catch (RuntimeException ex) {
+      System.out.println(ex.getMessage());
     }
   }
 
