@@ -4,6 +4,7 @@ package com.nutrons.framework.commands;
  * A wrapper which allows a 'dispose' runnable to be wrapped such that it is idempotent.
  */
 public class TerminatorWrapper implements Terminator {
+
   private final Runnable terminate;
   private volatile boolean terminated;
 

@@ -3,6 +3,7 @@ package com.nutrons.framework.controllers;
 import io.reactivex.Flowable;
 
 public class VirtualSpeedController extends LoopSpeedController {
+
   @Override
   public Flowable<FeedbackEvent> feedback() {
     return Flowable.empty();

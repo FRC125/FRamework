@@ -7,17 +7,17 @@ public class Events {
    * <a href="https://en.wikipedia.org/wiki/PID_controller">PID</a> loop
    *
    * @param setPoint target location or velocity of PID loop
-   * @param pval     proportion value of PID
-   * @param ival     integral value of PID
-   * @param dval     derivative value of PID
-   * @param fval     offset value of PID
+   * @param pval proportion value of PID
+   * @param ival integral value of PID
+   * @param dval derivative value of PID
+   * @param fval offset value of PID
    * @return a ControllerEvent that initiates a PID loop on the motor controller
    */
   public static ControllerEvent pid(double setPoint,
-                                    double pval,
-                                    double ival,
-                                    double dval,
-                                    double fval) {
+      double pval,
+      double ival,
+      double dval,
+      double fval) {
     ControllerEvent setpointEvent = new SetpointEvent(setPoint);
     ControllerEvent pid = pid(pval, dval, ival, fval);
     return new ControllerEvent() {
@@ -32,6 +32,11 @@ public class Events {
   public static ControllerEvent pid(double pval, double ival, double dval, double fval) {
     return new LoopPropertiesEvent(pval, ival, dval, fval);
   }
+
+  /**
+   * Combines actions that are preformed on the talon.
+   * @return combined event
+   */
   public static ControllerEvent combine(ControllerEvent... events) {
     return new ControllerEvent() {
       @Override
@@ -43,10 +48,11 @@ public class Events {
     };
   }
 
-  public static ControllerEvent setReversedSensor(boolean flipped)  {
+  public static ControllerEvent setReversedSensor(boolean flipped) {
     return new SetReversedSensorEvent(flipped);
 
   }
+
   public static ControllerEvent setpoint(double setpoint) {
     return new SetpointEvent(setpoint);
   }
