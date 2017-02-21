@@ -82,7 +82,7 @@ public class Serial implements Subsystem {
         }
         return serial.read(packetLength);
       };
-      this.dataStream = toFlowFast(new IntervalCache<byte[]>(50, supplier))
+      this.dataStream = toFlowFast(new IntervalCache<byte[]>(100, supplier))
           .filter(x -> x.length == packetLength);
     } catch (RuntimeException e) {
       System.out.println(e.getMessage());
