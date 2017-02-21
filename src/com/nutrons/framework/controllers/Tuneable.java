@@ -14,4 +14,11 @@ public class Tuneable {
     Preferences.getInstance().getDouble(label, defaultValue);
     return defaultValue;
   }
+  public void tunePID(double P, double I, double D, double F){
+    Preferences.getInstance().getDouble("Tuneable P", P);
+    Preferences.getInstance().getDouble("Tuneable I", I);
+    Preferences.getInstance().getDouble("Tuneable D", D);
+    Preferences.getInstance().getDouble("Tuneable F", F);
+    return;
+  }
 }
