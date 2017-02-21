@@ -1,6 +1,7 @@
 package com.nutrons.framework.controllers;
 
 class SetpointEvent implements ControllerEvent {
+
   private final double setpoint;
 
   SetpointEvent(double setpoint) {

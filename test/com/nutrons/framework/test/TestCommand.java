@@ -15,11 +15,16 @@ import static com.nutrons.framework.commands.Command.serial;
 import static junit.framework.TestCase.assertTrue;
 
 public class TestCommand {
+
   private Command delay;
 
   static void waitForCommand(Flowable<Terminator> commandExecution) {
     commandExecution.blockingSubscribe();
   }
+
+  /**
+   * Delays commands until test starts.
+   */
 
   @Before
   public void setupCommands() {
@@ -65,14 +70,14 @@ public class TestCommand {
 
   @Test
   public void testTerminable() throws InterruptedException {
-    long start = System.currentTimeMillis();
-    PublishProcessor<Object> pp = PublishProcessor.create();
-    Flowable<Terminator> d = serial(delay, delay, delay, delay)
+    final long start = System.currentTimeMillis();
+    PublishProcessor pp = PublishProcessor.create();
+    Flowable<Terminator> td = serial(delay, delay, delay, delay)
         .terminable(pp).execute(true);
     Thread.sleep(3000);
     pp.onNext(new Object());
     pp.onComplete();
-    waitForCommand(d);
+    waitForCommand(td);
     assertTrue(System.currentTimeMillis() - 4000 < start);
   }
 
@@ -81,9 +86,9 @@ public class TestCommand {
     int[] record = new int[2];
     assertTrue(record[0] == 0);
     long start = System.currentTimeMillis();
-    Flowable<Terminator> d = Command.fromAction(() -> record[0] = 1).until(() -> record[1] == 1).execute(true);
+    Flowable<Terminator> td = Command.fromAction(() -> record[0] = 1).until(() -> record[1] == 1).execute(true);
     Flowable.timer(1, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe(x -> record[1] = 1);
-    waitForCommand(d);
+    waitForCommand(td);
     assertTrue(System.currentTimeMillis() - 1000 > start);
     assertTrue(record[0] == 1);
     record[0] = 0;
@@ -104,12 +109,14 @@ public class TestCommand {
   public void testWhen() throws InterruptedException {
     int[] record = new int[2];
     assertTrue(record[0] == 0);
-    Flowable<Terminator> d = Command.fromAction(() -> record[0] = 1).when(() -> record[1] == 1).execute(true);
+    final Flowable<Terminator> td = Command.fromAction(() -> record[0] = 1)
+        .when(() -> record[1] == 1)
+        .execute(true);
     Thread.sleep(1000);
     assertTrue(record[0] == 0);
     long start = System.currentTimeMillis();
     Flowable.timer(1, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe(x -> record[1] = 1);
-    waitForCommand(d);
+    waitForCommand(td);
     assertTrue(System.currentTimeMillis() - 1000 > start);
     assertTrue(record[0] == 1);
   }

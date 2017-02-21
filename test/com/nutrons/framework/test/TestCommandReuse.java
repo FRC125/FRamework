@@ -1,14 +1,13 @@
 package com.nutrons.framework.test;
 
-import com.nutrons.framework.commands.Command;
-import org.junit.Test;
-
-import java.util.concurrent.TimeUnit;
-
 import static com.nutrons.framework.commands.Command.parallel;
 import static com.nutrons.framework.commands.Command.serial;
 import static com.nutrons.framework.test.TestCommand.waitForCommand;
 import static junit.framework.TestCase.assertTrue;
+
+import com.nutrons.framework.commands.Command;
+import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 
 public class TestCommandReuse {
 

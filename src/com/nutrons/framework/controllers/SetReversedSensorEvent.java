@@ -1,6 +1,7 @@
 package com.nutrons.framework.controllers;
 
 public class SetReversedSensorEvent implements ControllerEvent {
+
   private final boolean flipped;
 
   public SetReversedSensorEvent(boolean flipped) {

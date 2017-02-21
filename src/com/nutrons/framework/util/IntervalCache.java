@@ -3,35 +3,39 @@ package com.nutrons.framework.util;
 import java.util.function.Supplier;
 
 public class IntervalCache<T> implements Supplier<T> {
-    private final long interval;
-    private final Supplier<T> supplier;
-    private volatile long lastTimeRead;
-    private volatile T lastValue;
 
-    public IntervalCache(long interval, Supplier<T> supplier){
-        this.interval = interval;
-        this.supplier = supplier;
-        update();
-    }
+  private final long interval;
+  private final Supplier<T> supplier;
+  private volatile long lastTimeRead;
+  private volatile T lastValue;
 
-    private synchronized T update() {
-        if (needUpdate()) {
-            this.lastTimeRead = System.currentTimeMillis();
-            this.lastValue = supplier.get();
-        }
-        return lastValue;
-    }
+  /**
+   * Create a cache of recent events.
+   */
+  public IntervalCache(long interval, Supplier<T> supplier) {
+    this.interval = interval;
+    this.supplier = supplier;
+    update();
+  }
 
-    private boolean needUpdate(){
-        return System.currentTimeMillis() - this.lastTimeRead > interval;
+  private synchronized T update() {
+    if (needUpdate()) {
+      this.lastTimeRead = System.currentTimeMillis();
+      this.lastValue = supplier.get();
     }
+    return lastValue;
+  }
 
-    @Override
-    public T get() {
-        if(needUpdate()){
-            return update();
-        }else{
-            return lastValue;
-        }
+  private boolean needUpdate() {
+    return System.currentTimeMillis() - this.lastTimeRead > interval;
+  }
+
+  @Override
+  public T get() {
+    if (needUpdate()) {
+      return update();
+    } else {
+      return lastValue;
     }
+  }
 }

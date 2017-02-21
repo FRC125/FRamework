@@ -1,9 +1,7 @@
 package com.nutrons.framework.commands;
 
-import com.nutrons.framework.util.FlowOperators;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
@@ -12,10 +10,10 @@ import org.reactivestreams.Publisher;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import static com.nutrons.framework.util.FlowOperators.printId;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Command implements CommandWorkUnit {
+
   // emptyPulse sends items on an interval, and is used in the 'until' and 'when' methods
   // to determine how often to test the predicates.
   private static final ConnectableFlowable<CommandWorkUnit> emptyPulse =
@@ -73,6 +71,12 @@ public class Command implements CommandWorkUnit {
     return new Command(new ParallelCommand(commands));
   }
 
+  /**
+   * Creates a command that runs sequentially to another.
+   *
+   * @param commandStream A flowable of commands
+   * @retuns Second command after first is executed.
+   */
   public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream) {
     return new Command(x -> Flowable.defer(() ->
         Flowable.switchOnNext(Flowable.fromPublisher(commandStream).map(y -> y.execute(x))
@@ -100,7 +104,8 @@ public class Command implements CommandWorkUnit {
    * will delay the execution of all actions until startCondition returns true.
    */
   public Command when(Supplier<Boolean> startCondition) {
-    Flowable ignition = Flowable.defer(() -> emptyPulse.map(x -> startCondition.get()).filter(x -> x).onBackpressureDrop());
+    Flowable ignition = Flowable
+        .defer(() -> emptyPulse.map(x -> startCondition.get()).filter(x -> x).onBackpressureDrop());
     return this.startable(ignition);
   }
 
