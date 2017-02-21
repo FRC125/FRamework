@@ -1,10 +1,11 @@
 package com.nutrons.framework.controllers;
 
-import static com.nutrons.framework.util.FlowOperators.toFlow;
-
 import com.ctre.CANTalon;
 import io.reactivex.Flowable;
+
 import java.security.InvalidParameterException;
+
+import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Talon extends LoopSpeedController {
 
@@ -99,6 +100,15 @@ public class Talon extends LoopSpeedController {
     talon.setInverted(flipped);
   }
 
+  @Override
+  public double speed() {
+    return this.talon.getSpeed();
+  }
+
+  public void setFeedbackDevice(CANTalon.FeedbackDevice device) {
+    this.talon.setFeedbackDevice(device);
+  }
+
   void reverseSensor(boolean flipped) {
     talon.reverseSensor(flipped);
   }
@@ -108,15 +118,31 @@ public class Talon extends LoopSpeedController {
   }
 
   void setOutputVoltage(double min, double max) {
-    this.talon.configNominalOutputVoltage(Math.max(min, 0.0), Math.min(max, 12.0f));
-    this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 12.0f));
+    this.talon.configNominalOutputVoltage(Math.max(min, 0.0), Math.min(max, 0.0));
+    this.talon.configPeakOutputVoltage(Math.max(max, 0.0), Math.min(min, 0.0));
   }
 
+  @Override
   public double position() {
     return this.talon.getPosition();
   }
 
   void resetPositionTo(double position) {
     this.talon.setPosition(position);
+  }
+
+
+  @Override
+  public boolean fwdLimitSwitchClosed(){
+    return this.talon.isFwdLimitSwitchClosed();
+  }
+
+  @Override
+  public boolean revLimitSwitchClosed() {
+    return this.talon.isRevLimitSwitchClosed();
+  }
+
+  public double getClosedLoopError() {
+    return this.talon.getClosedLoopError();
   }
 }
