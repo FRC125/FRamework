@@ -65,7 +65,6 @@ public class Talon extends LoopSpeedController {
   }
 
   void changeSetpoint(double setpoint) {
-    System.out.println("Changing setpoint to " + setpoint);
     this.talon.setSetpoint(setpoint);
 
   }
@@ -98,7 +97,6 @@ public class Talon extends LoopSpeedController {
 
   @Override
   public void setOutputFlipped(boolean flipped) {
-    System.out.println("output: " + flipped);
     talon.setInverted(flipped);
   }
 
@@ -112,7 +110,6 @@ public class Talon extends LoopSpeedController {
   }
 
   void reverseSensor(boolean flipped) {
-    System.out.println("sensor: " + flipped);
     talon.reverseSensor(flipped);
   }
 
