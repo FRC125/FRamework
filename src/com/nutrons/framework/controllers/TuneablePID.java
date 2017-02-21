@@ -14,9 +14,9 @@ public class TuneablePID {
   }
 
   public void getPID(double P, double I, double D, double F) {
-    Preferences.getInstance().getDouble("P", P);
-    Preferences.getInstance().getDouble("I", I);
-    Preferences.getInstance().getDouble("D", D);
-    Preferences.getInstance().getDouble("F", F);
+    Preferences.getInstance().getDouble(label, P);
+    Preferences.getInstance().getDouble(label, I);
+    Preferences.getInstance().getDouble(label, D);
+    Preferences.getInstance().getDouble(label, F);
   }
 }
