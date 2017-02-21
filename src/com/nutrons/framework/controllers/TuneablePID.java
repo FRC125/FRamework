@@ -6,17 +6,23 @@ import edu.wpi.first.wpilibj.Preferences;
 public class TuneablePID {
 
   private final String label;
-  private final double tuneablePID;
+  private final double tuneableP;
+  private final double tuneableI;
+  private final double tuneableD;
+  private final double tuneableF;
 
-  public TuneablePID(String label, double tuneablePID) {
+  public TuneablePID(String label, double tuneableP, double tuneableI, double tuneableD, double tuneableF) {
     this.label = label;
-    this.tuneablePID = tuneablePID;
+    this.tuneableP = tuneableP;
+    this.tuneableI = tuneableI;
+    this.tuneableD = tuneableD;
+    this.tuneableF = tuneableF;
   }
 
-  public void getPID(double P, double I, double D, double F) {
-    Preferences.getInstance().getDouble(label, P);
-    Preferences.getInstance().getDouble(label, I);
-    Preferences.getInstance().getDouble(label, D);
-    Preferences.getInstance().getDouble(label, F);
+  public void getPID() {
+    Preferences.getInstance().getDouble(label, tuneableP);
+    Preferences.getInstance().getDouble(label, tuneableI);
+    Preferences.getInstance().getDouble(label, tuneableD);
+    Preferences.getInstance().getDouble(label, tuneableP);
   }
 }
