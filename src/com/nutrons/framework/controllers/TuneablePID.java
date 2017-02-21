@@ -1,8 +1,5 @@
 package com.nutrons.framework.controllers;
 
-import edu.wpi.first.wpilibj.Preferences;
-
-
 public class TuneablePID {
 
   private final String label;
@@ -19,10 +16,7 @@ public class TuneablePID {
     this.tuneableF = tuneableF;
   }
 
-  public void getPID() {
-    Preferences.getInstance().getDouble(label, tuneableP);
-    Preferences.getInstance().getDouble(label, tuneableI);
-    Preferences.getInstance().getDouble(label, tuneableD);
-    Preferences.getInstance().getDouble(label, tuneableP);
+  public LoopPropertiesEvent getPID() {
+    return new LoopPropertiesEvent(tuneableP, tuneableI, tuneableD, tuneableF);
  }
 }
