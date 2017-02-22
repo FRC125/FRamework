@@ -1,6 +1,6 @@
 package com.nutrons.framework.controllers;
 
-public interface ServoEvent {
+public interface ServoInstr {
 
   default void actOn(RevServo servo) {
     throw new EventUnimplementedException(

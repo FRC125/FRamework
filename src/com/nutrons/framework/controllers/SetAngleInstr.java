@@ -1,6 +1,6 @@
 package com.nutrons.framework.controllers;
 
-public class SetAngleEvent implements ServoEvent {
+public class SetAngleInstr implements ServoInstr {
 
   private final double angle;
 
@@ -9,7 +9,7 @@ public class SetAngleEvent implements ServoEvent {
    *
    * @param angle the angle to turn the servo to -90 (left) to 90 (right).
    */
-  public SetAngleEvent(double angle) {
+  public SetAngleInstr(double angle) {
     this.angle = angle;
   }
 
@@ -21,7 +21,7 @@ public class SetAngleEvent implements ServoEvent {
   @Override
   public void actOn(RevServo servo) {
     if (Math.abs(angle) > 90.0) {
-      throw new EventUnimplementedException(
+      throw new IllegalArgumentException(
           "Angle greater than 90 degrees is not supported for Servos");
     }
     servo.setAngle(angle);

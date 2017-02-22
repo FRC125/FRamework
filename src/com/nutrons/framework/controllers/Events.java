@@ -95,11 +95,11 @@ public class Events {
     return new ResetPositionEvent(position);
   }
 
-  public static ServoEvent setAngle(double angle) {
-    return new SetAngleEvent(angle);
+  public static ServoInstr setAngle(double angle) {
+    return new SetAngleInstr(angle);
   }
 
-  public static ServoEvent set(double value) {
-    return new SetEvent(value);
+  public static ServoInstr set(double value) {
+    return new SetInstr(value);
   }
 }
