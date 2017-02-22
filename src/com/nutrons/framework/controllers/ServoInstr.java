@@ -1,10 +1,13 @@
 package com.nutrons.framework.controllers;
 
-public interface ServoInstr {
+public class ServoInstr {
 
-  default void actOn(RevServo servo) {
-    throw new EventUnimplementedException(
-        servo.getClass().toString(), this.getClass().toString());
+  public static ServoCommand setAngle(double angle) {
+    return new SetAngleCommand(angle);
+  }
+
+  public static ServoCommand set(double value) {
+    return new SetCommand(value);
   }
 
 }

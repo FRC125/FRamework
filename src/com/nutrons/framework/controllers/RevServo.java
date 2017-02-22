@@ -18,8 +18,8 @@ public class RevServo extends ServoController {
   }
 
   @Override
-  public void accept(ServoInstr servoInstr) {
-    servoInstr.actOn(this);
+  public void accept(ServoCommand servoCommand) {
+    servoCommand.actOn(this);
   }
 
   /**

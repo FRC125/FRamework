@@ -1,6 +1,6 @@
 package com.nutrons.framework.controllers;
 
-public class SetAngleInstr implements ServoInstr {
+public class SetAngleCommand implements ServoCommand {
 
   private final double angle;
 
@@ -9,7 +9,7 @@ public class SetAngleInstr implements ServoInstr {
    *
    * @param angle the angle to turn the servo to -90 (left) to 90 (right).
    */
-  public SetAngleInstr(double angle) {
+  public SetAngleCommand(double angle) {
     this.angle = angle;
   }
 
