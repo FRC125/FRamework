@@ -7,8 +7,7 @@ public class TuneablePID {
   private final Tuneable tuneableI;
   private final Tuneable tuneableD;
   private final Tuneable tuneableF;
-
-
+  
   public TuneablePID(String label) {
     this.label = label;
     this.tuneableP = new Tuneable(label + "P", 0);
@@ -18,6 +17,7 @@ public class TuneablePID {
   }
 
   public LoopPropertiesEvent getPID() {
-    return new LoopPropertiesEvent(tuneableP.get(), tuneableI.get(), tuneableD.get(), tuneableF.get());
+    return new LoopPropertiesEvent(tuneableP.get(), tuneableI.get(), tuneableD.get(),
+        tuneableF.get());
   }
 }
