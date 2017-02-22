@@ -11,6 +11,7 @@ public class RevServo extends ServoController {
 
   /**
    * Makes a RevServo object at the given port.
+   *
    * @param port Port of RevServo
    */
   public RevServo(int port) {
@@ -24,6 +25,7 @@ public class RevServo extends ServoController {
 
   /**
    * Sets the Servo to a given angle ranging from -90 to 90 left and right reflectively.
+   *
    * @param angle given angle to turn to.
    */
   public void setAngle(double angle) {
@@ -32,6 +34,7 @@ public class RevServo extends ServoController {
 
   /**
    * Set the motor to a position given a value 0.0 is full left 1.0 is full right.
+   *
    * @param value The value to turn the servo to.
    */
   public void set(double value) {
