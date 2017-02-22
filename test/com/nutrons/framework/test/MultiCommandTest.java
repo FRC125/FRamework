@@ -1,15 +1,16 @@
 package com.nutrons.framework.test;
 
+import static com.nutrons.framework.commands.Command.parallel;
+import static junit.framework.TestCase.assertTrue;
+
 import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.commands.TerminatorWrapper;
 import io.reactivex.Flowable;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.concurrent.TimeUnit;
 
-import static com.nutrons.framework.commands.Command.parallel;
-import static junit.framework.TestCase.assertTrue;
 
 public class MultiCommandTest {
   private Command delay;

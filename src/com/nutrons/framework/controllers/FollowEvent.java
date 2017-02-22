@@ -6,6 +6,7 @@ public class FollowEvent implements ControllerEvent {
 
   /**
    * Sets a LoopSpeedController to follow another LoopSpeedController
+   *
    * @param targetToFollow is a LoopSpeedController which will be followed.
    */
   public FollowEvent(LoopSpeedController targetToFollow) {
