@@ -10,12 +10,10 @@ public class Settings implements Subsystem {
   /**
    * Provides a Flowable for a specific property on the WpiSmartDashboard's settings table.
    */
-  public Flowable<Double> getProperty(String key) {
-    return FlowOperators.toFlow(() -> Preferences
-        .getInstance()
-        .getDouble(key, 0.0))
+  public Flowable<Double> getProperty(String key, double backup) {
+    return FlowOperators.toFlow(() ->
+        Preferences.getInstance().getDouble(key, backup))
         .distinctUntilChanged();
-    //TODO: don't emit anything if it's 0.0, store last value and send that as backup
   }
 
   @Override
