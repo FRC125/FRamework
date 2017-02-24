@@ -1,18 +1,17 @@
 package com.nutrons.framework.test;
 
+import static com.nutrons.framework.commands.Command.parallel;
+import static com.nutrons.framework.commands.Command.serial;
+import static junit.framework.TestCase.assertTrue;
+
 import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.commands.Terminator;
 import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.concurrent.TimeUnit;
-
-import static com.nutrons.framework.commands.Command.parallel;
-import static com.nutrons.framework.commands.Command.serial;
-import static junit.framework.TestCase.assertTrue;
 
 public class TestCommand {
 
@@ -71,9 +70,8 @@ public class TestCommand {
   public void testTerminable() throws InterruptedException {
     final long start = System.currentTimeMillis();
     PublishProcessor pp = PublishProcessor.create();
-    Flowable<Terminator> td = serial(delay, delay, delay, delay)
-        .terminable(pp).execute(true);
     Thread.sleep(3000);
+    Flowable<Terminator> td = serial(delay, delay, delay, delay).terminable(pp).execute(true);
     pp.onNext(new Object());
     pp.onComplete();
     waitForCommand(td);
@@ -85,7 +83,8 @@ public class TestCommand {
     int[] record = new int[2];
     assertTrue(record[0] == 0);
     long start = System.currentTimeMillis();
-    Flowable<Terminator> td = Command.fromAction(() -> record[0] = 1).until(() -> record[1] == 1).execute(true);
+    Flowable<Terminator> td = Command.fromAction(() -> record[0] = 1).until(() -> record[1] == 1)
+        .execute(true);
     Flowable.timer(1, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe(x -> record[1] = 1);
     waitForCommand(td);
     assertTrue(System.currentTimeMillis() - 1000 > start);

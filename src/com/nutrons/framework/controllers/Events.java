@@ -35,6 +35,7 @@ public class Events {
 
   /**
    * Combines actions that are preformed on the talon.
+   *
    * @return combined event
    */
   public static ControllerEvent combine(ControllerEvent... events) {
@@ -94,4 +95,5 @@ public class Events {
   public static ControllerEvent resetPosition(double position) {
     return new ResetPositionEvent(position);
   }
+
 }
