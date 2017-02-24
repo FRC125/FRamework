@@ -39,7 +39,7 @@ public class FlowOperators {
   }
 
   public static <T> Flowable<T> toFlowFast(Supplier<T> supplier) {
-    return toFlow(supplier, 100, TimeUnit.MILLISECONDS);
+    return toFlow(supplier, 50, TimeUnit.MILLISECONDS);
   }
 
   /**
