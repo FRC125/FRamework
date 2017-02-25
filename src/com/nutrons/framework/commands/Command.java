@@ -1,16 +1,15 @@
 package com.nutrons.framework.commands;
 
+import static com.nutrons.framework.util.FlowOperators.toFlow;
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
 import org.reactivestreams.Publisher;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
-import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Command implements CommandWorkUnit {
 
@@ -79,11 +78,12 @@ public class Command implements CommandWorkUnit {
    */
   public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream) {
     return new Command(x -> Flowable.defer(() ->
-        Flowable.switchOnNext(Flowable.fromPublisher(commandStream).map(y -> y.execute(x))
-            .subscribeOn(Schedulers.io()))).scan((a, b) -> {
-      a.run();
-      return b;
-    }));
+        Flowable.fromPublisher(commandStream)
+            .concatMap(y -> Flowable.<Terminator>just(FlattenedTerminator.from(y.execute(x)))
+                .subscribeOn(Schedulers.io())).scan((a, b) -> {
+          a.run();
+          return b;
+        })));
   }
 
   public Command addFinalTerminator(Terminator terminator) {
@@ -125,7 +125,7 @@ public class Command implements CommandWorkUnit {
    */
   public Command endsWhen(Publisher<?> terminator, boolean terminatesAtEnd) {
     return Command.just(x -> {
-      Flowable<Terminator> sourceTerminator = this.execute(terminatesAtEnd);
+      Flowable<? extends Terminator> sourceTerminator = this.execute(terminatesAtEnd);
       Terminator multi = FlattenedTerminator.from(sourceTerminator);
       return Flowable.defer(() -> Flowable.<Terminator>never().takeUntil(terminator)
           .mergeWith(Flowable.just(multi::run)));
@@ -165,14 +165,14 @@ public class Command implements CommandWorkUnit {
 
   public Command killAfter(long delay, TimeUnit unit) {
     return Command.just(x -> {
-      Flowable<Terminator> terms = this.terminable(Flowable.timer(delay, unit)).execute(x);
+      Flowable<? extends Terminator> terms = this.terminable(Flowable.timer(delay, unit)).execute(x);
       return terms;
     });
   }
 
   @Override
-  public Flowable<Terminator> execute(boolean selfTerminating) {
-    Flowable<Terminator> terms = source.execute(selfTerminating).subscribeOn(Schedulers.io());
+  public Flowable<? extends Terminator> execute(boolean selfTerminating) {
+    Flowable<? extends Terminator> terms = source.execute(selfTerminating).subscribeOn(Schedulers.io());
     if (selfTerminating) {
       terms.toList().subscribe(x -> Observable.fromIterable(x).blockingSubscribe(Terminator::run));
     }

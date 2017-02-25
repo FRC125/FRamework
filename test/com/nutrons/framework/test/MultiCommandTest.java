@@ -1,15 +1,13 @@
 package com.nutrons.framework.test;
 
+import static com.nutrons.framework.commands.Command.parallel;
+import static junit.framework.TestCase.assertTrue;
+
 import com.nutrons.framework.commands.Command;
-import com.nutrons.framework.commands.TerminatorWrapper;
 import io.reactivex.Flowable;
 import org.junit.Before;
 import org.junit.Test;
-
 import java.util.concurrent.TimeUnit;
-
-import static com.nutrons.framework.commands.Command.parallel;
-import static junit.framework.TestCase.assertTrue;
 
 public class MultiCommandTest {
   private Command delay;
@@ -38,26 +36,6 @@ public class MultiCommandTest {
     oneThenZero.delayFinish(2000, TimeUnit.MILLISECONDS).execute(true);
     Thread.sleep(1000);
     assertTrue(record[0] == 1);
-    Thread.sleep(2000);
-    assertTrue(record[0] == 0);
-  }
-
-  @Test
-  public void testSwitch() throws InterruptedException {
-    int[] record = new int[1];
-    record[0] = 0;
-    Command inc = Command.just(x -> {
-      synchronized (record) {
-        record[0] += 1;
-      }
-      return Flowable.just(new TerminatorWrapper(() -> {
-        synchronized (record) {
-          record[0] -= 1;
-        }
-      }));
-    });
-    Command.fromSwitch(Flowable.interval(1, TimeUnit.SECONDS).map(x -> inc).take(5))
-        .execute(true).blockingSubscribe();
     Thread.sleep(2000);
     assertTrue(record[0] == 0);
   }
