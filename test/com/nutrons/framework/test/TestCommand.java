@@ -25,7 +25,6 @@ public class TestCommand {
   /**
    * Delays commands until test starts.
    */
-
   @Before
   public void setupCommands() {
     delay = Command.fromAction(() -> {

@@ -38,6 +38,10 @@ public class FlowOperators {
     return toFlow(supplier, 100, TimeUnit.MILLISECONDS);
   }
 
+  public static <T> Flowable<T> toFlowFast(Supplier<T> supplier) {
+    return toFlow(supplier, 50, TimeUnit.MILLISECONDS);
+  }
+
   /**
    * Modifies motor input to prevent motors running at very small values
    *
