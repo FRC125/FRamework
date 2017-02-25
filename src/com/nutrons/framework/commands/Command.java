@@ -7,9 +7,9 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Publisher;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import org.reactivestreams.Publisher;
 
 public class Command implements CommandWorkUnit {
 
@@ -80,14 +80,16 @@ public class Command implements CommandWorkUnit {
     return new Command(x -> Flowable.defer(() ->
         Flowable.fromPublisher(commandStream)
             .concatMap(y -> Flowable.<Terminator>just(FlattenedTerminator.from(y.execute(x)))
-                .subscribeOn(Schedulers.io())).scan((a, b) -> {
-          a.run();
-          return b;
-        })));
+                .subscribeOn(Schedulers.io()))
+            .scan((a, b) -> {
+              a.run();
+              return b;
+            })));
   }
 
   public Command addFinalTerminator(Terminator terminator) {
-    return Command.just(x -> this.source.execute(x).flatMap(y -> Flowable.<Terminator>just(y, terminator)).subscribeOn(Schedulers.io()));
+    return Command.just(x -> this.source.execute(x)
+        .flatMap(y -> Flowable.<Terminator>just(y, terminator)).subscribeOn(Schedulers.io()));
   }
 
   /**
@@ -137,7 +139,8 @@ public class Command implements CommandWorkUnit {
    * will only complete once endCondition returns true.
    */
   public Command until(Supplier<Boolean> endCondition) {
-    ConnectableFlowable<?> terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x).onBackpressureDrop().publish();
+    ConnectableFlowable<?> terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x)
+        .onBackpressureDrop().publish();
     terminator.connect();
     return this.terminable(terminator);
   }
@@ -163,16 +166,21 @@ public class Command implements CommandWorkUnit {
     return this.terminable(Flowable.timer(delay, unit));
   }
 
+  /**
+   * End and terminate this command only after the specified time has passed.
+   */
   public Command killAfter(long delay, TimeUnit unit) {
     return Command.just(x -> {
-      Flowable<? extends Terminator> terms = this.terminable(Flowable.timer(delay, unit)).execute(x);
+      Flowable<? extends Terminator> terms = this.terminable(Flowable.timer(delay, unit))
+          .execute(x);
       return terms;
     });
   }
 
   @Override
   public Flowable<? extends Terminator> execute(boolean selfTerminating) {
-    Flowable<? extends Terminator> terms = source.execute(selfTerminating).subscribeOn(Schedulers.io());
+    Flowable<? extends Terminator> terms = source.execute(selfTerminating)
+        .subscribeOn(Schedulers.io());
     if (selfTerminating) {
       terms.toList().subscribe(x -> Observable.fromIterable(x).blockingSubscribe(Terminator::run));
     }

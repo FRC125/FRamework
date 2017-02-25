@@ -5,9 +5,9 @@ import static junit.framework.TestCase.assertTrue;
 
 import com.nutrons.framework.commands.Command;
 import io.reactivex.Flowable;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.concurrent.TimeUnit;
 
 public class MultiCommandTest {
   private Command delay;

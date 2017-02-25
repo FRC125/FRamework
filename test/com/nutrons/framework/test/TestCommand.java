@@ -9,9 +9,9 @@ import com.nutrons.framework.commands.Terminator;
 import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.concurrent.TimeUnit;
 
 public class TestCommand {
 
@@ -71,7 +71,7 @@ public class TestCommand {
   public void testTerminable() throws InterruptedException {
     final long start = System.currentTimeMillis();
     PublishProcessor pp = PublishProcessor.create();
-    Flowable<? extends Terminator> td = serial(delay, delay, delay, delay)
+    final Flowable<? extends Terminator> td = serial(delay, delay, delay, delay)
         .terminable(pp).execute(true);
     Thread.sleep(3000);
     pp.onNext(new Object());
@@ -85,7 +85,8 @@ public class TestCommand {
     int[] record = new int[2];
     assertTrue(record[0] == 0);
     long start = System.currentTimeMillis();
-    Flowable<? extends Terminator> td = Command.fromAction(() -> record[0] = 1).until(() -> record[1] == 1).execute(true);
+    Flowable<? extends Terminator> td = Command.fromAction(() -> record[0] = 1)
+        .until(() -> record[1] == 1).execute(true);
     Flowable.timer(1, TimeUnit.SECONDS).subscribeOn(Schedulers.io()).subscribe(x -> record[1] = 1);
     waitForCommand(td);
     assertTrue(System.currentTimeMillis() - 1000 > start);

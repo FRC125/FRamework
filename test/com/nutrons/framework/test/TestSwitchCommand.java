@@ -6,10 +6,10 @@ import static junit.framework.TestCase.assertTrue;
 import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.commands.TerminatorWrapper;
 import io.reactivex.Flowable;
-import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import org.junit.Test;
 
 public class TestSwitchCommand {
 
