@@ -70,21 +70,30 @@ public class Command implements CommandWorkUnit {
     return new Command(new ParallelCommand(commands));
   }
 
+  public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream, boolean subcommandsSelfTerminate) {
+    return fromSwitch(commandStream, subcommandsSelfTerminate, true);
+  }
+
   /**
-   * Creates a command that runs sequentially to another.
+   * Creates a command that runs commands in a stream.
    *
-   * @param commandStream A flowable of commands
+   * @param commandStream             A flowable of commands
+   * @param subcommandsSelfTerminate  if true, commands in the stream will self terminate;
+   * @param subcommandsForceTerminate if true, commands in the stream will terminate the previous command.
    * @retuns Second command after first is executed.
    */
-  public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream) {
-    return new Command(x -> Flowable.defer(() ->
-        Flowable.fromPublisher(commandStream)
-            .concatMap(y -> Flowable.<Terminator>just(FlattenedTerminator.from(y.execute(x)))
-                .subscribeOn(Schedulers.io()))
-            .scan((a, b) -> {
-              a.run();
-              return b;
-            })));
+  public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream,
+                                   boolean subcommandsSelfTerminate,
+                                   boolean subcommandsForceTerminate) {
+    return new Command(x -> Flowable.fromPublisher(commandStream)
+        .concatMap(y -> Flowable.<Terminator>just(FlattenedTerminator.from(y.execute(subcommandsSelfTerminate)))
+            .subscribeOn(Schedulers.io()))
+        .scan((a, b) -> {
+          if (subcommandsForceTerminate) {
+            a.run();
+          }
+          return b;
+        }).replay().autoConnect());
   }
 
   public Command addFinalTerminator(Terminator terminator) {
@@ -182,7 +191,8 @@ public class Command implements CommandWorkUnit {
     Flowable<? extends Terminator> terms = source.execute(selfTerminating)
         .subscribeOn(Schedulers.io());
     if (selfTerminating) {
-      terms.toList().subscribe(x -> Observable.fromIterable(x).blockingSubscribe(Terminator::run));
+      terms.toList().map(Observable::fromIterable).subscribeOn(Schedulers.io())
+          .subscribe(x -> x.subscribe(Terminator::run));
     }
     return terms;
   }

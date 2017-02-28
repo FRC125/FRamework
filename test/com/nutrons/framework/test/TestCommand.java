@@ -141,4 +141,13 @@ public class TestCommand {
     Thread.sleep(4000);
     assertTrue(record[0] == 1);
   }
+
+  @Test
+  public void notSelfTerminating() throws InterruptedException {
+    Command doesntTermrinate = Command.just(x ->
+        Flowable.<Terminator>just(() -> assertTrue(false))
+            .mergeWith(Flowable.never()));
+    doesntTermrinate.execute(true);
+    Thread.sleep(2000);
+  }
 }

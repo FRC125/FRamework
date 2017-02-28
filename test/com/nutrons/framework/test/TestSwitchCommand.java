@@ -18,7 +18,7 @@ public class TestSwitchCommand {
     List<Long> list = new ArrayList<>();
     Flowable<Command> commandStream = Flowable.interval(100, TimeUnit.MILLISECONDS)
         .map(x -> putNumber(list, x)).take(5);
-    Command.fromSwitch(commandStream).execute(true);
+    Command.fromSwitch(commandStream, true).execute(true);
     Thread.sleep(300);
     assertFalse(list.contains(4));
     Thread.sleep(500);
@@ -46,7 +46,7 @@ public class TestSwitchCommand {
         }
       }));
     });
-    Command.fromSwitch(Flowable.interval(1, TimeUnit.SECONDS).map(x -> inc).take(5))
+    Command.fromSwitch(Flowable.interval(1, TimeUnit.SECONDS).map(x -> inc).take(5), true)
         .execute(true).blockingSubscribe();
     Thread.sleep(2000);
     assertTrue(record[0] == 0);
@@ -62,7 +62,7 @@ public class TestSwitchCommand {
         record[0] += 1;
       }
     })));
-    Command.fromSwitch(Flowable.interval(1, TimeUnit.SECONDS).map(x -> inc).take(5))
+    Command.fromSwitch(Flowable.interval(1, TimeUnit.SECONDS).map(x -> inc).take(5), true)
         .execute(true);
     assertTrue(System.currentTimeMillis() - start < 1000);
     Thread.sleep(2000);
@@ -76,7 +76,7 @@ public class TestSwitchCommand {
     doesntFinish.execute(false);
     Thread.sleep(1000);
     Command justOne = Command.fromSwitch(Flowable.<Command>never()
-        .mergeWith(Flowable.just(doesntFinish)));
+        .mergeWith(Flowable.just(doesntFinish)), false);
     justOne.execute(false);
     Thread.sleep(1000);
     justOne.execute(true);
@@ -88,7 +88,7 @@ public class TestSwitchCommand {
     Command doesntFinish = Command.just(x -> Flowable.just(() -> {
       throw new RuntimeException();
     }));
-    Command two = Command.fromSwitch(Flowable.just(doesntFinish, doesntFinish));
+    Command two = Command.fromSwitch(Flowable.just(doesntFinish, doesntFinish), false);
     two.execute(false).blockingSubscribe();
   }
 }
