@@ -1,16 +1,15 @@
 package com.nutrons.framework.commands;
 
+import static com.nutrons.framework.util.FlowOperators.toFlow;
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Publisher;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
-import static com.nutrons.framework.util.FlowOperators.toFlow;
+import org.reactivestreams.Publisher;
 
 public class Command implements CommandWorkUnit {
 
@@ -71,23 +70,35 @@ public class Command implements CommandWorkUnit {
     return new Command(new ParallelCommand(commands));
   }
 
+  public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream, boolean subcommandsSelfTerminate) {
+    return fromSwitch(commandStream, subcommandsSelfTerminate, true);
+  }
+
   /**
-   * Creates a command that runs sequentially to another.
+   * Creates a command that runs commands in a stream.
    *
-   * @param commandStream A flowable of commands
+   * @param commandStream             A flowable of commands
+   * @param subcommandsSelfTerminate  if true, commands in the stream will self terminate;
+   * @param subcommandsForceTerminate if true, commands in the stream will terminate the previous command.
    * @retuns Second command after first is executed.
    */
-  public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream) {
-    return new Command(x -> Flowable.defer(() ->
-        Flowable.switchOnNext(Flowable.fromPublisher(commandStream).map(y -> y.execute(x))
-            .subscribeOn(Schedulers.io()))).scan((a, b) -> {
-      a.run();
-      return b;
-    }));
+  public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream,
+                                   boolean subcommandsSelfTerminate,
+                                   boolean subcommandsForceTerminate) {
+    return new Command(x -> Flowable.fromPublisher(commandStream)
+        .concatMap(y -> Flowable.<Terminator>just(FlattenedTerminator.from(y.execute(subcommandsSelfTerminate)))
+            .subscribeOn(Schedulers.io()))
+        .scan((a, b) -> {
+          if (subcommandsForceTerminate) {
+            a.run();
+          }
+          return b;
+        }).replay().autoConnect());
   }
 
   public Command addFinalTerminator(Terminator terminator) {
-    return Command.just(x -> this.source.execute(x).flatMap(y -> Flowable.<Terminator>just(y, terminator)).subscribeOn(Schedulers.io()));
+    return Command.just(x -> this.source.execute(x)
+        .flatMap(y -> Flowable.<Terminator>just(y, terminator)).subscribeOn(Schedulers.io()));
   }
 
   /**
@@ -125,7 +136,7 @@ public class Command implements CommandWorkUnit {
    */
   public Command endsWhen(Publisher<?> terminator, boolean terminatesAtEnd) {
     return Command.just(x -> {
-      Flowable<Terminator> sourceTerminator = this.execute(terminatesAtEnd);
+      Flowable<? extends Terminator> sourceTerminator = this.execute(terminatesAtEnd);
       Terminator multi = FlattenedTerminator.from(sourceTerminator);
       return Flowable.defer(() -> Flowable.<Terminator>never().takeUntil(terminator)
           .mergeWith(Flowable.just(multi::run)));
@@ -137,7 +148,8 @@ public class Command implements CommandWorkUnit {
    * will only complete once endCondition returns true.
    */
   public Command until(Supplier<Boolean> endCondition) {
-    ConnectableFlowable<?> terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x).onBackpressureDrop().publish();
+    ConnectableFlowable<?> terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x)
+        .onBackpressureDrop().publish();
     terminator.connect();
     return this.terminable(terminator);
   }
@@ -163,18 +175,24 @@ public class Command implements CommandWorkUnit {
     return this.terminable(Flowable.timer(delay, unit));
   }
 
+  /**
+   * End and terminate this command only after the specified time has passed.
+   */
   public Command killAfter(long delay, TimeUnit unit) {
     return Command.just(x -> {
-      Flowable<Terminator> terms = this.terminable(Flowable.timer(delay, unit)).execute(x);
+      Flowable<? extends Terminator> terms = this.terminable(Flowable.timer(delay, unit))
+          .execute(x);
       return terms;
     });
   }
 
   @Override
-  public Flowable<Terminator> execute(boolean selfTerminating) {
-    Flowable<Terminator> terms = source.execute(selfTerminating).subscribeOn(Schedulers.io());
+  public Flowable<? extends Terminator> execute(boolean selfTerminating) {
+    Flowable<? extends Terminator> terms = source.execute(selfTerminating)
+        .subscribeOn(Schedulers.io());
     if (selfTerminating) {
-      terms.toList().subscribe(x -> Observable.fromIterable(x).blockingSubscribe(Terminator::run));
+      terms.toList().map(Observable::fromIterable).subscribeOn(Schedulers.io())
+          .subscribe(x -> x.subscribe(Terminator::run));
     }
     return terms;
   }
