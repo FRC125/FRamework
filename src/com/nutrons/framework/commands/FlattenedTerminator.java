@@ -10,9 +10,9 @@ class FlattenedTerminator implements Terminator {
 
   private final AtomicBoolean lock;
   private final ArrayList<Terminator> terminators;
-  private final Flowable<Terminator> terminatorStream;
+  private final Flowable<? extends Terminator> terminatorStream;
 
-  private FlattenedTerminator(Flowable<Terminator> terminators) {
+  private FlattenedTerminator(Flowable<? extends Terminator> terminators) {
     this.lock = new AtomicBoolean(false);
     this.terminators = new ArrayList<>();
     this.terminatorStream = terminators;
@@ -29,7 +29,7 @@ class FlattenedTerminator implements Terminator {
     });
   }
 
-  static FlattenedTerminator from(Flowable<Terminator> terminators) {
+  static FlattenedTerminator from(Flowable<? extends Terminator> terminators) {
     return new FlattenedTerminator(terminators);
   }
 
