@@ -1,5 +1,6 @@
 package com.nutrons.framework.commands;
 
+import com.nutrons.framework.util.FlowOperators;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
@@ -10,6 +11,7 @@ import org.reactivestreams.Publisher;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import static com.nutrons.framework.util.FlowOperators.printId;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Command implements CommandWorkUnit {
