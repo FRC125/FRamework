@@ -9,6 +9,7 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
+
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -201,5 +202,12 @@ public class Command implements CommandWorkUnit {
           .subscribe(x -> x.subscribe(Terminator::run));
     }
     return terms;
+  }
+
+  public static Command defer(Supplier<Command> supplier) {
+    return Command.just(x -> {
+      Command actual = supplier.get();
+      return actual.execute(x);
+    });
   }
 }
