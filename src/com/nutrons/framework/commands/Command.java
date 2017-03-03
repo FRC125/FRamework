@@ -85,7 +85,7 @@ public class Command implements CommandWorkUnit {
   public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream,
                                    boolean subcommandsSelfTerminate,
                                    boolean subcommandsForceTerminate) {
-    return new Command(x -> Flowable.fromPublisher(commandStream)
+    return new Command(x -> Flowable.fromPublisher(commandStream).share()
         .concatMap(y -> Flowable.<Terminator>just(FlattenedTerminator.from(y.execute(subcommandsSelfTerminate)))
             .subscribeOn(Schedulers.io()))
         .scan((a, b) -> {
@@ -93,7 +93,7 @@ public class Command implements CommandWorkUnit {
             a.run();
           }
           return b;
-        }).replay().autoConnect());
+        }).share());
   }
 
   public static Command defer(Supplier<Command> supplier) {
@@ -178,7 +178,7 @@ public class Command implements CommandWorkUnit {
    * Copies this command into one which will delay execution for a period of time.
    */
   public Command delayStart(long delay, TimeUnit unit) {
-    return this.startable(Flowable.timer(delay, unit));
+    return this.startable(Flowable.timer(delay, unit).onBackpressureBuffer());
   }
 
   /**

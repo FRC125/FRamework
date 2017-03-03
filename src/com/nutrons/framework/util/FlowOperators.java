@@ -27,7 +27,7 @@ public class FlowOperators {
       long ignored, TimeUnit unit) {
     return Flowable.interval(ignored, unit).subscribeOn(Schedulers.io())
         .map(x -> supplier.get()).onBackpressureDrop().observeOn(Schedulers.computation())
-        .onBackpressureDrop();
+        .onBackpressureDrop().share();
   }
 
   /**
