@@ -1,11 +1,11 @@
 package com.nutrons.framework.controllers;
 
+import static com.nutrons.framework.util.FlowOperators.toFlow;
+
 import com.ctre.CANTalon;
 import io.reactivex.Flowable;
-
 import java.security.InvalidParameterException;
 
-import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 public class Talon extends LoopSpeedController {
 
@@ -133,7 +133,7 @@ public class Talon extends LoopSpeedController {
 
 
   @Override
-  public boolean fwdLimitSwitchClosed(){
+  public boolean fwdLimitSwitchClosed() {
     return this.talon.isFwdLimitSwitchClosed();
   }
 

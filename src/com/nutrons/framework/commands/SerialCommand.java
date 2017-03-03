@@ -4,6 +4,7 @@ import io.reactivex.Flowable;
 import io.reactivex.schedulers.Schedulers;
 
 public class SerialCommand implements CommandWorkUnit {
+
   private final Flowable<Command> commands;
 
   SerialCommand(CommandWorkUnit... commands) {

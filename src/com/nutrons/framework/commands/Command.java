@@ -1,7 +1,5 @@
 package com.nutrons.framework.commands;
 
-import com.nutrons.framework.util.FlowOperators;
-
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import io.reactivex.Flowable;
@@ -9,13 +7,8 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
-import static com.nutrons.framework.util.FlowOperators.printId;
-import static com.nutrons.framework.util.FlowOperators.toFlow;
-
 import org.reactivestreams.Publisher;
 
 public class Command implements CommandWorkUnit {
@@ -103,6 +96,19 @@ public class Command implements CommandWorkUnit {
         }).replay().autoConnect());
   }
 
+  public static Command defer(Supplier<Command> supplier) {
+    return Command.just(x -> {
+      Command actual = supplier.get();
+      return actual.execute(x);
+    });
+  }
+
+  /**
+   * Adds a command that will terminate the current command.
+   *
+   * @param terminator Terminator command you wish to add.
+   * @return teriminatable command.
+   */
   public Command addFinalTerminator(Terminator terminator) {
     return Command.just(x -> this.source.execute(x)
         .flatMap(y -> Flowable.<Terminator>just(y, terminator)).subscribeOn(Schedulers.io()));
@@ -138,8 +144,8 @@ public class Command implements CommandWorkUnit {
   /**
    * Copies this command into one which will end when terminator emits an item.
    *
-   * @param terminatesAtEnd if true, the command will terminate only when the end is reached,
-   *                        if false, the command may terminate before the end is reached.
+   * @param terminatesAtEnd if true, the command will terminate only when the end is reached, if
+   *                        false, the command may terminate before the end is reached.
    */
   public Command endsWhen(Publisher<?> terminator, boolean terminatesAtEnd) {
     return Command.just(x -> {
@@ -184,6 +190,11 @@ public class Command implements CommandWorkUnit {
 
   /**
    * End and terminate this command only after the specified time has passed.
+   * Kills a command after a given time and unit
+   *
+   * @param delay a number in relation to a unit 1000 = 1 ms if unit is ms.
+   * @param unit  unit you wish to count in.
+   * @return a command that will terminate after a given time.
    */
   public Command killAfter(long delay, TimeUnit unit) {
     return Command.just(x -> {
@@ -202,12 +213,5 @@ public class Command implements CommandWorkUnit {
           .subscribe(x -> x.subscribe(Terminator::run));
     }
     return terms;
-  }
-
-  public static Command defer(Supplier<Command> supplier) {
-    return Command.just(x -> {
-      Command actual = supplier.get();
-      return actual.execute(x);
-    });
   }
 }
