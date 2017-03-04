@@ -14,9 +14,8 @@ public class SerialCommand implements CommandWorkUnit {
   @Override
   public Flowable<Terminator> execute(boolean selfTerminating) {
     Flowable<? extends Terminator> terminators = this.commands
-        .concatMap(x -> x.execute(selfTerminating).subscribeOn(Schedulers.io()))
-        .subscribeOn(Schedulers.io()).publish().autoConnect();
+        .concatMap(x -> x.execute(selfTerminating));
     return Flowable.<Terminator>just(FlattenedTerminator.from(terminators))
-        .mergeWith(terminators.ignoreElements().toFlowable());
+        .mergeWith(terminators.ignoreElements().toFlowable()).subscribeOn(Schedulers.io());
   }
 }

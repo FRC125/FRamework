@@ -85,7 +85,7 @@ public class Command implements CommandWorkUnit {
   public static Command fromSwitch(Publisher<? extends CommandWorkUnit> commandStream,
                                    boolean subcommandsSelfTerminate,
                                    boolean subcommandsForceTerminate) {
-    return new Command(x -> Flowable.fromPublisher(commandStream).share()
+    return new Command(x -> Flowable.fromPublisher(commandStream)
         .concatMap(y -> Flowable.<Terminator>just(FlattenedTerminator.from(y.execute(subcommandsSelfTerminate)))
             .subscribeOn(Schedulers.io()))
         .scan((a, b) -> {
@@ -93,7 +93,7 @@ public class Command implements CommandWorkUnit {
             a.run();
           }
           return b;
-        }).share());
+        }));
   }
 
   public static Command defer(Supplier<Command> supplier) {
@@ -111,7 +111,7 @@ public class Command implements CommandWorkUnit {
    */
   public Command addFinalTerminator(Terminator terminator) {
     return Command.just(x -> this.source.execute(x)
-        .flatMap(y -> Flowable.<Terminator>just(y, terminator)).subscribeOn(Schedulers.io()));
+        .flatMap(y -> Flowable.<Terminator>just(y, terminator)));
   }
 
   /**
@@ -119,7 +119,7 @@ public class Command implements CommandWorkUnit {
    */
   public Command startable(Publisher<?> starter) {
     return new Command(new SerialCommand(
-        Command.just(x -> Flowable.defer(() -> Flowable.<Terminator>never().takeUntil(starter))),
+        Command.just(x -> Flowable.<Terminator>never().takeUntil(starter)),
         this));
   }
 
@@ -128,8 +128,7 @@ public class Command implements CommandWorkUnit {
    * will delay the execution of all actions until startCondition returns true.
    */
   public Command when(Supplier<Boolean> startCondition) {
-    Flowable ignition = Flowable
-        .defer(() -> emptyPulse.map(x -> startCondition.get()).filter(x -> x).onBackpressureDrop());
+    Flowable ignition = emptyPulse.map(x -> startCondition.get()).filter(x -> x).onBackpressureDrop();
     return this.startable(ignition);
   }
 
@@ -151,8 +150,8 @@ public class Command implements CommandWorkUnit {
     return Command.just(x -> {
       Flowable<? extends Terminator> sourceTerminator = this.execute(terminatesAtEnd);
       Terminator multi = FlattenedTerminator.from(sourceTerminator);
-      return Flowable.defer(() -> Flowable.<Terminator>never().takeUntil(terminator)
-          .mergeWith(Flowable.just(multi::run)));
+      return Flowable.<Terminator>never().takeUntil(terminator)
+          .mergeWith(Flowable.just(multi));
     });
   }
 

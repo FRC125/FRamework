@@ -16,7 +16,7 @@ class FlattenedTerminator implements Terminator {
     this.lock = new AtomicBoolean(false);
     this.terminators = new ArrayList<>();
     this.terminatorStream = terminators;
-    terminators.subscribeOn(Schedulers.io()).subscribe(x -> {
+    terminators.subscribe(x -> {
       if (!lock.get()) {
         synchronized (lock) {
           if (!lock.get()) {
