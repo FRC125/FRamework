@@ -87,7 +87,7 @@ public class Command implements CommandWorkUnit {
                                    boolean subcommandsForceTerminate) {
     return new Command(x -> Flowable.fromPublisher(commandStream)
         .concatMap(y -> Flowable.<Terminator>just(FlattenedTerminator.from(y.execute(subcommandsSelfTerminate)))
-            .subscribeOn(Schedulers.io()))
+            .subscribeOn(Schedulers.trampoline()))
         .scan((a, b) -> {
           if (subcommandsForceTerminate) {
             a.run();
@@ -206,10 +206,12 @@ public class Command implements CommandWorkUnit {
   @Override
   public Flowable<? extends Terminator> execute(boolean selfTerminating) {
     Flowable<? extends Terminator> terms = source.execute(selfTerminating)
-        .subscribeOn(Schedulers.io());
+        .subscribeOn(Schedulers.trampoline());
     if (selfTerminating) {
-      terms.toList().map(Observable::fromIterable).subscribeOn(Schedulers.io())
+      terms.toList().map(Observable::fromIterable).subscribeOn(Schedulers.trampoline())
           .subscribe(x -> x.subscribe(Terminator::run));
+    } else {
+      terms.subscribe();
     }
     return terms;
   }

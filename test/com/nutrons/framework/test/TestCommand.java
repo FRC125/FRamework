@@ -32,6 +32,18 @@ public class TestCommand {
   }
 
   @Test
+  public void fromAction() throws InterruptedException {
+    int[] record = new int[1];
+    Command.fromAction(() -> {
+      synchronized (record) {
+        record[0] = 1;
+      }
+    }).execute(true);
+    Thread.sleep(1000);
+    assertTrue(record[0] == 1);
+  }
+
+  @Test
   public void single() {
     final Integer[] arr = new Integer[1];
     arr[0] = 5;

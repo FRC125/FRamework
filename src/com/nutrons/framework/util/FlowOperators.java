@@ -8,6 +8,7 @@ import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import java.util.concurrent.TimeUnit;
@@ -24,9 +25,10 @@ public class FlowOperators {
    */
   public static <T> Flowable<T> toFlow(Supplier<T> supplier,
                                        long ignored, TimeUnit unit) {
-    return Flowable.interval(ignored, unit).subscribeOn(Schedulers.io())
-        .map(x -> supplier.get()).onBackpressureDrop().observeOn(Schedulers.computation())
-        .onBackpressureDrop().share();
+    ConnectableFlowable<T> toRet = Flowable.interval(ignored, unit, Schedulers.io())
+        .map(x -> supplier.get()).onBackpressureDrop().observeOn(Schedulers.computation()).publish();
+    toRet.connect();
+    return toRet;
   }
 
   /**
@@ -90,7 +92,7 @@ public class FlowOperators {
           .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
           .map(x -> x * derivative);
       Flowable<Double> output = Flowable.combineLatest(errorP, errorI, errorD,
-          (p, i, d) -> p + i + d);
+          (p, i, d) -> p + i + d).publish().autoConnect();
       return output;
     };
   }
@@ -102,7 +104,7 @@ public class FlowOperators {
       Flowable<Double> errorD = error.buffer(2, 1)
           .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
           .map(x -> x * derivative);
-      return Flowable.combineLatest(errorP, errorD, (p, d) -> p + d).share();
+      return Flowable.combineLatest(errorP, errorD, (p, d) -> p + d).publish().autoConnect();
     };
   }
 

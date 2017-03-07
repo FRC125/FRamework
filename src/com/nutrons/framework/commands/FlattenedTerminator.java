@@ -35,7 +35,7 @@ class FlattenedTerminator implements Terminator {
 
   public Flowable<? extends Terminator> toSingle() {
     return Flowable.just(this).mergeWith(terminatorStream.ignoreElements().toFlowable())
-        .subscribeOn(Schedulers.io());
+        .subscribeOn(Schedulers.trampoline());
   }
 
   @Override

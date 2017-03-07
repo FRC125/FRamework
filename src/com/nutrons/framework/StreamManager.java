@@ -62,7 +62,7 @@ public class StreamManager {
     System.out.println("all subsystems registered");
     Command auto = autoSupplier.get();
     if (auto != null) {
-      combineLatest(this.enabled, this.mode, (x, y) -> x && y.compareTo(AUTO) == 0)
+      combineLatest(this.enabled, this.mode, (x, y) -> x && y.compareTo(AUTO) == 0).onBackpressureDrop()
           .subscribeOn(Schedulers.io())
           .filter(x -> x)
           .map((a) -> {
@@ -73,7 +73,7 @@ public class StreamManager {
     }
     Command tele = teleopSupplier.get();
     if (tele != null) {
-      combineLatest(this.enabled, this.mode, (x, y) -> x && y.compareTo(TELE) == 0)
+      combineLatest(this.enabled, this.mode, (x, y) -> x && y.compareTo(TELE) == 0).onBackpressureDrop()
           .subscribeOn(Schedulers.io())
           .filter(x -> x)
           .map((a) -> {
