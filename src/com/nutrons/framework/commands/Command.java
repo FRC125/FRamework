@@ -1,16 +1,15 @@
 package com.nutrons.framework.commands;
 
+import static com.nutrons.framework.util.FlowOperators.toFlow;
+
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.schedulers.Schedulers;
-import org.reactivestreams.Publisher;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-
-import static com.nutrons.framework.util.FlowOperators.toFlow;
+import org.reactivestreams.Publisher;
 
 public class Command implements CommandWorkUnit {
 
@@ -177,5 +176,24 @@ public class Command implements CommandWorkUnit {
       terms.toList().subscribe(x -> Observable.fromIterable(x).blockingSubscribe(Terminator::run));
     }
     return terms;
+  }
+
+  public static PartialCommand beginWith(Runnable action) {
+    return new PartialCommand(action);
+  }
+
+  public static class PartialCommand {
+    private final Runnable action;
+
+    PartialCommand(Runnable action) {
+      this.action = action;
+    }
+
+    public Command endWith(Runnable cleanup) {
+      return Command.just(x -> {
+        action.run();
+        return Flowable.just(new TerminatorWrapper(cleanup));
+      });
+    }
   }
 }
