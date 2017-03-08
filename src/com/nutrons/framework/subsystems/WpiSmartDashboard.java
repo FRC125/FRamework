@@ -24,6 +24,7 @@ public class WpiSmartDashboard implements Subsystem {
 
   /**
    * Takes a double and passes it to the Smart Dashboard.
+   *
    * @param key decimal passed to the Smartdash.
    */
   public Consumer<Double> getTextFieldDouble(String key) {
@@ -39,7 +40,8 @@ public class WpiSmartDashboard implements Subsystem {
 
   /**
    * Prints string to the Smart Dashborad.
-   * @param key  A specific String.
+   *
+   * @param key A specific String.
    */
   public Consumer<String> getTextFieldString(String key) {
     if (!stringFields.containsKey(key)) {
@@ -54,6 +56,7 @@ public class WpiSmartDashboard implements Subsystem {
 
   /**
    * Prints Output of a Boolean to the Smart Dashboard.
+   *
    * @param key boolean statement.
    */
   public Consumer<Boolean> getTextFieldBoolean(String key) {

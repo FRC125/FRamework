@@ -1,13 +1,12 @@
 package com.nutrons.framework.inputs;
 
-import static com.nutrons.framework.util.FlowOperators.toFlow;
-
 import com.nutrons.framework.Subsystem;
 import com.nutrons.framework.util.IntervalCache;
 import edu.wpi.first.wpilibj.SerialPort;
 import io.reactivex.Flowable;
 import io.reactivex.processors.PublishProcessor;
 import java.util.function.Supplier;
+import static com.nutrons.framework.util.FlowOperators.toFlowFast;
 
 /**
  * A wrapper around WPI's SerialPort class which provides
@@ -41,7 +40,7 @@ public class Serial implements Subsystem {
    * @param bufferSize represents how many bytes to cache unread before clearing buffer
    * @param packetLength represents the length of each read from the buffer
    * @param terminationCharacter allows users to set a custom termination character - default is the
-   *     newline character '\n'
+   *        newline character '\n'
    */
   public Serial(SerialPort.Port port,
       int bufferSize,
@@ -56,7 +55,7 @@ public class Serial implements Subsystem {
    * @param bufferSize represents how many bytes to cache unread before clearing buffer
    * @param packetLength represents the length of each read from the buffer
    * @param terminationCharacter allows users to set a custom termination character - default is the
-   *     newline character '\n'
+   *        newline character '\n'
    * @param baudrate See <a href="https://en.wikipedia.org/wiki/Symbol_rate">Symbol Rate</a>
    */
   public Serial(int baudrate,
@@ -80,7 +79,7 @@ public class Serial implements Subsystem {
         }
         return serial.read(packetLength);
       };
-      this.dataStream = toFlow(new IntervalCache<byte[]>(100, supplier))
+      this.dataStream = toFlowFast(new IntervalCache<byte[]>(100, supplier))
           .filter(x -> x.length == packetLength);
     } catch (RuntimeException ex) {
       System.out.println(ex.getMessage());

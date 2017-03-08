@@ -1,18 +1,18 @@
 package com.nutrons.framework.util;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 
 public class FlowOperators {
 
@@ -26,7 +26,7 @@ public class FlowOperators {
                                        long ignored, TimeUnit unit) {
     return Flowable.interval(ignored, unit).subscribeOn(Schedulers.io())
         .map(x -> supplier.get()).onBackpressureDrop().observeOn(Schedulers.computation())
-        .onBackpressureDrop();
+        .onBackpressureDrop().share();
   }
 
   /**
@@ -36,6 +36,10 @@ public class FlowOperators {
    */
   public static <T> Flowable<T> toFlow(Supplier<T> supplier) {
     return toFlow(supplier, 100, TimeUnit.MILLISECONDS);
+  }
+
+  public static <T> Flowable<T> toFlowFast(Supplier<T> supplier) {
+    return toFlow(supplier, 50, TimeUnit.MILLISECONDS);
   }
 
   /**
@@ -91,15 +95,32 @@ public class FlowOperators {
     };
   }
 
+  public static FlowableTransformer<Double, Double> pdLoop(double proportional,
+                                                           double derivative) {
+    return error -> {
+      Flowable<Double> errorP = error.map(x -> x * proportional);
+      Flowable<Double> errorD = error.buffer(2, 1)
+          .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
+          .map(x -> x * derivative);
+      return Flowable.combineLatest(errorP, errorD, (p, d) -> p + d).share();
+    };
+  }
+
   public static Function<Double, Double> limitWithin(double minimum, double maximum) {
     return x -> max(min(x, maximum), minimum);
   }
 
-  public static <T> T printId(T t) {
-    System.out.println(t);
-    return t;
+  public static <T> T printId(T flowables) {
+    System.out.println(flowables);
+    return flowables;
   }
 
+  /**
+   * Combines disposable given to this method in order to return them all at once.
+   *
+   * @param disposables the disposables you desire to combine
+   * @return combined disposables.
+   */
   public static Disposable combineDisposable(Disposable... disposables) {
     CompositeDisposable cd = new CompositeDisposable();
     Flowable.fromArray(disposables).blockingSubscribe(cd::add);
