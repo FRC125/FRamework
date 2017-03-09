@@ -71,7 +71,7 @@ public class TestCommand {
     final long start = System.currentTimeMillis();
     PublishProcessor pp = PublishProcessor.create();
     final Flowable<? extends Terminator> td = serial(delay, delay, delay, delay)
-        .terminable(pp).execute(true);
+        .endsWhen(pp).execute(true);
     Thread.sleep(3000);
     pp.onNext(new Object());
     pp.onComplete();
@@ -136,7 +136,7 @@ public class TestCommand {
       assertTrue(System.currentTimeMillis() - 3000 < start);
       assertTrue(System.currentTimeMillis() - 1000 > start);
       record[0] = 1;
-    })).killAfter(2, TimeUnit.SECONDS).execute(true);
+    })).until(() -> false).killAfter(2, TimeUnit.SECONDS).execute(true);
     Thread.sleep(4000);
     assertTrue(record[0] == 1);
   }

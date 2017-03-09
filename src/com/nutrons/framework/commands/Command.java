@@ -137,8 +137,8 @@ public class Command implements CommandWorkUnit {
    * Copies this command into one which will end and terminate
    * only when the terminator emits an item.
    */
-  public Command terminable(Publisher<?> terminator) {
-    return this.endsWhen(terminator, false);
+  public Command endsWhen(Publisher<?> terminator) {
+    return this.terminable(terminator, false);
   }
 
   /**
@@ -147,7 +147,7 @@ public class Command implements CommandWorkUnit {
    * @param terminatesAtEnd if true, the command will terminate only when the end is reached, if
    *                        false, the command may terminate before the end is reached.
    */
-  public Command endsWhen(Publisher<?> terminator, boolean terminatesAtEnd) {
+  public Command terminable(Publisher<?> terminator, boolean terminatesAtEnd) {
     return Command.just(x -> {
       Flowable<? extends Terminator> sourceTerminator = this.execute(terminatesAtEnd);
       Terminator multi = FlattenedTerminator.from(sourceTerminator);
@@ -164,7 +164,7 @@ public class Command implements CommandWorkUnit {
     ConnectableFlowable<?> terminator = emptyPulse.map(x -> endCondition.get()).filter(x -> x)
         .onBackpressureDrop().publish();
     terminator.connect();
-    return this.terminable(terminator);
+    return this.endsWhen(terminator);
   }
 
   /**
@@ -185,7 +185,7 @@ public class Command implements CommandWorkUnit {
    * Copies this command into one which will delay termination until a period of time has passed.
    */
   public Command delayFinish(long delay, TimeUnit unit) {
-    return this.terminable(Flowable.timer(delay, unit));
+    return this.endsWhen(Flowable.timer(delay, unit));
   }
 
   /**
@@ -198,7 +198,7 @@ public class Command implements CommandWorkUnit {
    */
   public Command killAfter(long delay, TimeUnit unit) {
     return Command.just(x -> {
-      Flowable<? extends Terminator> terms = this.terminable(Flowable.timer(delay, unit))
+      Flowable<? extends Terminator> terms = this.terminable(Flowable.timer(delay, unit), true)
           .execute(x);
       return terms;
     });
