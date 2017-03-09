@@ -214,4 +214,23 @@ public class Command implements CommandWorkUnit {
     }
     return terms;
   }
+
+  public static PartialCommand beginWith(Runnable action) {
+    return new PartialCommand(action);
+  }
+
+  public static class PartialCommand {
+    private final Runnable action;
+
+    PartialCommand(Runnable action) {
+      this.action = action;
+    }
+
+    public Command endWith(Runnable cleanup) {
+      return Command.just(x -> {
+        action.run();
+        return Flowable.just(new TerminatorWrapper(cleanup));
+      });
+    }
+  }
 }
