@@ -26,6 +26,11 @@ public class Events {
         pid.actOn(talon);
         setpointEvent.actOn(talon);
       }
+      @Override
+      public void actOn(VirtualSpeedController controller) {
+        pid.actOn(controller);
+        setpointEvent.actOn(controller);
+      }
     };
   }
 
@@ -44,6 +49,12 @@ public class Events {
       public void actOn(Talon talon) {
         for (ControllerEvent e : events) {
           e.actOn(talon);
+        }
+      }
+      @Override
+      public void actOn(VirtualSpeedController controller) {
+        for (ControllerEvent e : events) {
+          e.actOn(controller);
         }
       }
     };

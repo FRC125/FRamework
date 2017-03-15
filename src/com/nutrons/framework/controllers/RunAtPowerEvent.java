@@ -26,4 +26,9 @@ public class RunAtPowerEvent implements ControllerEvent {
     }
     talon.set(power);
   }
+
+  public void actOn(VirtualSpeedController controller) {
+    controller.setControlMode(ControlMode.MANUAL);
+    controller.setRawOutput(power);
+  }
 }

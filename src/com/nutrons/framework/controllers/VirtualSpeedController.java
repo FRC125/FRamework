@@ -1,8 +1,57 @@
 package com.nutrons.framework.controllers;
 
+import com.nutrons.framework.util.FlowOperators;
 import io.reactivex.Flowable;
+import io.reactivex.flowables.ConnectableFlowable;
+import io.reactivex.processors.PublishProcessor;
 
 public class VirtualSpeedController extends LoopSpeedController {
+
+  private final PublishProcessor<Boolean> outputDirection;
+  private final ConnectableFlowable<Boolean> outputDirectionReplay;
+  private final PublishProcessor<Double[]> pidProperties;
+  private final ConnectableFlowable<Double[]> pidPropertiesReplay;
+  private final ConnectableFlowable<Double> position;
+  private final ConnectableFlowable<Double> speed;
+  private final PublishProcessor<Double> setpoint;
+  private final ConnectableFlowable<Double> setpointReplay;
+  private final PublishProcessor<Double> rawOutput;
+  private final ConnectableFlowable<Double> rawOutputReplay;
+  private final PublishProcessor<ControlMode> mode;
+  private final ConnectableFlowable<ControlMode> modeReplay;
+  private final PublishProcessor<Boolean> sensorDirection;
+  private final ConnectableFlowable<Boolean> sensorDirectionRelay;
+
+  public VirtualSpeedController(Flowable<Double> position, Flowable<Double> speed) {
+    this.outputDirection = PublishProcessor.create();
+    this.outputDirectionReplay = this.outputDirection.distinctUntilChanged().replay(1);
+    this.pidProperties = PublishProcessor.create();
+    this.pidPropertiesReplay = this.pidProperties.distinctUntilChanged().replay(1);
+    this.setpoint = PublishProcessor.create();
+    this.setpointReplay = this.setpoint.distinctUntilChanged().replay(1);
+    this.rawOutput = PublishProcessor.create();
+    this.rawOutputReplay = this.rawOutput.distinctUntilChanged().replay(1);
+    this.mode = PublishProcessor.create();
+    this.modeReplay = this.mode.distinctUntilChanged().replay(1);
+    this.sensorDirection = PublishProcessor.create();
+    this.sensorDirectionRelay = this.sensorDirection.distinctUntilChanged().replay(1);
+
+    this.modeReplay.connect();
+    this.rawOutputReplay.connect();
+    this.outputDirectionReplay.connect();
+    this.pidPropertiesReplay.connect();
+    this.setpointReplay.connect();
+
+
+    this.position = position.replay(1);
+    this.speed = speed.replay(1);
+    this.position.connect();
+    this.speed.connect();
+  }
+
+  public VirtualSpeedController() {
+    this(Flowable.just(0.0), Flowable.just(0.0));
+  }
 
   @Override
   public Flowable<FeedbackEvent> feedback() {
@@ -14,9 +63,13 @@ public class VirtualSpeedController extends LoopSpeedController {
     controllerEvent.actOn(this);
   }
 
+  public Flowable<Boolean> outputDirection() {
+    return outputDirectionReplay;
+  }
+
   @Override
   public void setOutputFlipped(boolean flipped) {
-
+    outputDirection.onNext(flipped);
   }
 
   @Override
@@ -31,10 +84,54 @@ public class VirtualSpeedController extends LoopSpeedController {
 
   @Override
   public double position() {
-    return 0;
+    return FlowOperators.getLastValue(position);
   }
 
   public double speed() {
-    return 0;
+    return FlowOperators.getLastValue(speed);
+  }
+
+  void changeControlMode(ControlMode mode) {
+    this.mode.onNext(mode);
+  }
+
+  public Flowable<ControlMode> mode() {
+    return modeReplay;
+  }
+
+  void setRawOutput(double output) {
+    this.rawOutput.onNext(output);
+  }
+
+  public Flowable<Double> rawOutput() {
+    return rawOutputReplay;
+  }
+
+  void setLoopProperties(double p, double i, double d, double f) {
+    pidProperties.onNext(new Double[] {p, i, d, f});
+  }
+
+  public Flowable<Double[]> loopProperties() {
+    return pidPropertiesReplay;
+  }
+
+  void changeSetpoint(double setpoint) {
+    this.setpoint.onNext(setpoint);
+  }
+
+  public Flowable<Double> setpoint() {
+    return setpointReplay;
+  }
+
+  public void reverseSensor(boolean b) {
+    this.sensorDirection.onNext(b);
+  }
+
+  public Flowable<Boolean> sensorDirection() {
+    return this.sensorDirectionRelay;
+  }
+
+  public void resetPositionTo(double position) {
+    
   }
 }
