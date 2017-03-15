@@ -97,12 +97,25 @@ public class FlowOperators {
 
   public static FlowableTransformer<Double, Double> pdLoop(double proportional,
                                                            double derivative) {
+    return controlLoop(proportional, derivative, 0.0, error -> Flowable.just(0.0));
+  }
+
+  private static FlowableTransformer<Double, Double> controlLoop(double proportional,
+                                                                 double derivative,
+                                                                 double integral,
+                                                                 Function<Flowable<Double>, Flowable<Double>> errorI) {
     return error -> {
       Flowable<Double> errorP = error.map(x -> x * proportional);
       Flowable<Double> errorD = error.buffer(2, 1)
           .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
           .map(x -> x * derivative);
-      return Flowable.combineLatest(errorP, errorD, (p, d) -> p + d).share();
+      try {
+        return Flowable.combineLatest(errorP, errorI.apply(error).map(x -> x * integral), errorD,
+            (p, i, d) -> p + i + d);
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException(e);
+      }
     };
   }
 
