@@ -76,8 +76,10 @@ public class FlowOperators {
 
   /**
    * Creates a PID Loop Function.
+   * DON'T USE EVER
    */
-  public static FlowableTransformer<Double, Double> pidLoop(double proportional,
+  @Deprecated
+  public static FlowableTransformer<Double, Double> veryBadDontUseEverPidLoop(double proportional,
       int integralBuffer,
       double integral,
       double derivative) {
@@ -87,20 +89,28 @@ public class FlowOperators {
             .map(x -> x * integral / integralBuffer));
   }
 
+  /**
+   * Exponential average version of PID Loop.
+   */
   public static FlowableTransformer<Double, Double> exponentialPidLoop(double proportinal,
       double integralBuffer,
       double integral,
       double derivative) {
     return controlLoop(proportinal, integral, derivative, error -> error.scan(
-        (newVal, lastAvg) -> lastAvg * (integralBuffer - 1) / integralBuffer + 1 / integralBuffer));
-
+        (newVal, lastAvg) -> lastAvg * (integralBuffer - 1) / integralBuffer + newVal / integralBuffer));
   }
 
+  /**
+   * RegularPD loop with the 0.0 integral stream.
+   */
   public static FlowableTransformer<Double, Double> pdLoop(double proportional,
       double derivative) {
     return controlLoop(proportional, derivative, 0.0, error -> Flowable.just(0.0));
   }
 
+  /**
+   * Control Loop for PID which
+   */
   private static FlowableTransformer<Double, Double> controlLoop(double proportional,
       double derivative,
       double integral,
