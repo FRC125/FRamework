@@ -1,6 +1,5 @@
 package com.nutrons.framework.controllers;
 
-import com.nutrons.framework.util.FlowOperators;
 import io.reactivex.Flowable;
 import io.reactivex.flowables.ConnectableFlowable;
 import io.reactivex.processors.PublishProcessor;
@@ -11,8 +10,8 @@ public class VirtualSpeedController extends LoopSpeedController {
   private final ConnectableFlowable<Boolean> outputDirectionReplay;
   private final PublishProcessor<Double[]> pidProperties;
   private final ConnectableFlowable<Double[]> pidPropertiesReplay;
-  private final ConnectableFlowable<Double> position;
-  private final ConnectableFlowable<Double> speed;
+  private final Flowable<Double> position;
+  private final Flowable<Double> speed;
   private final PublishProcessor<Double> setpoint;
   private final ConnectableFlowable<Double> setpointReplay;
   private final PublishProcessor<Double> rawOutput;
@@ -21,6 +20,8 @@ public class VirtualSpeedController extends LoopSpeedController {
   private final ConnectableFlowable<ControlMode> modeReplay;
   private final PublishProcessor<Boolean> sensorDirection;
   private final ConnectableFlowable<Boolean> sensorDirectionRelay;
+  private volatile double lastSpeed;
+  private volatile double lastPosition;
 
   public VirtualSpeedController(Flowable<Double> position, Flowable<Double> speed) {
     this.outputDirection = PublishProcessor.create();
@@ -42,11 +43,10 @@ public class VirtualSpeedController extends LoopSpeedController {
     this.pidPropertiesReplay.connect();
     this.setpointReplay.connect();
 
-
-    this.position = position.replay(1);
-    this.speed = speed.replay(1);
-    this.position.connect();
-    this.speed.connect();
+    this.position = position;
+    this.speed = speed;
+    this.position.subscribe(x -> this.lastPosition = x);
+    this.speed.subscribe(x -> this.lastSpeed = x);
   }
 
   public VirtualSpeedController() {
@@ -84,11 +84,11 @@ public class VirtualSpeedController extends LoopSpeedController {
 
   @Override
   public double position() {
-    return FlowOperators.getLastValue(position);
+    return lastPosition;
   }
 
   public double speed() {
-    return FlowOperators.getLastValue(speed);
+    return lastSpeed;
   }
 
   void changeControlMode(ControlMode mode) {
