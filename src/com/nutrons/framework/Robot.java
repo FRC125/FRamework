@@ -3,14 +3,13 @@ package com.nutrons.framework;
 import static com.nutrons.framework.util.CompMode.AUTO;
 import static com.nutrons.framework.util.CompMode.TELE;
 import static com.nutrons.framework.util.CompMode.TEST;
-import static io.reactivex.Flowable.combineLatest;
 
 import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.util.CompMode;
 import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
-import io.reactivex.schedulers.Schedulers;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Robot extends SampleRobot {
 
