@@ -20,10 +20,10 @@ public class FlowOperators {
    * Generate a Flowable from a periodic call to a Supplier. Drops on backpressure.
    *
    * @param ignored the number of time units to wait before calling the supplier again
-   * @param <T>     the type of the Flowable and Supplier
+   * @param <T> the type of the Flowable and Supplier
    */
   public static <T> Flowable<T> toFlow(Supplier<T> supplier,
-                                       long ignored, TimeUnit unit) {
+      long ignored, TimeUnit unit) {
     return Flowable.interval(ignored, unit).subscribeOn(Schedulers.io())
         .map(x -> supplier.get()).onBackpressureDrop().observeOn(Schedulers.computation())
         .onBackpressureDrop().share();
@@ -57,7 +57,7 @@ public class FlowOperators {
    * specified by minimum and maximum. If so, the value will be changed to remap.
    */
   public static Function<Double, Double> deadbandMap(double minimum, double maximum,
-                                                     double remap) {
+      double remap) {
     return bandMap(minimum, maximum, x -> remap);
   }
 
@@ -66,7 +66,7 @@ public class FlowOperators {
    * specified by minimum and maximum. If so, the value will be passed through the remap function.
    */
   public static Function<Double, Double> bandMap(double minimum, double maximum,
-                                                 Function<Double, Double> remap) {
+      Function<Double, Double> remap) {
     return x -> x < maximum && x > minimum ? remap.apply(x) : x;
   }
 
@@ -76,33 +76,57 @@ public class FlowOperators {
 
   /**
    * Creates a PID Loop Function.
+   * DON'T USE EVER
    */
-  public static FlowableTransformer<Double, Double> pidLoop(double proportional,
-                                                            int integralBuffer,
-                                                            double integral,
-                                                            double derivative) {
-    return error -> {
-      Flowable<Double> errorP = error.map(x -> x * proportional);
-      Flowable<Double> errorI = error.buffer(integralBuffer, 1)
-          .map(list -> list.stream().reduce(0.0, (x, acc) -> x + acc))
-          .map(x -> x * integral);
-      Flowable<Double> errorD = error.buffer(2, 1)
-          .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
-          .map(x -> x * derivative);
-      Flowable<Double> output = Flowable.combineLatest(errorP, errorI, errorD,
-          (p, i, d) -> p + i + d);
-      return output;
-    };
+  @Deprecated
+  public static FlowableTransformer<Double, Double> veryBadDontUseEverPidLoop(double proportional,
+      int integralBuffer,
+      double integral,
+      double derivative) {
+    return controlLoop(proportional, derivative, integral,
+        (error) -> error.buffer(integralBuffer, 1)
+            .map(list -> list.stream().reduce(0.0, (x, acc) -> x + acc))
+            .map(x -> x * integral / integralBuffer));
   }
 
+  /**
+   * Exponential average version of PID Loop.
+   */
+  public static FlowableTransformer<Double, Double> exponentialPidLoop(double proportinal,
+      double integralBuffer,
+      double integral,
+      double derivative) {
+    return controlLoop(proportinal, integral, derivative, error -> error.scan(
+        (newVal, lastAvg) -> lastAvg * (integralBuffer - 1) / integralBuffer + newVal / integralBuffer));
+  }
+
+  /**
+   * RegularPD loop with the 0.0 integral stream.
+   */
   public static FlowableTransformer<Double, Double> pdLoop(double proportional,
-                                                           double derivative) {
+      double derivative) {
+    return controlLoop(proportional, derivative, 0.0, error -> Flowable.just(0.0));
+  }
+
+  /**
+   * Control Loop for PID which
+   */
+  private static FlowableTransformer<Double, Double> controlLoop(double proportional,
+      double derivative,
+      double integral,
+      Function<Flowable<Double>, Flowable<Double>> errorI) {
     return error -> {
       Flowable<Double> errorP = error.map(x -> x * proportional);
       Flowable<Double> errorD = error.buffer(2, 1)
           .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
           .map(x -> x * derivative);
-      return Flowable.combineLatest(errorP, errorD, (p, d) -> p + d).share();
+      try {
+        return Flowable.combineLatest(errorP, errorI.apply(error).map(x -> x * integral), errorD,
+            (p, i, d) -> p + i + d);
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException(e);
+      }
     };
   }
 
