@@ -54,6 +54,11 @@ public class VirtualSpeedController extends LoopSpeedController {
   }
 
   @Override
+  public double getCurrent() {
+    return 0;
+  }
+
+  @Override
   public Flowable<FeedbackEvent> feedback() {
     return Flowable.empty();
   }

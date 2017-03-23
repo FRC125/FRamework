@@ -69,6 +69,10 @@ public class Talon extends LoopSpeedController {
 
   }
 
+  public double getCurrent() {
+    return this.talon.getOutputCurrent();
+  }
+
   void setP(double pval) {
     this.talon.setP(pval);
   }
