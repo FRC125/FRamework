@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-public class Reader {
+public class reader {
   public static Flowable<DrivePathSegment> read(String serialized){
     StringTokenizer tokenizer = new StringTokenizer(serialized, "\n");
 
