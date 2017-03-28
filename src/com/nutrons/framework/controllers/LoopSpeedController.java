@@ -48,4 +48,6 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   public abstract boolean revLimitSwitchClosed();
 
   public abstract double position();
+
+  public abstract void setVoltageRampRate(double v);
 }
