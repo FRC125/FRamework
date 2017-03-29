@@ -92,6 +92,11 @@ public class VirtualSpeedController extends LoopSpeedController {
     return lastPosition;
   }
 
+  @Override
+  public void setVoltageRampRate(double v) {
+    
+  }
+
   public double speed() {
     return lastSpeed;
   }
