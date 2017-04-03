@@ -54,6 +54,11 @@ public class VirtualSpeedController extends LoopSpeedController {
   }
 
   @Override
+  public double getCurrent() {
+    return 0;
+  }
+
+  @Override
   public Flowable<FeedbackEvent> feedback() {
     return Flowable.empty();
   }
@@ -85,6 +90,11 @@ public class VirtualSpeedController extends LoopSpeedController {
   @Override
   public double position() {
     return lastPosition;
+  }
+
+  @Override
+  public void setVoltageRampRate(double v) {
+    
   }
 
   public double speed() {

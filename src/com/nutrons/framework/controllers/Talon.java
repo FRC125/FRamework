@@ -3,6 +3,7 @@ package com.nutrons.framework.controllers;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import com.ctre.CANTalon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import io.reactivex.Flowable;
 import java.security.InvalidParameterException;
 
@@ -42,6 +43,7 @@ public class Talon extends LoopSpeedController {
   }
 
   void set(double value) {
+    SmartDashboard.putNumber("talon " + this.id(), value);
     this.talon.set(value);
   }
 
@@ -67,6 +69,10 @@ public class Talon extends LoopSpeedController {
   void changeSetpoint(double setpoint) {
     this.talon.setSetpoint(setpoint);
 
+  }
+
+  public double getCurrent() {
+    return this.talon.getOutputCurrent();
   }
 
   void setP(double pval) {
@@ -144,5 +150,10 @@ public class Talon extends LoopSpeedController {
 
   public double getClosedLoopError() {
     return this.talon.getClosedLoopError();
+  }
+
+  @Override
+  public void setVoltageRampRate(double v){
+    this.talon.setVoltageRampRate(v);
   }
 }

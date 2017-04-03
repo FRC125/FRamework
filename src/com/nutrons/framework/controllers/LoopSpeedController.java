@@ -8,6 +8,8 @@ import io.reactivex.functions.Consumer;
  */
 public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
 
+  public abstract double getCurrent();
+
   public abstract Flowable<FeedbackEvent> feedback();
 
   @Override
@@ -46,4 +48,6 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   public abstract boolean revLimitSwitchClosed();
 
   public abstract double position();
+
+  public abstract void setVoltageRampRate(double v);
 }
