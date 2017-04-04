@@ -11,7 +11,7 @@ import java.io.Reader;
 
 public class MotionDeserialzer {
 
-  public static Flowable<Pair<Double, Double>> read(Reader reader) {
+  public static Flowable<Pair<Double[], Double[]>> read(Reader reader) {
     try {
       BufferedReader br = new BufferedReader(reader);
       String name = br.readLine();
@@ -25,11 +25,27 @@ public class MotionDeserialzer {
         }
         return br;
       });
+
+      Flowable<Double[]> dataParsed = data.map(x -> {
+        String[] split = x.split(" ");
+        Double[] mata = new Double[6];
+
+        for(int i = 0; i < split.length; i++){
+          mata[i] = Double.parseDouble(split[i]);
+        }
+
+        if(split.length == 6){
+          System.out.println("the parsed data was not of length 6, it was of length: " + split.length);
+        }
+
+        return mata;
+      });
+
       data = data.replay().autoConnect();
-      return Flowable.zip(data.take(num_elements), data.skip(num_elements), (l, r) -> {
-        double velocityL = Double.parseDouble(l.substring(0, l.indexOf(" ")));
-        double velocityR = Double.parseDouble(r.substring(0, r.indexOf(" ")));
-        return new Pair<>(velocityL, velocityR);
+      dataParsed = dataParsed.replay().autoConnect();
+
+      return Flowable.zip(dataParsed.take(num_elements), dataParsed.skip(num_elements), (l, r) -> {
+        return new Pair<>(l, r);
       });
     } catch (IOException e) {
       e.printStackTrace();
@@ -37,7 +53,8 @@ public class MotionDeserialzer {
     }
   }
 
-  public static Flowable<Pair<Double, Double>> read(File file) {
+  public static Flowable<Pair<Double[], Double[]>> read(File file) {
+    //return two trajectory targets flowables
     try {
       FileReader fr = new FileReader(file);
       return read(fr);
@@ -46,7 +63,6 @@ public class MotionDeserialzer {
       return Flowable.empty();
     }
   }
-
 }
 
 
