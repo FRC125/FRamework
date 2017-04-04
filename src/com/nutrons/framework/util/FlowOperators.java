@@ -92,7 +92,7 @@ public class FlowOperators {
           .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
           .map(x -> x * derivative);
       Flowable<Double> output = Flowable.combineLatest(errorP, errorI, errorD,
-          (p, i, d) -> p + i + d).publish().autoConnect();
+          (p, i, d) -> p + i + d).share();
       return output;
     };
   }
@@ -104,7 +104,7 @@ public class FlowOperators {
       Flowable<Double> errorD = error.buffer(2, 1)
           .map(last -> last.stream().reduce(0.0, (x, y) -> x - y))
           .map(x -> x * derivative);
-      return Flowable.combineLatest(errorP, errorD, (p, d) -> p + d).publish().autoConnect();
+      return Flowable.combineLatest(errorP, errorD, (p, d) -> p + d).share();
     };
   }
 
