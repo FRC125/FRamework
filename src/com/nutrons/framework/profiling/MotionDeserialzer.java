@@ -34,7 +34,7 @@ public class MotionDeserialzer {
           mata[i] = Double.parseDouble(split[i]);
         }
 
-        if(split.length == 6){
+        if(split.length != 6){
           System.out.println("the parsed data was not of length 6, it was of length: " + split.length);
         }
 
@@ -44,9 +44,7 @@ public class MotionDeserialzer {
       data = data.replay().autoConnect();
       dataParsed = dataParsed.replay().autoConnect();
 
-      return Flowable.zip(dataParsed.take(num_elements), dataParsed.skip(num_elements), (l, r) -> {
-        return new Pair<>(l, r);
-      });
+      return Flowable.zip(dataParsed.take(num_elements), dataParsed.skip(num_elements), Pair::new);
     } catch (IOException e) {
       e.printStackTrace();
       return Flowable.empty();

@@ -97,6 +97,11 @@ public class VirtualSpeedController extends LoopSpeedController {
     
   }
 
+  @Override
+  public void runMotionProfile(Flowable<Double[]> trajectoryPoints) {
+
+  }
+
   public double speed() {
     return lastSpeed;
   }

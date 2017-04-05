@@ -50,4 +50,6 @@ public abstract class LoopSpeedController implements Consumer<ControllerEvent> {
   public abstract double position();
 
   public abstract void setVoltageRampRate(double v);
+
+  public abstract void runMotionProfile(Flowable<Double[]> trajectoryPoints);
 }

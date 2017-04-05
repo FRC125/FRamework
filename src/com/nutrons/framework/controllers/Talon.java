@@ -1,11 +1,17 @@
 package com.nutrons.framework.controllers;
 
+import static com.ctre.CANTalon.FeedbackDevice;
+import static com.ctre.CANTalon.SetValueMotionProfile;
+import static com.ctre.CANTalon.TalonControlMode;
 import static com.nutrons.framework.util.FlowOperators.toFlow;
 
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import io.reactivex.Completable;
 import io.reactivex.Flowable;
+import io.reactivex.schedulers.Schedulers;
 import java.security.InvalidParameterException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class Talon extends LoopSpeedController {
@@ -13,6 +19,7 @@ public class Talon extends LoopSpeedController {
   private final Flowable<FeedbackEvent> feedback;
   private final CANTalon talon;
   private boolean reverseFeedback;
+  private MotionWorker motionWorker = new MotionWorker();
 
   /**
    * Creates a talon on the given port.
@@ -26,7 +33,7 @@ public class Talon extends LoopSpeedController {
     this.feedback = toFlow(() -> this.talon::getError);
   }
 
-  public Talon(int port, CANTalon.FeedbackDevice feedbackDevice) {
+  public Talon(int port, FeedbackDevice feedbackDevice) {
     this(port);
     this.talon.setFeedbackDevice(feedbackDevice);
   }
@@ -50,17 +57,19 @@ public class Talon extends LoopSpeedController {
   void changeControlMode(ControlMode mode) {
     switch (mode) {
       case FOLLOWER:
-        this.talon.changeControlMode(CANTalon.TalonControlMode.Follower);
+        this.talon.changeControlMode(TalonControlMode.Follower);
         break;
       case LOOP_POSITION:
-        this.talon.changeControlMode(CANTalon.TalonControlMode.Position);
+        this.talon.changeControlMode(TalonControlMode.Position);
         break;
       case LOOP_SPEED:
-        this.talon.changeControlMode(CANTalon.TalonControlMode.Speed);
+        this.talon.changeControlMode(TalonControlMode.Speed);
         break;
       case MANUAL:
-        this.talon.changeControlMode(CANTalon.TalonControlMode.PercentVbus);
+        this.talon.changeControlMode(TalonControlMode.PercentVbus);
         break;
+      case MOTION_PROFILE:
+        this.talon.changeControlMode(TalonControlMode.MotionProfile);
       default:
         throw new InvalidParameterException("This ControlMode is not supported!");
     }
@@ -111,7 +120,7 @@ public class Talon extends LoopSpeedController {
     return this.talon.getSpeed();
   }
 
-  public void setFeedbackDevice(CANTalon.FeedbackDevice device) {
+  public void setFeedbackDevice(FeedbackDevice device) {
     this.talon.setFeedbackDevice(device);
   }
 
@@ -153,7 +162,76 @@ public class Talon extends LoopSpeedController {
   }
 
   @Override
-  public void setVoltageRampRate(double v){
+  public void setVoltageRampRate(double v) {
     this.talon.setVoltageRampRate(v);
+  }
+
+  @Override
+  public void runMotionProfile(Flowable<Double[]> trajectoryPoints) {
+    System.out.println("starting motion profile");
+    this.talon.changeMotionControlFramePeriod(5);
+    this.talon.set(SetValueMotionProfile.Disable.value);
+    Completable buffer = this.motionWorker.startFilling(trajectoryPoints);
+    System.out.println("filling buffers");
+    this.motionWorker.resume();
+    buffer.doOnComplete(() -> this.talon.set(SetValueMotionProfile.Enable.value)).blockingAwait();
+    System.out.println("done filling buffers and enabled profile");
+  }
+
+  private class MotionWorker {
+    private static final int MIN_TRAJECTORY_POINTS = 10;
+    private final AtomicBoolean running;
+    private boolean paused;
+    private Thread worker;
+
+    private MotionWorker() {
+      this.running = new AtomicBoolean(false);
+      this.paused = true;
+      this.worker = new Thread(() -> {
+        while (running.get()) {
+          while (!paused) {
+            try {
+              Thread.sleep(5);
+            } catch (InterruptedException e) {
+            }
+            Talon.this.talon.processMotionProfileBuffer();
+          }
+        }
+      });
+    }
+
+    void pause() {
+      this.paused = true;
+    }
+
+    void resume() {
+      if (!this.running.get()) {
+        synchronized (running) {
+          if (!this.running.get()) {
+            this.worker.start();
+            this.running.set(true);
+          }
+        }
+      }
+      this.paused = false;
+    }
+
+    Completable startFilling(Flowable<Double[]> data) {
+      Talon.this.talon.clearMotionProfileTrajectories();
+      CANTalon.TrajectoryPoint point = new CANTalon.TrajectoryPoint();
+      point.zeroPos = true;
+      point.profileSlotSelect = 0;
+      data = data.takeWhile(x -> this.running.get()).subscribeOn(Schedulers.io()).share();
+      data.subscribe(x -> {
+        synchronized (point) {
+          point.position = x[0];
+          point.velocity = x[1];
+          point.timeDurMs = 10;
+          Talon.this.talon.pushMotionProfileTrajectory(point);
+          point.zeroPos = false;
+        }
+      });
+      return data.take(MIN_TRAJECTORY_POINTS).ignoreElements();
+    }
   }
 }

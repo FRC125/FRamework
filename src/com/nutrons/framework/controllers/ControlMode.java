@@ -4,5 +4,6 @@ public enum ControlMode {
   MANUAL,
   LOOP_SPEED,
   LOOP_POSITION,
-  FOLLOWER
+  FOLLOWER,
+  MOTION_PROFILE
 }
