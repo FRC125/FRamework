@@ -170,6 +170,7 @@ public class Talon extends LoopSpeedController {
   public void runMotionProfile(Flowable<Double[]> trajectoryPoints) {
     System.out.println("starting motion profile");
     this.talon.changeMotionControlFramePeriod(5);
+    this.talon.changeControlMode(TalonControlMode.MotionProfile);
     this.talon.set(SetValueMotionProfile.Disable.value);
     Completable buffer = this.motionWorker.startFilling(trajectoryPoints);
     System.out.println("filling buffers");
@@ -221,12 +222,13 @@ public class Talon extends LoopSpeedController {
       CANTalon.TrajectoryPoint point = new CANTalon.TrajectoryPoint();
       point.zeroPos = true;
       point.profileSlotSelect = 0;
-      data = data.takeWhile(x -> this.running.get()).subscribeOn(Schedulers.io()).share();
+      data = data.subscribeOn(Schedulers.io()).share().subscribeOn(Schedulers.io());
       data.subscribe(x -> {
         synchronized (point) {
           point.position = x[0];
           point.velocity = x[1];
           point.timeDurMs = 10;
+         // System.out.println(point.position + ":" + point.velocity);
           Talon.this.talon.pushMotionProfileTrajectory(point);
           point.zeroPos = false;
         }

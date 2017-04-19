@@ -30,7 +30,7 @@ public class MotionDeserialzer {
         String[] split = x.split(" ");
         Double[] mata = new Double[6];
 
-        for(int i = 0; i < split.length; i++){
+        for(int i = 0; i < mata.length; i++){
           mata[i] = Double.parseDouble(split[i]);
         }
 
