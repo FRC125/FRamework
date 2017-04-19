@@ -4,7 +4,6 @@ import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
-import com.nutrons.framework.inputs.CommonController;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableTransformer;
 import io.reactivex.disposables.CompositeDisposable;
@@ -64,18 +63,19 @@ public class FlowOperators {
                                                      double remap) {
     return bandMap(minimum, maximum, x -> remap);
   }
-  public static Function<Double,Double> deadbandAssign( double min , double max, double remap) {
+
+  public static Function<Double, Double> deadbandAssign(double deadzone, double rampRate) {
     return (Double x) -> {
-      if (x <= min) {
-        return x - min;
-      } else if (x >= max)
-      {
-        return x + max;}
-        else{
-        return remap;
+      if (x <= -(deadzone / 2)) {
+        return -Math.pow(Math.abs(x + deadzone / 2) / (1 - deadzone / 2), rampRate);
+      } else if (x >= (deadzone / 2)) {
+        return Math.pow(x - deadzone / 2, rampRate) / (1 - deadzone / 2);
+      } else {
+        return 0.0;
       }
     };
   }
+
   /**
    * Creates a function that will return the input value, unless that value is within the range
    * specified by minimum and maximum. If so, the value will be passed through the remap function.
