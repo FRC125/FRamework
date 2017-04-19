@@ -16,4 +16,8 @@ public class ResetPositionEvent implements ControllerEvent {
   public void actOn(Talon talon) {
     talon.resetPositionTo(position);
   }
+
+  public void actOn(VirtualSpeedController controller) {
+    controller.resetPositionTo(position);
+  }
 }

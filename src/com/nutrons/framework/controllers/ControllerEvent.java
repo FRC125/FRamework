@@ -11,4 +11,5 @@ public interface ControllerEvent {
     throw new EventUnimplementedException(
         controller.getClass().toString(), this.getClass().toString());
   }
+
 }

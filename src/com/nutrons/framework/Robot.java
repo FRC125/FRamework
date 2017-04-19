@@ -3,14 +3,13 @@ package com.nutrons.framework;
 import static com.nutrons.framework.util.CompMode.AUTO;
 import static com.nutrons.framework.util.CompMode.TELE;
 import static com.nutrons.framework.util.CompMode.TEST;
-import static io.reactivex.Flowable.combineLatest;
 
 import com.nutrons.framework.commands.Command;
 import com.nutrons.framework.util.CompMode;
 import com.nutrons.framework.util.FlowOperators;
 import edu.wpi.first.wpilibj.SampleRobot;
 import io.reactivex.Flowable;
-import io.reactivex.schedulers.Schedulers;
+import java.util.concurrent.TimeUnit;
 
 public abstract class Robot extends SampleRobot {
 
@@ -62,9 +61,9 @@ public abstract class Robot extends SampleRobot {
    */
   public final Flowable<CompMode> competitionStream() {
     return Flowable.merge(
-        FlowOperators.toFlow(this::isAutonomous).filter(x -> x).map((x) -> AUTO),
+        FlowOperators.toFlow(this::isAutonomous, 50, TimeUnit.MILLISECONDS).filter(x -> x).map((x) -> AUTO),
         FlowOperators.toFlow(this::isOperatorControl).filter(x -> x).map((x) -> TELE),
-        FlowOperators.toFlow(this::isTest).filter(x -> x).map((x) -> TEST)).distinctUntilChanged();
+        FlowOperators.toFlow(this::isTest).filter(x -> x).map((x) -> TEST)).distinctUntilChanged().replay(1).autoConnect();
     // filter(x -> x) will filter all false values from the stream.
   }
 

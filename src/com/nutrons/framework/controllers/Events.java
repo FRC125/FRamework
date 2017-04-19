@@ -26,6 +26,11 @@ public class Events {
         pid.actOn(talon);
         setpointEvent.actOn(talon);
       }
+      @Override
+      public void actOn(VirtualSpeedController controller) {
+        pid.actOn(controller);
+        setpointEvent.actOn(controller);
+      }
     };
   }
 
@@ -35,6 +40,7 @@ public class Events {
 
   /**
    * Combines actions that are preformed on the talon.
+   *
    * @return combined event
    */
   public static ControllerEvent combine(ControllerEvent... events) {
@@ -43,6 +49,12 @@ public class Events {
       public void actOn(Talon talon) {
         for (ControllerEvent e : events) {
           e.actOn(talon);
+        }
+      }
+      @Override
+      public void actOn(VirtualSpeedController controller) {
+        for (ControllerEvent e : events) {
+          e.actOn(controller);
         }
       }
     };
@@ -94,4 +106,5 @@ public class Events {
   public static ControllerEvent resetPosition(double position) {
     return new ResetPositionEvent(position);
   }
+
 }

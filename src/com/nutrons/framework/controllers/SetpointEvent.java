@@ -12,4 +12,9 @@ class SetpointEvent implements ControllerEvent {
   public void actOn(Talon talon) {
     talon.changeSetpoint(setpoint);
   }
+
+  @Override
+  public void actOn(VirtualSpeedController controller) {
+    controller.changeSetpoint(setpoint);
+  }
 }

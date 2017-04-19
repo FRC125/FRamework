@@ -12,4 +12,9 @@ public class SetReversedSensorEvent implements ControllerEvent {
   public void actOn(Talon talon) {
     talon.reverseSensor(flipped);
   }
+
+  @Override
+  public void actOn(VirtualSpeedController controller) {
+    controller.reverseSensor(true);
+  }
 }

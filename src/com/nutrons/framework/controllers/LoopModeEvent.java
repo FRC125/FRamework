@@ -16,4 +16,8 @@ public class LoopModeEvent implements ControllerEvent {
   public void actOn(Talon talon) {
     talon.changeControlMode(mode);
   }
+
+  public void actOn(VirtualSpeedController controller) {
+    controller.changeControlMode(mode);
+  }
 }

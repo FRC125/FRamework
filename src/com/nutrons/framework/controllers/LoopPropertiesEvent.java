@@ -27,4 +27,9 @@ public class LoopPropertiesEvent implements ControllerEvent {
     talon.setD(dval);
     talon.setF(fval);
   }
+
+  @Override
+  public void actOn(VirtualSpeedController controller) {
+    controller.setLoopProperties(pval, ival, dval, fval);
+  }
 }
