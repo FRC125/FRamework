@@ -57,10 +57,23 @@ public class FlowOperators {
   /**
    * Creates a function that will return the input value, unless that value is within the range
    * specified by minimum and maximum. If so, the value will be changed to remap.
+   * 0 if in deadband else f(x-d)
    */
   public static Function<Double, Double> deadbandMap(double minimum, double maximum,
                                                      double remap) {
     return bandMap(minimum, maximum, x -> remap);
+  }
+
+  public static Function<Double, Double> deadbandAssign(double deadzone, double rampRate) {
+    return (Double x) -> {
+      if (x <= -(deadzone / 2)) {
+        return -Math.pow(Math.abs(x + deadzone / 2) / (1 - deadzone / 2), rampRate);
+      } else if (x >= (deadzone / 2)) {
+        return Math.pow(x - deadzone / 2, rampRate) / (1 - deadzone / 2);
+      } else {
+        return 0.0;
+      }
+    };
   }
 
   /**
