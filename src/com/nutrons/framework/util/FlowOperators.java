@@ -67,9 +67,9 @@ public class FlowOperators {
   public static Function<Double, Double> deadbandAssign(double deadzone, double rampRate) {
     return (Double x) -> {
       if (x <= -(deadzone / 2)) {
-        return -Math.pow(Math.abs(x + deadzone / 2) / (1 - deadzone / 2), rampRate);
+        return -Math.pow(Math.abs(x + deadzone / 2) / (1 - deadzone / 2), rampRate) + 0.2;
       } else if (x >= (deadzone / 2)) {
-        return Math.pow(x - deadzone / 2, rampRate) / (1 - deadzone / 2);
+        return Math.pow(x - deadzone / 2, rampRate) / (1 - deadzone / 2) - 0.2;
       } else {
         return 0.0;
       }
